@@ -211,8 +211,106 @@ async function main() {
     );
   }
 
+  // ── 6. v2.0 — Assistant user + initial ChatSessions ───────────────
+  await upsertAssistantUser(prisma);
+  await upsertInitialChatSessions(prisma);
+
   await prisma.$disconnect();
   console.log("✅ seed complete");
+}
+
+async function upsertAssistantUser(prisma: PrismaClient) {
+  const email =
+    process.env.ASSISTANT_USER_EMAIL ?? "assistant@tbdc.ready4vc.com";
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    console.log(`   • assistant user already exists: ${email}`);
+    return existing;
+  }
+  const created = await prisma.user.create({
+    data: {
+      email,
+      name: "Assistant",
+      role: "assistant",
+      // Login is blocked for role=assistant in src/auth.ts regardless of
+      // password hash state. The `!` placeholder is a non-null string so the
+      // schema's `String` constraint is satisfied; bcrypt.compare against it
+      // would return false anyway.
+      passwordHash: "!",
+    },
+  });
+  console.log(`   ✓ assistant user: ${email}`);
+  return created;
+}
+
+async function upsertInitialChatSessions(prisma: PrismaClient) {
+  // General session (singleton). Prisma refuses null in compound unique
+  // lookups, so the singleton uses the sentinel "__general__" as the
+  // scopeEntityId. This is internal-only — the chat pane never renders it.
+  const GENERAL_SCOPE_SENTINEL = "__general__";
+  await prisma.chatSession.upsert({
+    where: {
+      scopeType_scopeEntityId: {
+        scopeType: "general",
+        scopeEntityId: GENERAL_SCOPE_SENTINEL,
+      },
+    },
+    create: {
+      scopeType: "general",
+      scopeEntityId: GENERAL_SCOPE_SENTINEL,
+      openclawSessionId: "tbdc-general",
+      displayName: "General",
+    },
+    update: {},
+  });
+
+  // One per company
+  const companies = await prisma.company.findMany({
+    select: { id: true, name: true },
+  });
+  for (const c of companies) {
+    await prisma.chatSession.upsert({
+      where: {
+        scopeType_scopeEntityId: {
+          scopeType: "company",
+          scopeEntityId: c.id,
+        },
+      },
+      create: {
+        scopeType: "company",
+        scopeEntityId: c.id,
+        openclawSessionId: `tbdc-co-${c.id}`,
+        displayName: c.name,
+      },
+      update: { displayName: c.name },
+    });
+  }
+
+  // One per investor
+  const investors = await prisma.investor.findMany({
+    select: { id: true, name: true },
+  });
+  for (const inv of investors) {
+    await prisma.chatSession.upsert({
+      where: {
+        scopeType_scopeEntityId: {
+          scopeType: "investor",
+          scopeEntityId: inv.id,
+        },
+      },
+      create: {
+        scopeType: "investor",
+        scopeEntityId: inv.id,
+        openclawSessionId: `tbdc-inv-${inv.id}`,
+        displayName: inv.name,
+      },
+      update: { displayName: inv.name },
+    });
+  }
+
+  console.log(
+    `   ✓ chat sessions: 1 general + ${companies.length} companies + ${investors.length} investors`,
+  );
 }
 
 main().catch(async (err) => {

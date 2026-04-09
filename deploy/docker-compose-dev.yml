@@ -1,0 +1,94 @@
+# TBDC POC v2.0 — local dev stack
+#
+# Brings up Postgres + OpenClaw gateway with the tbdc-db plugin installed.
+# The Next.js dev server runs on the HOST (via `npm run dev`), not in compose.
+#
+# See deploy/README-dev.md for the full bring-up sequence (plugin build, DB
+# migrate/seed, tbdc_assistant role creation, env vars for the host app).
+#
+# Important — this compose file uses the pivoted "plugin install on boot"
+# entrypoint shape validated in the Phase 0 probe. Do NOT revert to the
+# plan's original ":ro config mount" pattern; see deploy/probe/FINDINGS.md
+# sections "How OpenClaw actually launches (vs. the plan)" and
+# "Compose file settled shape (for Phase 5 + Phase 6)".
+#
+# OpenClaw image tag is pinned to the value in deploy/openclaw-version.txt
+# (2026.4.8 at time of writing). Bump both locations together.
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: tbdc-dev-pg
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_PASSWORD: devpw
+      POSTGRES_DB: tbdc_poc_dev
+    volumes:
+      - tbdc-dev-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tbdc_poc_dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  openclaw-gateway:
+    # Pinned tag — keep in sync with deploy/openclaw-version.txt
+    image: ghcr.io/openclaw/openclaw:2026.4.8
+    container_name: tbdc-dev-openclaw
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "18789:18789"
+    # Run as root so the entrypoint can fix ownership/permissions on the
+    # state volume and the plugin copy; the init drops to `node` via `su`
+    # before exec'ing the gateway process.
+    user: "0:0"
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        # 1. State dir — Docker-created mount point is root-owned by default.
+        chown node:node /state || true
+        mkdir -p /state/workspace && chown node:node /state/workspace || true
+        # 2. Config files — gateway rewrites them on every boot, must be node-owned.
+        [ -f /state/openclaw.json ] && chown node:node /state/openclaw.json || true
+        [ -f /state/openclaw.json.bak ] && chown node:node /state/openclaw.json.bak || true
+        # 3. One-shot plugin install. Only runs when the plugin source has a
+        #    dist/ directory (i.e. the operator ran `npm run build` inside
+        #    deploy/plugins/tbdc-db first) and the plugin has not already
+        #    been installed into this state volume.
+        if [ -d /plugins-src/tbdc-db/dist ] && [ ! -d /state/custom-plugins/tbdc-db ]; then
+          echo "[entrypoint] installing tbdc-db plugin from /plugins-src into /state/custom-plugins"
+          mkdir -p /state/custom-plugins
+          cp -r /plugins-src/tbdc-db /state/custom-plugins/
+          # OpenClaw rejects plugin dirs that aren't root-owned or are world-writable.
+          chown -R root:root /state/custom-plugins
+          chmod -R 755 /state/custom-plugins
+          su -s /bin/sh node -c "cd /app && node openclaw.mjs plugins install -l /state/custom-plugins/tbdc-db"
+          # plugins install runs as node above, but if the root-path guard ever
+          # forces us to run it as root, this chown brings the config file back
+          # to node-ownership before gateway boot. Harmless when already node-owned.
+          [ -f /state/openclaw.json ] && chown node:node /state/openclaw.json || true
+        elif [ ! -d /plugins-src/tbdc-db/dist ]; then
+          echo "[entrypoint] WARNING: /plugins-src/tbdc-db/dist missing — run 'npm run build' in deploy/plugins/tbdc-db before 'docker compose up'. Gateway will boot without the plugin."
+        fi
+        exec su -s /bin/sh node -c "node /app/openclaw.mjs gateway"
+    environment:
+      - OPENCLAW_STATE_DIR=/state
+      - TBDC_DATABASE_URL=postgresql://tbdc_assistant:devpw@postgres:5432/tbdc_poc_dev
+      - ASSISTANT_USER_EMAIL=assistant@tbdc.ready4vc.com
+      # Intentionally optional in dev — Phase 5's expected failure is that the
+      # LLM call returns "no API key". See deploy/SMOKE-DEV.md.
+      - ZAI_API_KEY=${ZAI_API_KEY:-}
+    volumes:
+      - tbdc-dev-openclaw-state:/state
+      # Read-only source mount; the entrypoint copies into /state/custom-plugins
+      # and chowns the copy, so the host directory ownership does not matter.
+      - ./plugins/tbdc-db:/plugins-src/tbdc-db:ro
+
+volumes:
+  tbdc-dev-pg:
+  tbdc-dev-openclaw-state:

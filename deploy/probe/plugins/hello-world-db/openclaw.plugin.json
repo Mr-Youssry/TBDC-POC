@@ -1,0 +1,10 @@
+{
+  "id": "hello-world-db",
+  "name": "Hello World DB Probe",
+  "description": "Probe plugin — verifies OpenClaw plugin SDK + custom tool registration works end-to-end in the TBDC POC probe environment.",
+  "configSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  }
+}

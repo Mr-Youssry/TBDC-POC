@@ -1,0 +1,32 @@
+{
+  "name": "@tbdc/openclaw-plugin-tbdc-db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "prisma:generate": "prisma generate --schema=../../../prisma/schema.prisma",
+    "postprisma:generate": "node scripts/copy-prisma-client.mjs",
+    "build": "npm run prisma:generate && tsc -p tsconfig.json",
+    "test": "npm run prisma:generate && vitest run"
+  },
+  "openclaw": {
+    "extensions": ["./dist/index.js"],
+    "compat": {
+      "pluginApi": "1",
+      "minGatewayVersion": "2026.2.26"
+    }
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/pg": "^8.20.0",
+    "prisma": "^7.7.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
