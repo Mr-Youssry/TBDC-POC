@@ -3,23 +3,28 @@
 -- Requires superuser. Safe to re-run (all statements use IF NOT EXISTS / CREATE OR REPLACE).
 --
 -- Usage:
---   psql -v TBDC_ASSISTANT_PASSWORD="'the-real-password'" -f v2_roles_and_grants.sql
+--   psql -v TBDC_ASSISTANT_PASSWORD=the-real-password -f v2_roles_and_grants.sql
 --
--- The single-quotes around the password value above are required because
--- psql :varname substitution is a literal text replacement, not a parameter
--- binding — the quotes become part of the CREATE ROLE statement.
+-- The password value MUST be passed WITHOUT surrounding quotes. psql's
+-- `:'varname'` syntax automatically wraps the substituted value in a
+-- SQL string literal — if you pre-quote the value, you get nested quotes
+-- and the stored password ends up with literal single quotes around it.
+-- Discovered the hard way during the v2.0 droplet deploy: Prisma's
+-- `pg` client cannot authenticate against a role whose password contains
+-- unescaped quote characters. Tracked as "password auth failed 28P01".
 
 -- 1. Restricted role for the OpenClaw tbdc-db plugin.
 --
--- Postgres has no CREATE ROLE IF NOT EXISTS. Workaround: build the CREATE
--- ROLE statement conditionally as a row, then feed it back to psql via
--- \gexec. This is a psql-only pattern — it won't run via pgAdmin, DBeaver,
--- or any other SQL runner. That's fine: we always run it from psql on deploy.
-SELECT format('CREATE ROLE tbdc_assistant LOGIN PASSWORD %L', :'TBDC_ASSISTANT_PASSWORD')
+-- Create once (CREATE ROLE IF NOT EXISTS doesn't exist in Postgres) via
+-- the conditional-SELECT + \gexec pattern, then ALTER the password
+-- unconditionally so re-running the file rotates the password cleanly.
+SELECT 'CREATE ROLE tbdc_assistant LOGIN'
 WHERE NOT EXISTS (
   SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'tbdc_assistant'
 )
 \gexec
+
+ALTER ROLE tbdc_assistant WITH LOGIN PASSWORD :'TBDC_ASSISTANT_PASSWORD';
 
 -- 2. Sanitized User view (excludes passwordHash)
 CREATE OR REPLACE VIEW v_user_public AS

@@ -52,16 +52,22 @@ export default definePluginEntry({
     // writes would fail at runtime with a FK violation anyway, so refusing
     // to register them up-front gives a clearer error at `plugins inspect`
     // time.
+    // The tbdc_assistant Postgres role intentionally has NO access to the
+    // User table (to prevent the plugin from leaking passwordHash). Access
+    // is via the sanitized v_user_public view. Prisma's generated client
+    // only knows the User model, not the view, so this lookup uses raw SQL.
     let assistantUserId = "";
     try {
-      const row = await prisma.user.findUnique({
-        where: { email: assistantEmail },
-        select: { id: true },
-      });
-      if (row) {
-        assistantUserId = row.id;
+      const rows = (await prisma.$queryRaw`
+        SELECT id FROM v_user_public
+        WHERE email = ${assistantEmail}
+          AND role = 'assistant'::"UserRole"
+        LIMIT 1
+      `) as Array<{ id: string }>;
+      if (rows.length > 0 && rows[0]) {
+        assistantUserId = rows[0].id;
         api.logger?.info?.(
-          `[tbdc-db] assistant user resolved: ${assistantEmail} → ${row.id}`,
+          `[tbdc-db] assistant user resolved: ${assistantEmail} → ${rows[0].id}`,
         );
       } else {
         api.logger?.warn?.(
