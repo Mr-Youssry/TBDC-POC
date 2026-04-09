@@ -1,0 +1,38 @@
+services:
+  openclaw-probe:
+    image: ghcr.io/openclaw/openclaw:2026.4.8
+    container_name: openclaw-probe
+    ports:
+      - "18789:18789"
+    volumes:
+      # OpenClaw's default state dir is /home/node/.openclaw, which does NOT
+      # exist in the image — so Docker creates the mount point as root and the
+      # node user (uid 1000) can't write to it. Workaround: point
+      # OPENCLAW_STATE_DIR at /state, mount a named volume there, and fix
+      # ownership via an init that runs as root.
+      - openclaw-probe-state:/state
+      - ./skills:/state/workspace/skills:ro
+      - ./plugins:/plugins:ro
+    environment:
+      - OPENCLAW_STATE_DIR=/state
+      - PROBE_DATABASE_URL=postgresql://postgres:probe@host.docker.internal:15432/probe
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Start as root so we can chown the fresh volume, then drop back to node
+    # via the entrypoint wrapper below.
+    user: "0:0"
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        chown node:node /state || true
+        mkdir -p /state/workspace && chown node:node /state/workspace || true
+        # Fix ownership of config files that may have been written by root
+        # during plugins install (custom-plugins dir must STAY root-owned —
+        # OpenClaw's security policy rejects plugin dirs owned by non-root).
+        [ -f /state/openclaw.json ] && chown node:node /state/openclaw.json
+        [ -f /state/openclaw.json.bak ] && chown node:node /state/openclaw.json.bak
+        exec su -s /bin/sh node -c "node /app/openclaw.mjs gateway --allow-unconfigured"
+
+volumes:
+  openclaw-probe-state:

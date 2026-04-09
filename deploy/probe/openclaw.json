@@ -1,0 +1,13 @@
+{
+  "gateway": {
+    "host": "0.0.0.0",
+    "port": 18789,
+    "controlUi": {
+      "basePath": "/",
+      "allowedOrigins": ["http://localhost:18789"]
+    }
+  },
+  "models": {},
+  "skills": {},
+  "channels": { "webchat": { "enabled": true } }
+}
