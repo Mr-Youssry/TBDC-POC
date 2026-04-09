@@ -6,7 +6,15 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ---
 
-## 2026-04-08 — [unreleased] Docs handoff structure + dev server webpack fix
+## 2026-04-08 — [pending] Connect GitHub remote (Mr-Youssry/TBDC-POC)
+
+- Created private GitHub repo `Mr-Youssry/TBDC-POC` and pushed all 6 local commits.
+- Added `origin` remote with clean HTTPS URL (no token in `.git/config`); local `main` tracks `origin/main`.
+- Used URL-embedded-token workaround to bypass Windows' broken Git Credential Manager (`manager-core` helper referenced but executable missing from PATH — see BL-005 in backlog). Workaround documented in global `~/.claude/CLAUDE.md`.
+- Rotated the GitHub PAT: old classic token (`ghp_ilRV68...`) was invalid, replaced with fine-grained PAT `TBDC-POC-claude` scoped only to this repo with Contents R/W. Stored in global CLAUDE.md, flagged old token as invalid.
+- BL-002 (missing GitHub remote) resolved and removed from backlog.
+
+## 2026-04-08 — [a748a49] Docs handoff structure + dev server webpack fix
 
 - Added `docs/roadmap.md`, `docs/changelog.md`, `docs/backlog.md` so new sessions can resume without losing context.
 - Switched `npm run dev` from Turbopack to webpack. Root cause: Turbopack on Windows crashes when spawning the PostCSS loader subprocess (`STATUS_DLL_INIT_FAILED 0xc0000142`). `next build` with Turbopack is unaffected. `npm run dev:turbo` kept as an escape hatch for retesting the fix after future Next.js releases.
