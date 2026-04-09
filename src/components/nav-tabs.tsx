@@ -12,6 +12,7 @@ const TABS = [
 
 const ADMIN_TABS = [
   { id: "analyst", label: "05 — Analyst", href: "/analyst" },
+  { id: "audit", label: "06 — Audit", href: "/admin/audit" },
 ];
 
 export function NavTabs({ role }: { role?: string }) {
