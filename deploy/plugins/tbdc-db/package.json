@@ -6,6 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "prisma:generate": "prisma generate --schema=../../../prisma/schema.prisma",
+    "postprisma:generate": "node scripts/copy-prisma-client.mjs",
     "build": "npm run prisma:generate && tsc -p tsconfig.json",
     "test": "npm run prisma:generate && vitest run"
   },
