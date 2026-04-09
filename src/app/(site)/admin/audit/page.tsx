@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/guards";
+import { requireSessionForPage } from "@/lib/guards";
 import { AuditRow } from "./_components/audit-row";
 
 /**
@@ -13,7 +13,14 @@ export default async function AuditPage({
 }: {
   searchParams: Promise<{ entry?: string; actor?: string; table?: string }>;
 }) {
-  await requireAdmin();
+  // Page guard: redirect unauthenticated visitors to /login first, then
+  // enforce the admin-only role check. requireAdmin() alone throws on a
+  // missing session, which Next renders as a 500 instead of a redirect.
+  const session = await requireSessionForPage();
+  const role = (session.user as { role?: string }).role;
+  if (role !== "admin") {
+    throw new Error("Forbidden: admin role required");
+  }
   const params = await searchParams;
 
   const where: {
