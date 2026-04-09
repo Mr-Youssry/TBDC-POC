@@ -1,0 +1,128 @@
+// TBDC POC — see docs/superpowers/specs/2026-04-08-tbdc-poc-design.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         String   @default("admin")
+  createdAt    DateTime @default(now())
+  invitedById  String?
+  invitedBy    User?    @relation("Invites", fields: [invitedById], references: [id])
+  invitees     User[]   @relation("Invites")
+}
+
+model Investor {
+  id               String       @id @default(cuid())
+  name             String
+  type             String
+  stage            String
+  sectors          String
+  chequeSize       String
+  geography        String
+  leadOrFollow     String
+  deals12m         String
+  notablePortfolio String
+  contactApproach  String
+  sortOrder        Int          @default(0)
+  matches          Match[]
+  doNotMatches     DoNotMatch[]
+}
+
+model Company {
+  id                    String           @id @default(cuid())
+  name                  String
+  cohort                String
+  stage                 String
+  sector                String
+  arrTraction           String
+  askSize               String
+  homeMarket            String
+  targetMarket          String
+  founderProfile        String
+  acceptsInvestorIntros Boolean          @default(true)
+  gateNote              String?
+  sortOrder             Int              @default(0)
+  matches               Match[]
+  doNotMatches          DoNotMatch[]
+  customerTargets       CustomerTarget[]
+  events                IndustryEvent[]
+}
+
+model Match {
+  id           String   @id @default(cuid())
+  companyId    String
+  investorId   String
+  tier         Int
+  score        Int
+  geoPts       Int
+  stagePts     Int
+  sectorPts    Int
+  revenuePts   Int
+  chequePts    Int
+  founderPts   Int
+  gapPts       Int
+  warmPath     String
+  portfolioGap String
+  rationale    String
+  nextStep     String
+  sortOrder    Int      @default(0)
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  investor     Investor @relation(fields: [investorId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, investorId])
+}
+
+model DoNotMatch {
+  id         String    @id @default(cuid())
+  companyId  String
+  investorId String?
+  label      String
+  reason     String
+  sortOrder  Int       @default(0)
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  investor   Investor? @relation(fields: [investorId], references: [id], onDelete: SetNull)
+}
+
+model CustomerTarget {
+  id          String  @id @default(cuid())
+  companyId   String
+  name        String
+  targetType  String
+  hq          String
+  description String
+  sortOrder   Int     @default(0)
+  company     Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model IndustryEvent {
+  id        String  @id @default(cuid())
+  companyId String
+  name      String
+  sortOrder Int     @default(0)
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model MethodologyDimension {
+  id        String @id @default(cuid())
+  name      String
+  maxWeight String
+  logic     String
+  rationale String
+  sortOrder Int    @default(0)
+}
+
+model MethodologyCard {
+  id        String @id @default(cuid())
+  title     String
+  body      String
+  sortOrder Int    @default(0)
+}
