@@ -1,0 +1,20 @@
+{
+  "id": "tbdc-db",
+  "name": "TBDC DB",
+  "description": "Read/write access to the TBDC Investor Matchmaking Postgres database, scoped to the tbdc_assistant role. Every write requires an actingUserId and appends to the AuditLog.",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "databaseUrl": {
+        "type": "string",
+        "description": "Postgres connection string for the tbdc_assistant role."
+      },
+      "assistantUserEmail": {
+        "type": "string",
+        "description": "Email of the assistant User row (used as actorUserId in AuditLog). Defaults to assistant@tbdc.ready4vc.com."
+      }
+    },
+    "required": ["databaseUrl"],
+    "additionalProperties": false
+  }
+}
