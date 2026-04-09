@@ -9,7 +9,7 @@
 - Every write endpoint goes through Zod + `requireAdmin()`. No exceptions.
 - Never change `globals.css` tokens — they match the reference HTML verbatim.
 - Never revert `npm run dev` to Turbopack.
-- Data in the seed must be identical to `reference/tbdc_investor_matching_poc_v2.html`.
+- Data in the seed must be identical to `docs/reference/tbdc_investor_matching_poc_v2.html`.
 - Commits: one per phase, Conventional Commits style, author = global git config (Ahmed Youssry).
 
 ## Phase 2 — Database & data layer

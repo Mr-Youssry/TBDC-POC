@@ -6,7 +6,7 @@
 
 ## Purpose
 
-Turn the single-file static HTML prototype at [`reference/tbdc_investor_matching_poc_v2.html`](../../../reference/tbdc_investor_matching_poc_v2.html) into a functional, authenticated, edit-in-place web app deployed at **https://tbdc.ready4vc.com**, with all data persisted in Postgres and preserving pixel-level visual parity with the original.
+Turn the single-file static HTML prototype at [`docs/reference/tbdc_investor_matching_poc_v2.html`](../../reference/tbdc_investor_matching_poc_v2.html) into a functional, authenticated, edit-in-place web app deployed at **https://tbdc.ready4vc.com**, with all data persisted in Postgres and preserving pixel-level visual parity with the original.
 
 Foundation (Phase 1) is already complete: Next.js 16.2.3 + Tailwind v4 + shadcn + the TBDC design tokens ported verbatim into `globals.css`.
 

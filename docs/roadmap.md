@@ -11,7 +11,7 @@ This roadmap is the single source of truth for what this project is and what's n
 
 **Status: LIVE.** Deployed at https://tbdc.ready4vc.com on the rafiq-dev droplet.
 
-**What this is:** A functional, authenticated, edit-in-place web app for the Toronto Business Development Centre partnerships team to match portfolio companies to investors. Built from a single-file static HTML prototype ([`reference/tbdc_investor_matching_poc_v2.html`](reference/tbdc_investor_matching_poc_v2.html)) into Next.js + Postgres while preserving the original's visual design pixel-for-pixel.
+**What this is:** A functional, authenticated, edit-in-place web app for the Toronto Business Development Centre partnerships team to match portfolio companies to investors. Built from a single-file static HTML prototype ([`docs/reference/tbdc_investor_matching_poc_v2.html`](docs/reference/tbdc_investor_matching_poc_v2.html)) into Next.js + Postgres while preserving the original's visual design pixel-for-pixel.
 
 **Login:** https://tbdc.ready4vc.com/login
 - Bootstrap admins: `korayem@ready4vc.com`, `youssry@ready4vc.com`

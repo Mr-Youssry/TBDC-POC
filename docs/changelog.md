@@ -81,7 +81,7 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 - Schema with User, Investor, Company, Match, DoNotMatch, CustomerTarget, IndustryEvent, MethodologyDimension, MethodologyCard.
 - Prisma 7 driver-adapter pattern (`@prisma/adapter-pg`) since `url` is no longer allowed in `schema.prisma`. `prisma.config.ts` supplies schema path + migrations + seed command.
 - Runtime client in `src/lib/prisma.ts` constructs `PrismaPg(DATABASE_URL)` at request time with a dev-mode singleton.
-- Seed script ingests all 24 investors, 10 companies, 38 matches, 27 do-not-match rows, 8 WIDMO customer targets, 3 events, 9 methodology dimensions, 4 cards verbatim from `reference/tbdc_investor_matching_poc_v2.html`.
+- Seed script ingests all 24 investors, 10 companies, 38 matches, 27 do-not-match rows, 8 WIDMO customer targets, 3 events, 9 methodology dimensions, 4 cards verbatim from `docs/reference/tbdc_investor_matching_poc_v2.html`.
 - Bootstrap admins for korayem@ and youssry@ready4vc.com seeded only when User table is empty.
 
 ## 2026-04-09 — [fb004ba] Design doc + implementation plan for phases 2-11
@@ -127,7 +127,7 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ## 2026-04-08 — [a053202] Port original TBDC design tokens into Tailwind v4 + visual spike
 
-- Replaced shadcn's default neutral palette with the exact warm off-white + Georgia serif aesthetic from `reference/tbdc_investor_matching_poc_v2.html`.
+- Replaced shadcn's default neutral palette with the exact warm off-white + Georgia serif aesthetic from `docs/reference/tbdc_investor_matching_poc_v2.html`.
 - All 28+ original tokens ported verbatim as CSS variables and exposed as Tailwind v4 utility classes via `@theme inline`: tier colors (`t1/t2/t3`), warn/hard-gate, blue accents, surface ramp (`surface/surface-2/surface-3`), text ramp (`text-1/text-2/text-3`), Georgia font stack.
 - Dropped Geist Google Fonts in favor of system Georgia serif to match the original.
 - Built a visual parity spike at `/` — header, nav tabs, tier badges, surface ramp — to verify the port against the reference HTML.
