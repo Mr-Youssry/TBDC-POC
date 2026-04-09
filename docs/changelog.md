@@ -6,7 +6,81 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ---
 
-## 2026-04-08 — [pending] Add CLAUDE.md onboarding doc at repo root
+## 2026-04-09 — [9da9297] Fix Docker runner missing transitive deps
+
+- Selective `COPY --from=builder` for individual node_modules (`prisma`, `tsx`, `bcryptjs`, etc.) was missing transitive deps the prisma CLI needs at exec time. `prisma db push` failed with "Cannot find module @prisma/config" inside the container.
+- Switched to a single `COPY --from=builder /app/node_modules ./node_modules`. Image is larger but reliable. Pruning is in the post-launch backlog.
+
+## 2026-04-09 — [ec5b16f] Multi-stage Dockerfile + standalone output
+
+- `next.config.ts` → `output: "standalone"` + `serverExternalPackages` for `@prisma/client`, `@prisma/adapter-pg`, `pg`, `bcryptjs` so the bundler doesn't try to inline native or driver code.
+- Three-stage Dockerfile: `deps` (npm ci) → `builder` (prisma generate + next build with placeholder env) → `runner` (node:20-alpine, tini, non-root nextjs user). Real `DATABASE_URL` and `AUTH_SECRET` injected at runtime via `--env-file`.
+- `.dockerignore` excludes `reference/`, `docs/`, `.env*`, `.serena/`, `.claude/`.
+
+## 2026-04-09 — [a6962de] Admin user management page
+
+- `/admin/users` protected by proxy.ts + `requireSessionForPage`. InviteForm uses `useActionState` to post email/name/password to `inviteUser` server action (Zod-validated, bcrypt password, admin role, records inviter).
+- DeleteUserButton has inline confirm flow and the server action refuses to delete the caller's own account.
+- SiteHeader gained a "users" link visible only when authenticated.
+
+## 2026-04-09 — [df6ee46] Match output page with WIDMO branch
+
+- `/match?c=<companyId>` server component, sidebar groups companies by cohort, WIDMO-style rows use warn colors.
+- Normal branch: profile card → Tier 1 cards → Tier 2 cards → Do Not Match list. Each match card shows score badge, per-dimension dot signals (geo/stage/sector/revenue/cheque/founder/gap), inline-edit short fields, modal-edit rationale + next step.
+- WIDMO branch: warn gate card with `gateNote`, customer meeting targets grid, industry event pill row.
+- Server actions (updateMatch* / updateDoNotMatch / updateCustomerTarget) Zod-whitelist fields and require admin.
+
+## 2026-04-09 — [7224be8] Companies page
+
+- Same editing pattern as investors. Cohort grouping (Pivot 1, Horizon 3) via column.
+- AcceptsIntrosToggle client component flips the WIDMO flag optimistically; reverts on server failure. updates revalidate both `/companies` and `/match`.
+
+## 2026-04-09 — [1bfb7f2] Investors page with inline + modal editing
+
+- EditableCell component: inline text/number/select with autofocus, Enter/blur-to-save, Esc-to-cancel, optimistic-ish via `useTransition`.
+- Badges module (TypeBadge / StageBadge / LeadBadge / WarnBadge / OpenBadge) carries the exact color palette from the reference HTML.
+- Investors page: short cols inline-edit, sectors/portfolio/contact click-to-modal. Add/delete row buttons admin-only.
+
+## 2026-04-09 — [a4b725b] Site layout + methodology page
+
+- Split bare root layout from `(site)/layout.tsx` (header + nav + 1200px main wrapper). Login page bypasses the site chrome.
+- SiteHeader is a server component showing sign-in/sign-out + admin links based on session.
+- NavTabs is a client component using `usePathname` for active highlight.
+- LongTextModal generic click-to-edit modal for long-form fields (used everywhere).
+- Methodology page renders dimensions table, 4 tier legend cards, 4 philosophy cards from Prisma. All editable when logged in.
+
+## 2026-04-09 — [c22f2bb] NextAuth v5 Credentials provider + admin guard
+
+- Split edge-safe `src/auth.config.ts` (used by `proxy.ts` middleware) from full-Node `src/auth.ts` (used by server components + route handlers). The proxy can't import Prisma or bcryptjs.
+- Credentials provider validates email+password via Zod + bcrypt against the User table. JWT session strategy; jwt/session callbacks carry id and role.
+- `src/lib/guards.ts` exports `getSession` / `requireAdmin` / `requireSessionForPage`. Casts around the NextAuth overload so the RSC signature type-checks.
+- Root `proxy.ts` (Next 16 middleware replacement) protects `/admin/*`. Minimal `/login` page using `useActionState` + server action.
+
+## 2026-04-09 — [4760ba2] Prisma 7 schema + seed parsed from reference HTML
+
+- Schema with User, Investor, Company, Match, DoNotMatch, CustomerTarget, IndustryEvent, MethodologyDimension, MethodologyCard.
+- Prisma 7 driver-adapter pattern (`@prisma/adapter-pg`) since `url` is no longer allowed in `schema.prisma`. `prisma.config.ts` supplies schema path + migrations + seed command.
+- Runtime client in `src/lib/prisma.ts` constructs `PrismaPg(DATABASE_URL)` at request time with a dev-mode singleton.
+- Seed script ingests all 24 investors, 10 companies, 38 matches, 27 do-not-match rows, 8 WIDMO customer targets, 3 events, 9 methodology dimensions, 4 cards verbatim from `reference/tbdc_investor_matching_poc_v2.html`.
+- Bootstrap admins for korayem@ and youssry@ready4vc.com seeded only when User table is empty.
+
+## 2026-04-09 — [fb004ba] Design doc + implementation plan for phases 2-11
+
+- Locked all open roadmap decisions: single admin role, no password reset, no audit log, one-time seed, accept BL-001 workaround, accept BL-004, verify BL-003.
+- Cleared backlog after grep-diffing `globals.css` against the reference HTML (BL-003 verified).
+- Wrote `docs/superpowers/specs/2026-04-08-tbdc-poc-design.md` and `docs/superpowers/plans/2026-04-08-tbdc-poc-implementation-plan.md` per the superpowers brainstorming → writing-plans workflow.
+
+## 2026-04-09 — [deploy] Production deployment to rafiq-dev
+
+- Project isolated under `/root/tbdc-poc/` on the droplet (separate from `/root/Rafiq-v1/`).
+- New DB `tbdc_poc` owned by new role `tbdc_app` inside the existing `shared-postgres` container (no new Postgres container).
+- `tbdc-web` container on `docker_rafiq-shared` network (shared with caddy + shared-postgres). Restart policy `unless-stopped`. Env loaded from `/root/tbdc-poc/tbdc-web.env`.
+- `prisma db push` + seed run via `docker exec`. Bootstrapped 2 admins.
+- TBDC site block appended to `Rafiq-v1/docker/caddy/Caddyfile` with a clear "TBDC POC — isolated project, NOT part of Rafiq" comment header. `caddy reload` succeeded with only pre-existing warnings.
+- DNS A record `tbdc.ready4vc.com` → `67.205.157.55` already in place. Caddy provisioned Let's Encrypt cert automatically.
+- Smoke test: all 6 routes return correct status codes (200 for public, 307 for `/admin/users` redirect to login). Data renders (Radical Ventures, WIDMO Spectral, Tier 1 all present in HTML).
+
+## 2026-04-08 — [69ac880] Add CLAUDE.md onboarding doc at repo root
 
 - Generated via `/init`. Focused on non-obvious facts future sessions would otherwise rediscover the hard way: webpack-vs-Turbopack asymmetry, Tailwind v4 CSS-first token location, the `reference/` HTML being source-of-truth for data + design, the WIDMO hard-gate edge case, the inline-vs-modal editing rule, deployment target details, and where the memory files live.
 - Deliberately terse on anything already documented in `docs/roadmap.md` — CLAUDE.md points at the roadmap/changelog/backlog as the primary project plan; it does not duplicate them.
