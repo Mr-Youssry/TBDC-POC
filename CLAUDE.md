@@ -35,7 +35,7 @@ All design tokens live in [src/app/globals.css](src/app/globals.css) using the `
 
 ### The reference HTML is source of truth for data + design
 
-[reference/tbdc_investor_matching_poc_v2.html](reference/tbdc_investor_matching_poc_v2.html) is the original self-contained prototype. It contains:
+[docs/reference/tbdc_investor_matching_poc_v2.html](docs/reference/tbdc_investor_matching_poc_v2.html) is the original self-contained prototype. It contains:
 - All 28+ design tokens ported verbatim into `globals.css` (colors, tiers, surface ramp, typography)
 - The 24 investors, 10 portfolio companies, and every match/WIDMO row in `var INVESTORS`, `var COMPANIES`, `var MATCHES` (around line 318)
 - The weighted scoring logic and tier thresholds

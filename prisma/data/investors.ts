@@ -1,4 +1,4 @@
-// Ported verbatim from reference/tbdc_investor_matching_poc_v2.html `var INVESTORS`.
+// Ported verbatim from docs/reference/tbdc_investor_matching_poc_v2.html `var INVESTORS`.
 // Do not edit here — the reference HTML is the source of truth.
 
 export type SeedInvestor = {

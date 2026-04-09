@@ -1,4 +1,4 @@
-// Ported verbatim from reference/tbdc_investor_matching_poc_v2.html `var COMPANIES`.
+// Ported verbatim from docs/reference/tbdc_investor_matching_poc_v2.html `var COMPANIES`.
 
 export type SeedCompany = {
   name: string;
