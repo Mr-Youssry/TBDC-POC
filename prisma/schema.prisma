@@ -1,4 +1,6 @@
 // TBDC POC — see docs/superpowers/specs/2026-04-08-tbdc-poc-design.md
+// v2.0 additions — see docs/superpowers/specs/2026-04-09-v2-openclaw-analyst-design.md
+// and docs/superpowers/plans/2026-04-09-v2-plan-addendum-plugin-pivot.md
 
 generator client {
   provider = "prisma-client-js"
@@ -8,16 +10,47 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserRole {
+  admin
+  assistant
+}
+
+enum AuditOp {
+  insert
+  update
+  delete
+}
+
+enum ChatScopeType {
+  company
+  investor
+  general
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
   passwordHash String
   name         String?
-  role         String   @default("admin")
+  role         UserRole @default(admin)
   createdAt    DateTime @default(now())
   invitedById  String?
   invitedBy    User?    @relation("Invites", fields: [invitedById], references: [id])
   invitees     User[]   @relation("Invites")
+
+  // v2.0 — audit relations
+  auditLogsActor    AuditLog[] @relation("AuditActor")
+  auditLogsOnBehalf AuditLog[] @relation("AuditOnBehalfOf")
+
+  // v2.0 — updatedBy back-relations
+  updatedInvestors        Investor[]             @relation("UpdatedByInvestor")
+  updatedCompanies        Company[]              @relation("UpdatedByCompany")
+  updatedMatches          Match[]                @relation("UpdatedByMatch")
+  updatedDoNotMatches     DoNotMatch[]           @relation("UpdatedByDoNotMatch")
+  updatedCustomerTargets  CustomerTarget[]       @relation("UpdatedByCustomerTarget")
+  updatedIndustryEvents   IndustryEvent[]        @relation("UpdatedByIndustryEvent")
+  updatedMethodologyDims  MethodologyDimension[] @relation("UpdatedByMethodologyDimension")
+  updatedMethodologyCards MethodologyCard[]      @relation("UpdatedByMethodologyCard")
 }
 
 model Investor {
@@ -35,6 +68,11 @@ model Investor {
   sortOrder        Int          @default(0)
   matches          Match[]
   doNotMatches     DoNotMatch[]
+
+  // v2.0 — tracking
+  updatedByUserId String?
+  updatedBy       User?    @relation(name: "UpdatedByInvestor", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @default(now()) @updatedAt
 }
 
 model Company {
@@ -55,6 +93,11 @@ model Company {
   doNotMatches          DoNotMatch[]
   customerTargets       CustomerTarget[]
   events                IndustryEvent[]
+
+  // v2.0 — tracking
+  updatedByUserId String?
+  updatedBy       User?    @relation(name: "UpdatedByCompany", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @default(now()) @updatedAt
 }
 
 model Match {
@@ -78,6 +121,11 @@ model Match {
   company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   investor     Investor @relation(fields: [investorId], references: [id], onDelete: Cascade)
 
+  // v2.0 — tracking
+  updatedByUserId String?
+  updatedBy       User?    @relation(name: "UpdatedByMatch", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @default(now()) @updatedAt
+
   @@unique([companyId, investorId])
 }
 
@@ -90,6 +138,11 @@ model DoNotMatch {
   sortOrder  Int       @default(0)
   company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   investor   Investor? @relation(fields: [investorId], references: [id], onDelete: SetNull)
+
+  // v2.0 — tracking
+  updatedByUserId String?
+  updatedBy       User?    @relation(name: "UpdatedByDoNotMatch", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @default(now()) @updatedAt
 }
 
 model CustomerTarget {
@@ -101,6 +154,11 @@ model CustomerTarget {
   description String
   sortOrder   Int     @default(0)
   company     Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // v2.0 — tracking
+  updatedByUserId String?
+  updatedBy       User?    @relation(name: "UpdatedByCustomerTarget", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @default(now()) @updatedAt
 }
 
 model IndustryEvent {
@@ -109,6 +167,11 @@ model IndustryEvent {
   name      String
   sortOrder Int     @default(0)
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // v2.0 — tracking
+  updatedByUserId String?
+  updatedBy       User?    @relation(name: "UpdatedByIndustryEvent", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @default(now()) @updatedAt
 }
 
 model MethodologyDimension {
@@ -118,6 +181,11 @@ model MethodologyDimension {
   logic     String
   rationale String
   sortOrder Int    @default(0)
+
+  // v2.0 — tracking
+  updatedByUserId String?
+  updatedBy       User?    @relation(name: "UpdatedByMethodologyDimension", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @default(now()) @updatedAt
 }
 
 model MethodologyCard {
@@ -125,4 +193,51 @@ model MethodologyCard {
   title     String
   body      String
   sortOrder Int    @default(0)
+
+  // v2.0 — tracking
+  updatedByUserId String?
+  updatedBy       User?    @relation(name: "UpdatedByMethodologyCard", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @default(now()) @updatedAt
+}
+
+// v2.0 — append-only audit log of every DB write performed by the Assistant
+// (and, in future phases, by admins). Every write tool must insert a row here
+// in the same transaction as the content write. Revert flow in /admin/audit
+// uses the oldValueJson snapshot to roll a row back.
+model AuditLog {
+  id                String   @id @default(cuid())
+  actorUserId       String
+  actor             User     @relation("AuditActor", fields: [actorUserId], references: [id])
+  onBehalfOfUserId  String?
+  onBehalfOf        User?    @relation("AuditOnBehalfOf", fields: [onBehalfOfUserId], references: [id])
+  tableName         String
+  rowId             String
+  field             String?
+  oldValueJson      Json?
+  newValueJson      Json?
+  operation         AuditOp
+  chatSessionId     String?
+  revertedByAuditId String?
+  createdAt         DateTime @default(now())
+
+  @@index([tableName, rowId])
+  @@index([actorUserId, createdAt])
+  @@index([chatSessionId])
+}
+
+// v2.0 — one-to-one mapping between a TBDC entity (company, investor, or
+// the singleton "general" scope) and an OpenClaw chat session. Seeded at
+// `prisma db seed` time; the chat UI references sessions by
+// `openclawSessionId` without a DB round-trip.
+model ChatSession {
+  id                String        @id @default(cuid())
+  scopeType         ChatScopeType
+  scopeEntityId     String?
+  openclawSessionId String        @unique
+  displayName       String
+  createdAt         DateTime      @default(now())
+  lastMessageAt     DateTime?
+
+  @@unique([scopeType, scopeEntityId])
+  @@index([lastMessageAt])
 }
