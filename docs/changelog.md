@@ -6,7 +6,14 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ---
 
-## 2026-04-08 — [pending] Connect GitHub remote (Mr-Youssry/TBDC-POC)
+## 2026-04-08 — [pending] Fix Git Credential Manager config
+
+- Root cause: two `credential.helper` values were stacked — system-level `manager` (correct) plus global `manager-core` (deprecated name, executable missing). Git ran `manager` first (sometimes returning stale creds) then tried `manager-core` and errored with "not a git command".
+- Fix: `git config --global --unset credential.helper`. Only the system-level `manager` remains, backed by the working `git-credential-manager v2.6.0` executable at `/mingw64/bin/git-credential-manager`.
+- Verified by running `git fetch origin` and this commit's `git push` without any credential bypass — both worked clean.
+- BL-005 resolved and removed from backlog. Global `~/.claude/CLAUDE.md` no longer needs the URL-embedded-token workaround (but it's kept as a fallback note).
+
+## 2026-04-08 — [bfe1f3f] Connect GitHub remote (Mr-Youssry/TBDC-POC)
 
 - Created private GitHub repo `Mr-Youssry/TBDC-POC` and pushed all 6 local commits.
 - Added `origin` remote with clean HTTPS URL (no token in `.git/config`); local `main` tracks `origin/main`.
