@@ -10,11 +10,16 @@ const TABS = [
   { id: "match", label: "04 — Match Output", href: "/match" },
 ];
 
-export function NavTabs() {
+const ADMIN_TABS = [
+  { id: "analyst", label: "05 — Analyst", href: "/analyst" },
+];
+
+export function NavTabs({ role }: { role?: string }) {
   const pathname = usePathname() ?? "";
+  const tabs = role === "admin" ? [...TABS, ...ADMIN_TABS] : TABS;
   return (
     <nav className="bg-surface border-b border-border flex gap-0 px-8">
-      {TABS.map((t) => {
+      {tabs.map((t) => {
         const active = pathname === t.href || pathname.startsWith(`${t.href}/`);
         return (
           <Link
