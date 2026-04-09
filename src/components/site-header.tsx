@@ -25,6 +25,12 @@ export async function SiteHeader() {
         <div className="flex items-start gap-3">
           {email ? (
             <form action={signOutAction} className="flex items-center gap-2">
+              <Link
+                href="/admin/users"
+                className="font-mono text-[0.65rem] px-[10px] py-[3px] border border-[#444] rounded-[4px] text-[#aaa] hover:text-[#f5f4f0] hover:border-[#666]"
+              >
+                users
+              </Link>
               <span className="font-mono text-[0.65rem] text-[#aaa]">{email}</span>
               <button
                 type="submit"
