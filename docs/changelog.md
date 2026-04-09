@@ -6,6 +6,26 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ---
 
+## 2026-04-09 — [3bd9fd1] v2.0 plan addendum — role guard + prisma CLI pre-check
+
+- Folded the two acted-on advisory items from the plan-document-reviewer pass: (1) Task 1.2b adds a defensive role check in `src/auth.ts` rejecting login for `role=assistant` users regardless of password hash state (belt-and-suspenders on top of the placeholder `!` hash from the seed); (2) Task 6.3 Step 0 adds a pre-check for Prisma CLI availability inside the live `tbdc-web` container with a documented fallback to a throwaway `node:20` container that mounts the repo.
+- Plan reviewer had approved the base plan; these are quality-of-life additions that save implementer friction, not scope changes.
+
+## 2026-04-09 — [59aafdf] v2.0 implementation plan committed
+
+- 3,351-line implementation plan at [docs/superpowers/plans/2026-04-09-v2-openclaw-analyst-implementation-plan.md](superpowers/plans/2026-04-09-v2-openclaw-analyst-implementation-plan.md), broken into 7 phases: probe → data model → custom skill → chat UI → audit log admin → local dev stack → droplet deployment. Plus a Phase 7 that writes a separate Korayem commissioning handoff doc during execution.
+- Each task has bite-sized steps with exact file paths, code snippets, commit boundaries, and gate conditions. Multi-agent dispatch guidance in the header: parallelize Phases 1+2 after Phase 0, then parallelize Phases 3+4+5.
+- Folds all 4 advisory items from the spec-review loop: OpenClaw image pinned in Task 0.1, `clear_dnm` vs no-deletes clarified in the Phase 2 preamble, skill source-of-truth pinned as rsync-from-repo in Task 6.4, Caddyfile edit explicitly as in-place replacement (not append) in Task 6.6.
+- Plan-document-reviewer ran against the committed plan and returned **Approved** with 5 advisory recommendations; the 2 that mattered were folded into the follow-up addendum commit.
+- Execution deliberately stops one step before the z.ai API key — the final commissioning happens in a joint session with Korayem.
+
+## 2026-04-09 — [a2a7579] v2.0 design document committed
+
+- 519-line spec at [docs/superpowers/specs/2026-04-09-v2-openclaw-analyst-design.md](superpowers/specs/2026-04-09-v2-openclaw-analyst-design.md) for v2.0 of the TBDC POC — adds a "Chat with the Assistant" surface backed by an OpenClaw sidecar container running GLM-5.1 via z.ai Coding Plan subscription.
+- Core decisions captured in the locked-decisions table: Assistant as a first-class `User` row (not a "tool"), per-entity channels (`#general` + one per company + one per investor), direct writes with `AuditLog` + one-click revert as the guardrail, custom Next.js chat pane as the only v2.0 surface, Control UI subpath-mounted at `/ClawAdmin/` behind Caddy basic auth. Deliberately sized for interview-demo load, not production resilience.
+- Captures the full brainstorming session flow (6 sections, ~20 rounds of clarification) with all locked decisions, the custom `tbdc-db` skill with 10 read tools + 14 write tools, data model changes (new `AuditLog` + `ChatSession` tables + `UserRole` enum), Prisma role/grant SQL, Caddy snippet, docker layout on rafiq-dev, and risks scoped to interview-demo use profile.
+- spec-document-reviewer ran against the committed spec and returned **Approved** with 4 advisory recommendations; all 4 were folded into the implementation plan rather than editing the spec.
+
 ## 2026-04-09 — [9da9297] Fix Docker runner missing transitive deps
 
 - Selective `COPY --from=builder` for individual node_modules (`prisma`, `tsx`, `bcryptjs`, etc.) was missing transitive deps the prisma CLI needs at exec time. `prisma db push` failed with "Cannot find module @prisma/config" inside the container.

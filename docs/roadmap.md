@@ -123,6 +123,39 @@ This roadmap is the single source of truth for what this project is and what's n
 
 ---
 
+## Phase 12 — v2.0 OpenClaw Investment Analyst 🔄 PLANNED (blocked on z.ai subscription)
+
+**Status:** Design + implementation plan committed. Execution deferred to a fresh session, with final commissioning deferred to a joint Ahmed + Korayem session for the z.ai subscription and smoke test.
+
+**What v2.0 adds:** An in-app "Chat with the Assistant" surface backed by an [OpenClaw](https://github.com/openclaw/openclaw) sidecar container running GLM-5.1 via z.ai Coding Plan subscription. The Assistant is a first-class `User` row (role `assistant`) with direct read+write access to the TBDC database via a custom `tbdc-db` skill, organized into per-entity channels (`#general` + one per company + one per investor). Every write is audit-logged in a new `AuditLog` table and one-click-revertible from a new `/admin/audit` admin page.
+
+**Deployment shape:** New `openclaw-gateway` container alongside the existing `tbdc-web` container on `docker_rafiq-shared` network on rafiq-dev. Control UI subpath-mounted at `https://tbdc.ready4vc.com/ClawAdmin/` behind Caddy basic auth. Chat pane at `https://tbdc.ready4vc.com/analyst` under NextAuth. No new droplet, no new Postgres container, no new DNS record.
+
+**Use profile:** Interview portfolio artifact — expected load is 1–2 test conversations by an interviewer. Not production. If Ahmed is accepted into the TBDC role, v2.0 moves to its own droplet with a higher subscription tier.
+
+**Artifacts:**
+- Design: [docs/superpowers/specs/2026-04-09-v2-openclaw-analyst-design.md](superpowers/specs/2026-04-09-v2-openclaw-analyst-design.md) — 519 lines, spec-document-reviewer approved
+- Implementation plan: [docs/superpowers/plans/2026-04-09-v2-openclaw-analyst-implementation-plan.md](superpowers/plans/2026-04-09-v2-openclaw-analyst-implementation-plan.md) — 3,400+ lines, plan-document-reviewer approved, 7 phases with multi-agent dispatch guidance
+
+**Execution phases** (each is a gate in the plan):
+- [ ] Phase 0 — Verification probe (pin OpenClaw image tag, verify TS skill runtime + metadata flow with a throwaway `hello-world-db` skill)
+- [ ] Phase 1 — Prisma migration + seed + manual SQL for `tbdc_assistant` role
+- [ ] Phase 2 — Custom `tbdc-db` skill: 10 read tools + 14 write tools + vitest against disposable Postgres
+- [ ] Phase 3 — Next.js `/analyst` chat pane + WebSocket token-mint route handler
+- [ ] Phase 4 — `/admin/audit` page with one-click revert server action
+- [ ] Phase 5 — Local dev docker-compose + end-to-end local smoke test (everything except the LLM call)
+- [ ] Phase 6 — Droplet deployment to rafiq-dev, stopping one step before the z.ai API key
+- [ ] Phase 7 — Write the Korayem commissioning handoff doc
+- [ ] **BLOCKED — Korayem session** — subscribe to z.ai Coding Plan, inject API key, run first real chat, verify audit log + revert, sign off in changelog
+
+**Deferred to later v2.x phases (not in v2.0 scope):**
+- v2.1 — `web-research` skill for external lookups blended with DB context
+- v2.2 — broader write surface + async approval inbox for out-of-chat writes
+- v2.3 — secondary chat surface (Slack / Teams / WhatsApp / Telegram, once the team reveals their native tool)
+- v3/v4 — founder-facing access (expands the trust boundary significantly; re-introduces per-user sessions and the approval-before-write pattern)
+
+---
+
 ## Post-launch backlog (future work)
 
 These were intentionally deferred as out-of-scope for the v1 POC:
