@@ -28,6 +28,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
         if (!user) return null;
 
+        // v2.0: the Assistant user row exists only as an FK target for
+        // audit logs. It must never be logged into, regardless of password
+        // hash state. Defensive check on top of the seed's `!` placeholder.
+        if (user.role === "assistant") return null;
+
         const ok = await bcrypt.compare(parsed.data.password, user.passwordHash);
         if (!ok) return null;
 
