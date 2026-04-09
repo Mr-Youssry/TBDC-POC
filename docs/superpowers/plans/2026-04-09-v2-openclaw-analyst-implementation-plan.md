@@ -693,6 +693,44 @@ git add prisma/seed.ts
 git commit -m "feat(v2/seed): create Assistant user + auto-provision chat sessions"
 ```
 
+### Task 1.2b — Defensive role guard in NextAuth credentials provider
+
+**Files:**
+- Modify: `src/auth.ts`
+
+**Why:** The seed writes `passwordHash: '!'` on the Assistant user as a placeholder. `bcrypt.compare('any-password', '!')` returns false (or throws, depending on the bcryptjs version), so in practice login-as-Assistant already fails. But the belt-and-suspenders fix is an explicit role check at the top of the `authorize` callback, so even if someone later reseeds with a real hash by mistake, login is still rejected. One line, zero cost, closes a latent footgun.
+
+- [ ] **Step 1: Read the current `authorize` implementation.**
+
+```bash
+cat src/auth.ts
+```
+
+- [ ] **Step 2: Add the role check immediately after the user lookup.**
+
+Insert between the `if (!user) return null;` line and the `const ok = await bcrypt.compare(...)` line:
+
+```typescript
+        // v2.0: the Assistant user row exists only as an FK target for audit logs.
+        // It must never be logged into, regardless of password hash state.
+        if (user.role === 'assistant') return null;
+```
+
+- [ ] **Step 3: Verify the app still builds.**
+
+```bash
+npm run build
+```
+
+Expected: clean build.
+
+- [ ] **Step 4: Commit.**
+
+```bash
+git add src/auth.ts
+git commit -m "feat(v2/auth): reject login for role=assistant users (defensive)"
+```
+
 ### Task 1.3 — Write the manual SQL role + grants file
 
 **Files:**
@@ -2757,6 +2795,29 @@ ssh -i ~/.ssh/id_ed25519 root@67.205.157.55 \
 Expected: v2 commits visible in the log.
 
 ### Task 6.3 — Apply the Prisma migration to the live DB
+
+- [ ] **Step 0: Verify Prisma CLI is actually available inside the tbdc-web container.**
+
+The v1 runner stage copies full `node_modules` (see v1 changelog entry `[9da9297]`), so `npx prisma` *should* work. But verify before committing to this path:
+
+```bash
+ssh -i ~/.ssh/id_ed25519 root@67.205.157.55 \
+  'docker exec tbdc-web npx prisma --version'
+```
+
+Expected: Prisma CLI version printed (e.g., `prisma                  : 7.x.x`). If you instead get `npx: command not found` or `Cannot find module '@prisma/cli'`, fall back to running the migration from a throwaway `node:20` container that mounts the repo:
+
+```bash
+ssh -i ~/.ssh/id_ed25519 root@67.205.157.55 '
+docker run --rm \
+  --network docker_rafiq-shared \
+  -v /root/tbdc-poc/repo:/app -w /app \
+  -e DATABASE_URL="$(grep ^DATABASE_URL= /root/tbdc-poc/tbdc-web.env | cut -d= -f2-)" \
+  node:20 bash -c "npm ci && npx prisma migrate deploy"
+'
+```
+
+Record which path you took in the commit message.
 
 - [ ] **Step 1: Run `prisma migrate deploy` against the live `tbdc_poc` DB.**
 
