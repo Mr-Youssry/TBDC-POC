@@ -14,9 +14,9 @@
 - [x] Assistant user seeded: `assistant@tbdc.ready4vc.com`, role `assistant`, passwordHash=`!` (login blocked by the auth layer).
 - [x] 35 `ChatSession` rows (1 general + 10 companies + 24 investors), each with a deterministic `openclawSessionId` (`tbdc-general`, `tbdc-co-<id>`, `tbdc-inv-<id>`).
 - [x] Rafiq Caddyfile updated in-place. Current `tbdc.ready4vc.com` block handles:
-  - `/ClawAdmin/*` → basic-auth-gated reverse_proxy to `openclaw-gateway:18789`
   - `/analyst/ws/socket` → reverse_proxy to `openclaw-gateway:18789`
   - everything else → `tbdc-web:3000`
+  - **Note on `/ClawAdmin/`:** originally this path reverse-proxied to the OpenClaw Control UI behind basic auth. **Removed 2026-04-09 after live deploy debugging.** OpenClaw's Control UI cannot be served through a reverse proxy — its `connect` RPC requires loopback/paired-device locality state that the gateway refuses to grant to proxied connections even with `trustedProxies`, `allowRealIpFallback`, `dangerouslyDisableDeviceAuth`, and server-injected Bearer headers. OpenClaw explicitly documents **SSH tunneling** as the remote-access path (see `openclaw dashboard` CLI output). See **"Accessing OpenClaw Control UI"** below for the working flow.
 - [x] `tbdc-web` rebuilt as `tbdc-web:v2` with the `/analyst` page, `/admin/audit` page, `/api/analyst/ws-token` token-mint endpoint, and the role-gated Analyst + Audit nav tabs.
 - [x] All 8 smoke-test HTTP checks passing (`/login`, `/methodology`, `/investors` → 200; `/analyst`, `/admin/audit`, `/api/analyst/ws-token` → 307 redirect to login for anon; `/ClawAdmin/` → 401 without auth, 200 with).
 
@@ -138,11 +138,43 @@ Send 5–8 messages in quick succession in `# General`. If z.ai rate-limits you:
 
 If you see a hard disconnect banner or the WebSocket drops, check `docker logs openclaw-gateway --tail 100` for the underlying error.
 
-### 7. OpenClaw Control UI sanity check
+### 7. OpenClaw Control UI sanity check (via SSH tunnel)
 
-1. Visit https://tbdc.ready4vc.com/ClawAdmin/ in a browser.
-2. Basic-auth prompt: username `admin`, password from `/root/tbdc-poc/openclaw.env` (`OPENCLAW_ADMIN_PLAINTEXT=`).
-3. Expected: the OpenClaw Control UI loads. You should be able to browse sessions, see the `tbdc-db` plugin in the plugin list, inspect recent agent turns from step 4/5.
+`https://tbdc.ready4vc.com/ClawAdmin/` is intentionally NOT served. See the note under "What's already live" for why. Use an SSH tunnel to get the full Control UI with no workarounds:
+
+```bash
+# Terminal 1 (keep this running for the duration of the session)
+ssh -N -L 18789:127.0.0.1:18789 -i ~/.ssh/id_ed25519 root@67.205.157.55
+```
+
+```bash
+# Terminal 2 — get the current gateway auth token
+ssh -i ~/.ssh/id_ed25519 root@67.205.157.55 \
+  'docker exec openclaw-gateway sh -c "cat /state/openclaw.json" | python3 -c "import sys,json; print(json.load(sys.stdin)[\"gateway\"][\"auth\"][\"token\"])"'
+```
+
+Open in your browser (paste the token from Terminal 2 after `#token=`):
+
+```
+http://localhost:18789/#token=<paste-the-token>
+```
+
+Expected: the full OpenClaw Control UI loads, connects as a loopback client, shows the plugin list (`tbdc-db` with 4+4 tools loaded), the session list, recent agent turns, and all the gateway diagnostics. You can also inspect the live config under Settings.
+
+**Why SSH tunnel and not the reverse proxy:** OpenClaw's `connect` RPC carries a device identity + pairing state that the gateway validates against loopback/trusted-local criteria. Reverse-proxied connections fail this check silently — the WS opens, the UI sends the connect frame, the gateway drops it with no response. The SSH tunnel makes the connection appear as loopback, which is the gateway's intended remote-access path per the `openclaw dashboard` CLI's own documentation.
+
+**Alternative — inspect via CLI instead of browser UI:**
+
+```bash
+ssh -i ~/.ssh/id_ed25519 root@67.205.157.55 \
+  'docker exec openclaw-gateway sh -c "cd /app && node openclaw.mjs plugins list"'
+ssh -i ~/.ssh/id_ed25519 root@67.205.157.55 \
+  'docker exec openclaw-gateway sh -c "cd /app && node openclaw.mjs plugins inspect tbdc-db"'
+ssh -i ~/.ssh/id_ed25519 root@67.205.157.55 \
+  'docker exec openclaw-gateway sh -c "cat /state/openclaw.json"'
+```
+
+These work without a tunnel and show everything the Control UI would show, just in plain text.
 
 ### 8. Sign off
 
