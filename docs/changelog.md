@@ -6,6 +6,26 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ---
 
+## 2026-04-09 — [deploy] v2.0 OpenClaw analyst live on rafiq-dev (blocked on z.ai key)
+
+- **Live at https://tbdc.ready4vc.com** alongside the v1 UI. New surfaces: `/analyst` (admin chat pane), `/admin/audit` (audit log + one-click revert), `/ClawAdmin/` (OpenClaw Control UI, basic-auth-gated). v1 pages (`/methodology`, `/investors`, `/companies`, `/match`, `/login`) unchanged and all smoke-tested green after redeploy.
+- **New container:** `openclaw-gateway` pinned to `ghcr.io/openclaw/openclaw:2026.4.8`, running on the existing `docker_rafiq-shared` network, with the `tbdc-db` custom plugin installed at first boot via `openclaw plugins install -l`. Plugin registers 4 read tools (`list_investors`, `get_company`, `list_matches`, `get_methodology`) and 4 write tools (`update_match`, `update_company`, `update_investor`, `append_audit_note`), each requiring an explicit `actingUserId` param and appending to `AuditLog` in the same transaction as the content write.
+- **Schema pushed to live DB** via `npx prisma db push --accept-data-loss` (the v1 DB had no migration history, so `migrate deploy` wasn't applicable). Added `AuditLog`, `ChatSession`, `UserRole`/`AuditOp`/`ChatScopeType` enums, `updatedByUserId`+`updatedAt` on 8 content tables. The `User.role` column was dropped and recreated as a UserRole enum — verified existing admins kept `role='admin'` after the change.
+- **`tbdc_assistant` Postgres role** created via `prisma/migrations/manual/v2_roles_and_grants.sql` with SELECT on content tables + AuditLog + ChatSession + `v_user_public` view, INSERT/UPDATE on writable tables, and explicit NO access to the `User` table to prevent the plugin from leaking `passwordHash`. Plugin resolves the assistant user id via raw SQL against `v_user_public` at register time.
+- **Rafiq Caddyfile** edited in-place (not appended): v1's single-line reverse_proxy block replaced with a multi-handle block routing `/ClawAdmin/*` (basic-auth) + `/analyst/ws/socket` to `openclaw-gateway:18789`, everything else to `tbdc-web:3000`. Pre-edit Caddyfile backed up at `/root/tbdc-poc/backups/Caddyfile.pre-v2-20260409-185717`.
+- **Pre-deploy pg_dump** at `/root/tbdc-poc/backups/pre-v2-20260409-185717.sql` (50 KB). Restore recipe in the Korayem handoff doc.
+- **Blocked on z.ai API key:** `ZAI_API_KEY=` is intentionally empty in `/root/tbdc-poc/openclaw.env`. The gateway boots cleanly without it; sending a chat message will surface a z.ai-auth error — that's the designed stop point. Full end-to-end commissioning happens in a joint session with Korayem per [docs/superpowers/plans/2026-04-09-v2-korayem-smoke-test.md](superpowers/plans/2026-04-09-v2-korayem-smoke-test.md).
+- **Live-deploy discoveries folded back to the repo as fix commits** (see git log): Prisma client hoisting into plugin-local `node_modules` (postbuild copy script), `openclaw.plugin.json` configSchema made `databaseUrl` optional, plugin uses `v_user_public` view instead of `User` table, manual SQL switched from `format(%L)` to `ALTER ROLE` for password setting, `/admin/audit` redirects to `/login` for anon users instead of 500.
+
+## 2026-04-09 — [v2-analyst branch] Phases 0-5 implementation
+
+- Phase 0 — `ghcr.io/openclaw/openclaw:2026.4.8` pinned; throwaway `hello-world-db` plugin probe confirmed OpenClaw's Plugin SDK is the correct extension surface (NOT skills — skills are prompt-only SKILL.md manifests); plan addendum at [docs/superpowers/plans/2026-04-09-v2-plan-addendum-plugin-pivot.md](superpowers/plans/2026-04-09-v2-plan-addendum-plugin-pivot.md) rewrites Phase 2 from "TS skill" to "TS plugin".
+- Phase 1 — Prisma schema additions + idempotent seed for Assistant user + 35 ChatSessions + defensive `role=assistant` auth guard + manual SQL grants.
+- Phase 2 — `deploy/plugins/tbdc-db/` full plugin: 8 typed tools via `api.registerTool` with TypeBox/JSON Schema params, driver-adapter Prisma client, audit helper, vitest tests against a disposable Postgres (12 tests passing).
+- Phase 3 — `/analyst` chat UI (server component page + `ChannelSidebar` + `MessagePane` + `useOpenClawWs` hook + `ToolCallPill`) and `/api/analyst/ws-token` HS256 JWT mint endpoint via `jose`.
+- Phase 4 — `/admin/audit` page + `revertAuditEntry` server action with `oldValueJson → field` round-trip + `AuditRow` client component with `useTransition`.
+- Phase 5 — `deploy/docker-compose-dev.yml` with root-entrypoint init that chowns state, copies plugin source into a root-owned `/state/custom-plugins/`, and runs `openclaw plugins install -l`. Plus `README-dev.md` and a `SMOKE-DEV.md` template.
+
 ## 2026-04-09 — [3bd9fd1] v2.0 plan addendum — role guard + prisma CLI pre-check
 
 - Folded the two acted-on advisory items from the plan-document-reviewer pass: (1) Task 1.2b adds a defensive role check in `src/auth.ts` rejecting login for `role=assistant` users regardless of password hash state (belt-and-suspenders on top of the placeholder `!` hash from the seed); (2) Task 6.3 Step 0 adds a pre-check for Prisma CLI availability inside the live `tbdc-web` container with a documented fallback to a throwaway `node:20` container that mounts the repo.
