@@ -14,7 +14,7 @@
         "description": "Email of the assistant User row (used as actorUserId in AuditLog). Defaults to assistant@tbdc.ready4vc.com."
       }
     },
-    "required": ["databaseUrl"],
+    "required": [],
     "additionalProperties": false
   }
 }
