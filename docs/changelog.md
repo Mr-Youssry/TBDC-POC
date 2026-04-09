@@ -6,7 +6,12 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ---
 
-## 2026-04-08 — [pending] Fix Git Credential Manager config
+## 2026-04-08 — [pending] Add CLAUDE.md onboarding doc at repo root
+
+- Generated via `/init`. Focused on non-obvious facts future sessions would otherwise rediscover the hard way: webpack-vs-Turbopack asymmetry, Tailwind v4 CSS-first token location, the `reference/` HTML being source-of-truth for data + design, the WIDMO hard-gate edge case, the inline-vs-modal editing rule, deployment target details, and where the memory files live.
+- Deliberately terse on anything already documented in `docs/roadmap.md` — CLAUDE.md points at the roadmap/changelog/backlog as the primary project plan; it does not duplicate them.
+
+## 2026-04-08 — [ee9495f] Fix Git Credential Manager config
 
 - Root cause: two `credential.helper` values were stacked — system-level `manager` (correct) plus global `manager-core` (deprecated name, executable missing). Git ran `manager` first (sometimes returning stale creds) then tried `manager-core` and errored with "not a git command".
 - Fix: `git config --global --unset credential.helper`. Only the system-level `manager` remains, backed by the working `git-credential-manager v2.6.0` executable at `/mingw64/bin/git-credential-manager`.
