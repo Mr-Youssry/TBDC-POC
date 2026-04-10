@@ -39,6 +39,43 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // GET /gateway-token — returns the current openclaw gateway auth token
+  // by reading /state/openclaw.json. Used by the TBDC ClawAdmin instructions
+  // page so the displayed token is always fresh, even if the operator rotates
+  // it via `openclaw config set`. Trusted-server-side use only; the bridge
+  // is not exposed publicly (Caddy gatekeeps which paths reach it).
+  if (
+    req.method === "GET" &&
+    (req.url === "/gateway-token" || req.url === "/api/openclaw/gateway-token")
+  ) {
+    try {
+      const cfg = JSON.parse(
+        await import("node:fs").then((fs) =>
+          fs.promises.readFile("/state/openclaw.json", "utf8"),
+        ),
+      );
+      const token = cfg?.gateway?.auth?.token ?? null;
+      if (!token) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({
+            ok: false,
+            error: "gateway.auth.token not set in /state/openclaw.json",
+          }),
+        );
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: true, token }));
+      return;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: false, error: msg }));
+      return;
+    }
+  }
+
   // Accept both /chat and /api/openclaw/chat so the bridge doesn't require
   // Caddy to strip a prefix (Caddy's uri strip_prefix didn't take effect
   // reliably when stacked with reverse_proxy in this setup).
