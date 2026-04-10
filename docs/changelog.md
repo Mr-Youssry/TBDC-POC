@@ -6,6 +6,16 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ---
 
+## 2026-04-10 — Mission Control dashboard (no SSH)
+
+- **`/ClawAdmin`** now shows a live TBDC-branded Mission Control dashboard with gateway status, plugin details, model config, and sanitized JSON config — all fetched server-side from the openclaw-chat-bridge. No SSH tunnel required.
+- **Three new bridge endpoints:** `/status` (gateway overview), `/plugins` (tbdc-db metadata + inspect output), `/config` (full config with token redacted). All accessible via Caddy at `/api/openclaw/*`.
+- **SSH tunnel instructions** moved to a collapsible "Power User" section at the bottom of the page for operators who want the native OpenClaw Control UI.
+- **Nav tab renamed** from "07 — ClawAdmin" to "07 — Mission Control".
+- **z.ai API key** injected (`ZAI_API_KEY`), default model set to `zai/glm-4.5`. End-to-end chat verified: LLM + tbdc-db tool calls + Postgres query all working ("24 investors, first alphabetically is Accel India").
+- **`/analyst` chat pane** rearchitected from broken WS protocol to an HTTP bridge (`POST /api/openclaw/chat`). The bridge wraps `openclaw agent -m ... --session-id ...` CLI inside the gateway container. Works end-to-end but has ~30-60s cold-start latency per turn (POC acceptable).
+- **OpenClaw Control UI** confirmed to be unservable via reverse proxy (WS connect RPC requires loopback locality). SSH tunnel documented as the supported remote-access pattern per OpenClaw's own CLI.
+
 ## 2026-04-09 — [deploy] v2.0 OpenClaw analyst live on rafiq-dev (blocked on z.ai key)
 
 - **Live at https://tbdc.ready4vc.com** alongside the v1 UI. New surfaces: `/analyst` (admin chat pane), `/admin/audit` (audit log + one-click revert), `/ClawAdmin/` (OpenClaw Control UI, basic-auth-gated). v1 pages (`/methodology`, `/investors`, `/companies`, `/match`, `/login`) unchanged and all smoke-tested green after redeploy.
