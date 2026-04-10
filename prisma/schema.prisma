@@ -27,6 +27,16 @@ enum ChatScopeType {
   general
 }
 
+enum PipelineStatus {
+  not_started
+  researching
+  outreach_sent
+  meeting_set
+  follow_up
+  closed_won
+  closed_pass
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -117,7 +127,9 @@ model Match {
   warmPath     String
   portfolioGap String
   rationale    String
-  nextStep     String
+  nextStep       String
+  pipelineStatus PipelineStatus @default(not_started)
+  warmPathBonus  String?
   sortOrder    Int      @default(0)
   company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   investor     Investor @relation(fields: [investorId], references: [id], onDelete: Cascade)
