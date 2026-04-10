@@ -23,6 +23,8 @@
 
 import http from "node:http";
 import { spawn } from "node:child_process";
+import { promises as fsPromises } from "node:fs";
+import { execFile } from "node:child_process";
 
 const PORT = Number(process.env.BRIDGE_PORT ?? 3020);
 const OPENCLAW_BIN = process.env.OPENCLAW_BIN ?? "/app/openclaw.mjs";
@@ -67,6 +69,129 @@ const server = http.createServer(async (req, res) => {
       }
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ ok: true, token }));
+      return;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: false, error: msg }));
+      return;
+    }
+  }
+
+  // GET /status — returns a health/config snapshot from openclaw.json + env.
+  if (
+    req.method === "GET" &&
+    (req.url === "/status" || req.url === "/api/openclaw/status")
+  ) {
+    console.log("[bridge] GET /status");
+    try {
+      const cfg = JSON.parse(
+        await fsPromises.readFile("/state/openclaw.json", "utf8"),
+      );
+      const apiKey = process.env.ZAI_API_KEY ?? "";
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          ok: true,
+          gateway: {
+            version: cfg?.meta?.lastTouchedVersion ?? null,
+            lastTouchedAt: cfg?.meta?.lastTouchedAt ?? null,
+            authMode: cfg?.gateway?.auth?.mode ?? null,
+            model: cfg?.agents?.defaults?.model?.primary ?? null,
+            trustedProxies: cfg?.gateway?.trustedProxies ?? null,
+            dangerouslyDisableDeviceAuth:
+              cfg?.gateway?.controlUi?.dangerouslyDisableDeviceAuth ?? null,
+          },
+          env: {
+            ZAI_API_KEY: apiKey
+              ? `${apiKey.slice(0, 8)}…(set)`
+              : "(not set)",
+            NODE_ENV: process.env.NODE_ENV ?? null,
+          },
+          bridgePid: process.pid,
+          ts: Date.now(),
+        }),
+      );
+      return;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: false, error: msg }));
+      return;
+    }
+  }
+
+  // GET /plugins — returns tbdc-db plugin metadata + `openclaw plugins inspect tbdc-db` output.
+  if (
+    req.method === "GET" &&
+    (req.url === "/plugins" || req.url === "/api/openclaw/plugins")
+  ) {
+    console.log("[bridge] GET /plugins");
+    try {
+      const cfg = JSON.parse(
+        await fsPromises.readFile("/state/openclaw.json", "utf8"),
+      );
+      const inspectOutput = await new Promise((resolve) => {
+        execFile(
+          "node",
+          ["/app/openclaw.mjs", "--log-level", "silent", "plugins", "inspect", "tbdc-db"],
+          { cwd: "/app", timeout: 10000, env: process.env },
+          (_err, stdout) => {
+            const filtered = (stdout ?? "")
+              .split("\n")
+              .filter((l) => !/^\[plugins?\]/.test(l.trim()))
+              .join("\n")
+              .trim();
+            resolve(filtered);
+          },
+        );
+      });
+      const entry = cfg?.plugins?.entries?.["tbdc-db"] ?? {};
+      const install = cfg?.plugins?.installs?.["tbdc-db"] ?? {};
+      const totalLoaded = cfg?.plugins?.totalLoaded ?? null;
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          ok: true,
+          custom: {
+            id: "tbdc-db",
+            enabled: entry.enabled ?? null,
+            version: install.version ?? null,
+            installedAt: install.installedAt ?? null,
+            sourcePath: install.sourcePath ?? null,
+            inspectOutput,
+          },
+          totalLoaded,
+          ts: Date.now(),
+        }),
+      );
+      return;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: false, error: msg }));
+      return;
+    }
+  }
+
+  // GET /config — returns full openclaw.json config with gateway.auth.token redacted.
+  if (
+    req.method === "GET" &&
+    (req.url === "/config" || req.url === "/api/openclaw/config")
+  ) {
+    console.log("[bridge] GET /config");
+    try {
+      const cfg = JSON.parse(
+        await fsPromises.readFile("/state/openclaw.json", "utf8"),
+      );
+      const rawToken = cfg?.gateway?.auth?.token ?? "";
+      if (cfg?.gateway?.auth) {
+        cfg.gateway.auth.token = rawToken
+          ? `${rawToken.slice(0, 8)}…(redacted)`
+          : "(not set)";
+      }
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: true, config: cfg }));
       return;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
