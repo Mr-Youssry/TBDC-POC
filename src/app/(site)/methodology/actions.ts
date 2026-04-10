@@ -5,9 +5,36 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/guards";
 
+const gateFieldSchema = z.enum(["name", "trigger", "rationale"]);
 const dimensionFieldSchema = z.enum(["name", "maxWeight", "logic", "rationale"]);
 const cardFieldSchema = z.enum(["title", "body"]);
 const valueSchema = z.string().min(1).max(5000);
+
+export async function updateGateField(
+  id: string,
+  field: string,
+  value: string,
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    await requireAdmin();
+  } catch {
+    return { ok: false, error: "Not authorized" };
+  }
+
+  const parsedField = gateFieldSchema.safeParse(field);
+  const parsedValue = valueSchema.safeParse(value);
+  if (!parsedField.success || !parsedValue.success) {
+    return { ok: false, error: "Invalid input" };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma v7 driver-adapter type lag
+  await (prisma as any).methodologyGate.update({
+    where: { id },
+    data: { [parsedField.data]: parsedValue.data },
+  });
+  revalidatePath("/methodology");
+  return { ok: true };
+}
 
 export async function updateDimensionField(
   id: string,

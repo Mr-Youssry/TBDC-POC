@@ -51,6 +51,7 @@ model User {
   updatedIndustryEvents   IndustryEvent[]        @relation("UpdatedByIndustryEvent")
   updatedMethodologyDims  MethodologyDimension[] @relation("UpdatedByMethodologyDimension")
   updatedMethodologyCards MethodologyCard[]      @relation("UpdatedByMethodologyCard")
+  updatedMethodologyGates MethodologyGate[]      @relation("UpdatedByMethodologyGate")
 }
 
 model Investor {
@@ -171,6 +172,20 @@ model IndustryEvent {
   // v2.0 — tracking
   updatedByUserId String?
   updatedBy       User?    @relation(name: "UpdatedByIndustryEvent", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @default(now()) @updatedAt
+}
+
+model MethodologyGate {
+  id        String @id @default(cuid())
+  code      String   // e.g. "01", "02", "03"
+  name      String   // e.g. "Founder Opt-Out"
+  trigger   String
+  rationale String
+  sortOrder Int    @default(0)
+
+  // v2.0 — tracking
+  updatedByUserId String?
+  updatedBy       User?    @relation(name: "UpdatedByMethodologyGate", fields: [updatedByUserId], references: [id], onDelete: SetNull)
   updatedAt       DateTime @default(now()) @updatedAt
 }
 

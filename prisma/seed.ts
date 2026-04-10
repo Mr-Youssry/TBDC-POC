@@ -5,7 +5,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { INVESTORS } from "./data/investors";
 import { COMPANIES } from "./data/companies";
 import { MATCH_BLOCKS } from "./data/matches";
-import { DIMENSIONS, CARDS } from "./data/methodology";
+import { GATES, DIMENSIONS, CARDS } from "./data/methodology";
 
 function getPrisma(): PrismaClient {
   const url = process.env.DATABASE_URL;
@@ -20,6 +20,15 @@ async function main() {
   console.log("🌱  TBDC POC seed — reference HTML → Postgres");
 
   // ── 1. Methodology content ─────────────────────────────────────────
+  await prisma.methodologyGate.deleteMany({});
+  for (let i = 0; i < GATES.length; i++) {
+    const g = GATES[i]!;
+    await prisma.methodologyGate.create({
+      data: { ...g, sortOrder: i },
+    });
+  }
+  console.log(`   ✓ ${GATES.length} methodology gates`);
+
   await prisma.methodologyDimension.deleteMany({});
   for (let i = 0; i < DIMENSIONS.length; i++) {
     const d = DIMENSIONS[i]!;
