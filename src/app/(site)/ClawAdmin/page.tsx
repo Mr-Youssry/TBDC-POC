@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { requireSessionForPage } from "@/lib/guards";
 import { StatusCard } from "./_components/status-card";
 import { CopyButton } from "./_components/copy-button";
+import { DownloadScriptButtons } from "./_components/download-script";
 
 export const dynamic = "force-dynamic";
 
@@ -121,16 +122,42 @@ export default async function ClawAdminPage() {
         )}
       </StatusCard>
 
-      {/* SSH Tunnel (collapsible) */}
+      {/* Native Control UI — one-click launcher */}
+      <StatusCard title="Launch Native Control UI">
+        <div className="space-y-3">
+          <p className="text-sm text-text-2">
+            Download and run this script to open the full interactive
+            OpenClaw Control UI. It opens an SSH tunnel in the background
+            and launches the dashboard in your browser automatically.
+          </p>
+          {tokenData ? (
+            <>
+              <DownloadScriptButtons token={tokenData.token} />
+              <p className="text-xs text-text-3">
+                Windows: double-click the .bat file. Mac/Linux: run{" "}
+                <code className="font-mono bg-surface-3 px-1 rounded">
+                  chmod +x tbdc-mission-control.sh && ./tbdc-mission-control.sh
+                </code>
+                . Keep the terminal open while using Mission Control.
+              </p>
+            </>
+          ) : (
+            <p className="text-sm text-warn-txt">
+              Could not fetch the gateway token — download unavailable.
+            </p>
+          )}
+        </div>
+      </StatusCard>
+
+      {/* Manual SSH commands (collapsible) */}
       <details className="border border-border rounded-lg overflow-hidden">
         <summary className="px-4 py-2 bg-surface-2 border-b border-border font-serif text-base text-text-1 font-semibold cursor-pointer">
-          Power User: SSH Tunnel to native Control UI
+          Manual: SSH commands (if the script doesn&apos;t work)
         </summary>
         <div className="px-4 py-3 space-y-3">
           <p className="text-sm text-text-2">
-            For the full interactive OpenClaw Control UI (session browser,
-            live config editor, tool inspector), open an SSH tunnel and
-            access the gateway directly at loopback.
+            Run these two commands manually if the download script
+            doesn&apos;t work on your machine.
           </p>
           <div className="bg-surface-3 border border-border rounded p-3 flex items-start gap-3">
             <pre className="font-mono text-xs text-text-1 flex-1 whitespace-pre-wrap break-all">
