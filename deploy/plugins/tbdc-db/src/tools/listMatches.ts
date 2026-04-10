@@ -6,7 +6,7 @@ export function registerListMatches(api: RegisterApi, prisma: PrismaClient) {
     name: "list_matches",
     label: "List Matches",
     description:
-      "List all Match rows for a given company, ordered by tier then sortOrder. Each row includes the linked investor summary so you can reason about it without a second lookup. For WIDMO-style companies (acceptsInvestorIntros=false) this list will normally be empty — use get_company + its customerTargets instead.",
+      "List all Match rows for a given company, ordered by tier then sortOrder. Each row includes the linked investor summary, the pipelineStatus (not_started/researching/outreach_sent/meeting_set/follow_up/closed_won/closed_pass), and the warmPathBonus (Ahmed's personal warm-path assessment, if any). For WIDMO-style companies (acceptsInvestorIntros=false) this list will normally be empty — use get_company + its customerTargets instead.",
     parameters: {
       type: "object",
       properties: {

@@ -4,16 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TABS = [
-  { id: "methodology", label: "01 — Methodology", href: "/methodology" },
-  { id: "investors", label: "02 — Investor Database", href: "/investors" },
-  { id: "companies", label: "03 — Portfolio Companies", href: "/companies" },
-  { id: "match", label: "04 — Match Output", href: "/match" },
+  { id: "methodology", label: "Methodology", href: "/methodology" },
+  { id: "investors", label: "Investor Database", href: "/investors" },
+  { id: "companies", label: "Portfolio Companies", href: "/companies" },
+  { id: "match", label: "Match Output", href: "/match" },
+  { id: "pipeline", label: "Pipeline", href: "/pipeline" },
 ];
 
 const ADMIN_TABS = [
-  { id: "analyst", label: "05 — Analyst", href: "/analyst" },
-  { id: "audit", label: "06 — Audit", href: "/admin/audit" },
-  { id: "clawadmin", label: "07 — Mission Control", href: "/ClawAdmin" },
+  { id: "analyst", label: "Analyst", href: "/analyst" },
+  { id: "audit", label: "Audit", href: "/admin/audit" },
+  { id: "clawadmin", label: "Mission Control", href: "/ClawAdmin" },
 ];
 
 export function NavTabs({ role }: { role?: string }) {
