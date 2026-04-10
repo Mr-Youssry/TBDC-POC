@@ -16,6 +16,8 @@ const FIELDS = [
   "deals12m",
   "notablePortfolio",
   "contactApproach",
+  "region",
+  "confidence",
 ] as const;
 const fieldSchema = z.enum(FIELDS);
 const valueSchema = z.string().min(1).max(5000);

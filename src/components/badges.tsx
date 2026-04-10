@@ -14,9 +14,24 @@ export function TypeBadge({ type }: { type: string }) {
       <span className={`${base} bg-[#e8f4e8] text-[#1a5a1a] border-[#60a060]`}>Gov</span>
     );
   }
-  if (type === "Corporate") {
+  if (type === "Corporate" || type === "Corporate VC") {
     return (
       <span className={`${base} bg-[#f8e8f8] text-[#6a1a6a] border-[#c060c0]`}>Corp</span>
+    );
+  }
+  if (type === "Angel Network") {
+    return (
+      <span className={`${base} bg-[#fef2df] text-[#7a4b09] border-[#c4840c]`}>Angel</span>
+    );
+  }
+  if (type === "Gov" || type === "Gov Program") {
+    return (
+      <span className={`${base} bg-[#e8f4e8] text-[#1a5a1a] border-[#60a060]`}>Gov</span>
+    );
+  }
+  if (type.includes("Venture Studio") || type.includes("Venture Debt")) {
+    return (
+      <span className={`${base} bg-[#f0ede8] text-[#5a5752] border-[#bbb6ae]`}>{type.includes("Debt") ? "Debt" : "Studio"}</span>
     );
   }
   return <span className={`${base} bg-surface-2 text-text-3 border-border`}>{type}</span>;
@@ -53,6 +68,23 @@ export function WarnBadge({ children }: { children: ReactNode }) {
   return (
     <span className={`${base} bg-warn text-warn-txt border-warn-bdr`}>{children}</span>
   );
+}
+
+export function ConfidenceBadge({ confidence }: { confidence: string }) {
+  if (confidence === "High") {
+    return <span className={`${base} bg-[#e8f4e8] text-[#1a5a1a] border-[#60a060]`}>High</span>;
+  }
+  return <span className={`${base} bg-surface-2 text-text-3 border-border`}>Med</span>;
+}
+
+export function RegionBadge({ region }: { region: string }) {
+  if (region === "Canada") {
+    return <span className={`${base} bg-[#fceaea] text-[#8c2020] border-[#c94040]`}>CA</span>;
+  }
+  if (region === "US") {
+    return <span className={`${base} bg-[#e8eef8] text-[#1a4fa0] border-[#7090d0]`}>US</span>;
+  }
+  return <span className={`${base} bg-[#f0ede8] text-[#5a5752] border-[#bbb6ae]`}>Intl</span>;
 }
 
 export function OpenBadge() {

@@ -76,6 +76,8 @@ model Investor {
   deals12m         String
   notablePortfolio String
   contactApproach  String
+  region           String       @default("Canada")  // Canada | US | Global
+  confidence       String       @default("Medium")  // High | Medium
   sortOrder        Int          @default(0)
   matches          Match[]
   doNotMatches     DoNotMatch[]

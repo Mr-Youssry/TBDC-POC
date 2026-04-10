@@ -1,58 +1,133 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isLoggedIn } from "@/lib/guards";
 import { SecHead } from "@/components/sec-head";
 import { EditableCell } from "@/components/editable-cell";
 import { LongTextModal } from "@/components/long-text-modal";
-import { TypeBadge, StageBadge, LeadBadge } from "@/components/badges";
+import { TypeBadge, StageBadge, LeadBadge, ConfidenceBadge, RegionBadge } from "@/components/badges";
 import { updateInvestorField } from "./actions";
 import { AddInvestorButton, DeleteInvestorButton } from "./row-actions";
+import { InvestorFilters } from "./investor-filters";
 
 export const dynamic = "force-dynamic";
 
 const TYPE_OPTIONS = [
   { label: "VC", value: "VC" },
-  { label: "Government", value: "Government" },
-  { label: "Corporate", value: "Corporate" },
+  { label: "Angel Network", value: "Angel Network" },
+  { label: "Corporate VC", value: "Corporate VC" },
+  { label: "Gov", value: "Gov" },
+  { label: "Gov Program", value: "Gov Program" },
+  { label: "Venture Studio / VC", value: "Venture Studio / VC" },
+  { label: "Venture Debt", value: "Venture Debt" },
 ];
 const LEAD_OPTIONS = [
   { label: "Lead", value: "Lead" },
   { label: "Follow", value: "Follow" },
-  { label: "Lead+Follow", value: "Lead+Follow" },
+  { label: "Lead/Follow", value: "Lead/Follow" },
+];
+const CONFIDENCE_OPTIONS = [
+  { label: "High", value: "High" },
+  { label: "Medium", value: "Medium" },
+];
+const REGION_OPTIONS = [
+  { label: "Canada", value: "Canada" },
+  { label: "US", value: "US" },
+  { label: "Global", value: "Global" },
 ];
 
-export default async function InvestorsPage() {
-  const [investors, editable] = await Promise.all([
-    prisma.investor.findMany({ orderBy: { sortOrder: "asc" } }),
+/* Stage ordering for sort — earlier stages get lower numbers */
+const STAGE_ORDER: Record<string, number> = {
+  "Pre-idea": 0,
+  "Pre-seed": 1,
+  "Pre-Series A": 2,
+  Seed: 3,
+  "Series A": 4,
+  "Series B": 5,
+  "Series C": 6,
+  Growth: 7,
+};
+
+function stageRank(stage: string): number {
+  // Find the earliest stage mentioned in the string
+  let min = 99;
+  for (const [key, val] of Object.entries(STAGE_ORDER)) {
+    if (stage.includes(key) && val < min) min = val;
+  }
+  return min;
+}
+
+type Props = {
+  searchParams: Promise<{ region?: string; type?: string; sort?: string }>;
+};
+
+export default async function InvestorsPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const regionFilter = params.region || "All";
+  const typeFilter = params.type || "All";
+  const sortParam = params.sort || "";
+
+  /* ── Build Prisma where clause ─────────────────────────────────────── */
+  const where: Prisma.InvestorWhereInput = {};
+  if (regionFilter !== "All") where.region = regionFilter;
+  if (typeFilter !== "All") where.type = { contains: typeFilter };
+
+  const [allInvestors, investors, editable] = await Promise.all([
+    prisma.investor.groupBy({ by: ["region"], _count: true }),
+    prisma.investor.findMany({ where, orderBy: { sortOrder: "asc" } }),
     isLoggedIn(),
   ]);
+
+  /* ── Sort client-side for confidence/stage ──────────────────────────── */
+  let sorted = [...investors];
+  if (sortParam === "confidence-desc") {
+    sorted.sort((a, b) => (a.confidence === "High" ? -1 : 1) - (b.confidence === "High" ? -1 : 1));
+  } else if (sortParam === "confidence-asc") {
+    sorted.sort((a, b) => (a.confidence === "High" ? 1 : -1) - (b.confidence === "High" ? 1 : -1));
+  } else if (sortParam === "stage-asc") {
+    sorted.sort((a, b) => stageRank(a.stage) - stageRank(b.stage));
+  } else if (sortParam === "stage-desc") {
+    sorted.sort((a, b) => stageRank(b.stage) - stageRank(a.stage));
+  }
+
+  /* ── Region counts for filter pills ────────────────────────────────── */
+  const total = allInvestors.reduce((s, g) => s + g._count, 0);
+  const canada = allInvestors.find((g) => g.region === "Canada")?._count ?? 0;
+  const us = allInvestors.find((g) => g.region === "US")?._count ?? 0;
+  const global = allInvestors.find((g) => g.region === "Global")?._count ?? 0;
+
+  const th = "bg-surface-2 px-3 py-[9px] text-left font-mono text-[0.65rem] tracking-[0.05em] text-text-2 border-b border-border whitespace-nowrap font-normal";
 
   return (
     <>
       <div className="flex items-center justify-between mb-3">
         <SecHead className="mb-0 mt-0 pb-0 border-none">
-          Investor database — 24 funds profiled on 10 dimensions
+          Investor database — {total} funds profiled
         </SecHead>
         {editable && <AddInvestorButton />}
       </div>
+
+      <InvestorFilters counts={{ total, canada, us, global }} />
+
+      <p className="text-[0.68rem] font-mono text-text-3 mb-3">
+        Showing {sorted.length} of {total} investors
+        {regionFilter !== "All" && <> · {regionFilter}</>}
+        {typeFilter !== "All" && <> · {typeFilter}</>}
+        {sortParam && <> · sorted by {sortParam.replace("-", " ")}</>}
+      </p>
 
       <div className="overflow-x-auto border border-border rounded-[10px] mb-6">
         <table className="w-full text-[0.78rem] border-collapse">
           <thead>
             <tr>
-              {["Fund Name", "Type", "Stage", "Sectors", "Cheque", "Geo", "Lead", "Deals 12M", "Notable Portfolio", "Contact Approach", editable ? "" : null]
+              {["Fund Name", "Type", "Region", "Stage", "Sectors", "Cheque", "Geo", "Lead", "Deals/yr", "Confidence", "Notable Portfolio", "Contact Approach", editable ? "" : null]
                 .filter((h) => h !== null)
                 .map((h, i) => (
-                  <th
-                    key={i}
-                    className="bg-surface-2 px-3 py-[9px] text-left font-mono text-[0.65rem] tracking-[0.05em] text-text-2 border-b border-border whitespace-nowrap font-normal"
-                  >
-                    {h}
-                  </th>
+                  <th key={i} className={th}>{h}</th>
                 ))}
             </tr>
           </thead>
           <tbody>
-            {investors.map((iv) => (
+            {sorted.map((iv) => (
               <tr key={iv.id} className="hover:bg-surface-2">
                 <td className="px-3 py-[9px] border-b border-border align-top">
                   <EditableCell
@@ -73,6 +148,17 @@ export default async function InvestorsPage() {
                     update={updateInvestorField}
                     options={TYPE_OPTIONS}
                     display={<TypeBadge type={iv.type} />}
+                  />
+                </td>
+                <td className="px-3 py-[9px] border-b border-border align-top">
+                  <EditableCell
+                    id={iv.id}
+                    field="region"
+                    initialValue={iv.region}
+                    editable={editable}
+                    update={updateInvestorField}
+                    options={REGION_OPTIONS}
+                    display={<RegionBadge region={iv.region} />}
                   />
                 </td>
                 <td className="px-3 py-[9px] border-b border-border align-top">
@@ -135,6 +221,17 @@ export default async function InvestorsPage() {
                     update={updateInvestorField}
                   />
                 </td>
+                <td className="px-3 py-[9px] border-b border-border align-top">
+                  <EditableCell
+                    id={iv.id}
+                    field="confidence"
+                    initialValue={iv.confidence}
+                    editable={editable}
+                    update={updateInvestorField}
+                    options={CONFIDENCE_OPTIONS}
+                    display={<ConfidenceBadge confidence={iv.confidence} />}
+                  />
+                </td>
                 <td className="px-3 py-[9px] border-b border-border align-top text-[0.73rem]">
                   <LongTextModal
                     id={iv.id}
@@ -170,7 +267,7 @@ export default async function InvestorsPage() {
         </table>
       </div>
       <p className="text-[0.72rem] font-mono text-text-3">
-        * Portfolio and deal data sourced from LinkedIn, public announcements, and direct market knowledge. Crunchbase/PitchBook integration recommended for production deployment. Contact names validated via LinkedIn Sales Navigator.
+        * Portfolio and deal data sourced from LinkedIn, public announcements, and direct market knowledge. Crunchbase/PitchBook integration recommended for production deployment.
       </p>
     </>
   );
