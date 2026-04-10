@@ -38,14 +38,15 @@ export function MessagePane({
       <div className="px-6 py-3 border-b border-border bg-surface-2">
         <h2 className="font-serif text-lg text-text-1"># {displayName}</h2>
         {state === "rate-limited" && (
-          <p className="text-xs text-warn-txt mt-1">
-            Assistant is queued by provider, response may be delayed
+          <p className="text-xs text-text-3 mt-1 italic">
+            Assistant is thinking… (30–60s on a cold turn)
           </p>
         )}
         {(state === "closed" || state === "error") && (
           <p className="text-xs text-warn-txt mt-1">
-            Disconnected —{" "}
-            {state === "error" ? "connection error" : "connection closed"}
+            {state === "error"
+              ? "Last turn failed — try sending the message again."
+              : "Disconnected."}
           </p>
         )}
       </div>
@@ -100,7 +101,9 @@ export function MessagePane({
           placeholder={
             state === "open"
               ? "Type a message to the Assistant…"
-              : "Connecting…"
+              : state === "rate-limited"
+                ? "Waiting for the Assistant to reply…"
+                : "Reconnecting…"
           }
           disabled={state !== "open"}
           className="w-full px-3 py-2 rounded border border-border bg-surface text-sm text-text-1 disabled:opacity-50"
