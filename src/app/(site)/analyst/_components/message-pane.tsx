@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useOpenClawWs } from "./use-openclaw-ws";
 import { ToolCallPill } from "./tool-call-pill";
+import { UploadModal } from "./upload-modal";
 
 // Markdown renderer scoped to the chat pane. Supports GFM (tables,
 // strikethrough, task lists). Every tag is explicitly styled so assistant
@@ -107,7 +108,9 @@ export function MessagePane({
     currentUserName,
   });
   const [input, setInput] = useState("");
+  const [uploadOpen, setUploadOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const companySlug = displayName.toLowerCase().replace(/\s+/g, "-");
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -185,21 +188,40 @@ export function MessagePane({
         onSubmit={handleSubmit}
         className="px-6 py-3 border-t border-border bg-surface-2"
       >
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={
-            state === "open"
-              ? "Type a message to the Assistant…"
-              : state === "rate-limited"
-                ? "Waiting for the Assistant to reply…"
-                : "Reconnecting…"
-          }
-          disabled={state !== "open"}
-          className="w-full px-3 py-2 rounded border border-border bg-surface text-sm text-text-1 disabled:opacity-50"
-        />
+        <div className="flex gap-2 items-center">
+          {openclawSessionId.startsWith("tbdc-co-") && (
+            <button
+              type="button"
+              onClick={() => setUploadOpen(true)}
+              className="px-2 py-2 text-text-3 hover:text-text-1 transition-colors"
+              title="Upload document to workspace"
+            >
+              📎
+            </button>
+          )}
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={
+              state === "open"
+                ? "Type a message to the Assistant…"
+                : state === "rate-limited"
+                  ? "Waiting for the Assistant to reply…"
+                  : "Reconnecting…"
+            }
+            disabled={state !== "open"}
+            className="flex-1 px-3 py-2 rounded border border-border bg-surface text-sm text-text-1 disabled:opacity-50"
+          />
+        </div>
       </form>
+
+      <UploadModal
+        open={uploadOpen}
+        onClose={() => setUploadOpen(false)}
+        companySlug={companySlug}
+        sendMessage={sendMessage}
+      />
     </main>
   );
 }
