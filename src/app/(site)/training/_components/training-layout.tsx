@@ -20,6 +20,9 @@ export function TrainingLayout({
   // Track which files have unsaved changes (keyed by path)
   const [dirtyFiles, setDirtyFiles] = useState<Set<string>>(new Set());
 
+  // Cache unsaved editor content so switching files preserves edits
+  const [contentCache, setContentCache] = useState<Record<string, string>>({});
+
   const onDirtyChange = useCallback((path: string, dirty: boolean) => {
     setDirtyFiles((prev) => {
       const next = new Set(prev);
@@ -47,6 +50,9 @@ export function TrainingLayout({
             key={selected.path}
             path={selected.path}
             onDirtyChange={onDirtyChange}
+            cachedContent={contentCache[selected.path]}
+            onContentChange={(p, content) => setContentCache(prev => ({ ...prev, [p]: content }))}
+            onSaved={(p) => setContentCache(prev => { const next = { ...prev }; delete next[p]; return next; })}
           />
         )
       ) : (

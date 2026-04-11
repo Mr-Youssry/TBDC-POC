@@ -53,11 +53,22 @@ export function FileEditor({
     },
   });
 
-  // Load file content
+  // Load file content (prefer cache, fall back to bridge fetch)
   useEffect(() => {
     if (!editor) return;
     loadedRef.current = false;
     setLoading(true);
+
+    if (cachedContent !== undefined) {
+      // Restore from cache — this means we have unsaved changes
+      editor.commands.setContent(cachedContent);
+      setDirty(true);
+      requestAnimationFrame(() => { loadedRef.current = true; });
+      setLoading(false);
+      return;
+    }
+
+    // No cache — fetch from bridge
     setDirty(false);
     fetch(`/api/openclaw/workspace/file?path=${encodeURIComponent(path)}`)
       .then((r) => r.json())
@@ -70,7 +81,7 @@ export function FileEditor({
       })
       .catch(() => setToast("Failed to load file"))
       .finally(() => setLoading(false));
-  }, [path, editor]);
+  }, [path, editor, cachedContent]);
 
   // Report dirty state to parent for tree indicators
   useEffect(() => {
@@ -102,6 +113,7 @@ export function FileEditor({
       const data = await res.json();
       if (data.ok) {
         setDirty(false);
+        onSaved?.(path);
         setToast("Saved. SCOTE will pick up this change on the next message.");
         setTimeout(() => setToast(null), 4000);
       } else {

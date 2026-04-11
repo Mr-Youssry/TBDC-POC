@@ -40,7 +40,7 @@ export function MessagePane({
   return (
     <main className="flex-1 flex flex-col">
       <div className="px-6 py-3 border-b border-border bg-surface-2">
-        <h2 className="font-serif text-lg text-text-1"># {displayName}</h2>
+        <h2 className="font-serif text-lg text-text-1">{displayName}</h2>
         {state === "rate-limited" && (
           <p className="text-xs text-text-3 mt-1 italic">
             SCOTE is thinking… (30–60s on a cold turn)
