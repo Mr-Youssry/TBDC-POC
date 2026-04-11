@@ -29,7 +29,7 @@ export default async function MethodologyPage() {
   const th = "bg-surface-2 px-[10px] py-2 text-left font-mono text-[0.65rem] tracking-[0.05em] text-text-2 border-b border-border font-normal";
 
   return (
-    <>
+    <div className="px-8 py-7 max-w-[1200px]">
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 1 — Hard gates
           ═══════════════════════════════════════════════════════════════ */}
@@ -288,6 +288,6 @@ export default async function MethodologyPage() {
           <li>Activation modifier: <span className="text-text-1 font-medium">Warm Path</span> (no pts, changes execution only)</li>
         </ul>
       </div>
-    </>
+    </div>
   );
 }

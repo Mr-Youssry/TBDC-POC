@@ -70,6 +70,9 @@ export function Sidebar({ role }: { role?: string }) {
   const [collapsed, setCollapsed] = useState(false);
   const isAdmin = role === "admin";
 
+  // Hide global sidebar on analyst page — it has its own channel sidebar
+  if (pathname.startsWith("/analyst")) return null;
+
   const renderItem = (item: { id: string; label: string; href: string }) => {
     const active =
       pathname === item.href || pathname.startsWith(`${item.href}/`);

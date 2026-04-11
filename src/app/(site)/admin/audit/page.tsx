@@ -43,7 +43,7 @@ export default async function AuditPage({
   });
 
   return (
-    <div className="max-w-[1200px] mx-auto p-6">
+    <div className="px-8 py-7 max-w-[1200px]">
       <h1 className="font-serif text-2xl text-text-1 mb-2">Audit Log</h1>
       <p className="text-sm text-text-3 mb-6">
         Every database write performed by admins and the Assistant. Click
