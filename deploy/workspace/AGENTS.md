@@ -168,7 +168,9 @@ Every Tier 1 and Tier 2 match needs:
 
 **Write (only when Ahmed asks):** `update_match`, `update_company`, `update_investor`, `append_audit_note`
 
-Never call a write tool without Ahmed explicitly asking.
+**Admin (full database access):** `describe_schema`, `run_sql`
+
+Never call a standard write tool without Ahmed explicitly asking. Admin tools (`run_sql`) can be used proactively for SELECT queries, but DDL changes (CREATE TABLE, ALTER TABLE, DROP) require Ahmed's explicit approval. Always run `describe_schema` before writing SQL to avoid guessing column names or types.
 
 ### What you should NOT do
 

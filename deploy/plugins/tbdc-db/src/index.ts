@@ -9,6 +9,8 @@ import { registerUpdateMatch } from "./tools/updateMatch.js";
 import { registerUpdateCompany } from "./tools/updateCompany.js";
 import { registerUpdateInvestor } from "./tools/updateInvestor.js";
 import { registerAppendAuditNote } from "./tools/appendAuditNote.js";
+import { registerDescribeSchema } from "./tools/describeSchema.js";
+import { registerRunSql } from "./tools/runSql.js";
 
 const DEFAULT_ASSISTANT_EMAIL = "assistant@tbdc.ready4vc.com";
 
@@ -100,6 +102,21 @@ export default definePluginEntry({
     } else {
       api.logger?.info?.(
         "[tbdc-db] registered 5 read tools (write tools disabled — no assistant user)",
+      );
+    }
+
+    // Admin tools — full DDL + DML access via the tbdc_scote role.
+    // These use a separate Prisma client with elevated permissions.
+    const adminDatabaseUrl =
+      process.env.TBDC_ADMIN_DATABASE_URL || "";
+    if (adminDatabaseUrl) {
+      const adminPrisma = makePrisma(adminDatabaseUrl);
+      registerDescribeSchema(api, adminPrisma);
+      registerRunSql(api, adminPrisma);
+      api.logger?.info?.("[tbdc-db] registered 2 admin tools (describe_schema, run_sql)");
+    } else {
+      api.logger?.info?.(
+        "[tbdc-db] admin tools skipped — TBDC_ADMIN_DATABASE_URL not set",
       );
     }
   },
