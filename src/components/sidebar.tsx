@@ -85,7 +85,7 @@ export function Sidebar({ role }: { role?: string }) {
           "flex items-center gap-2.5 rounded-md text-[0.78rem] transition-colors relative",
           collapsed ? "px-2 py-2 justify-center" : "px-3 py-2",
           active
-            ? "bg-surface-3 text-text-1 font-semibold"
+            ? "bg-[#e8e6e1] text-text-1 font-semibold border-l-[3px] border-l-t1-txt"
             : "text-text-3 hover:bg-surface-2 hover:text-text-2",
         ].join(" ")}
       >
@@ -129,7 +129,13 @@ export function Sidebar({ role }: { role?: string }) {
         {isAdmin && (
           <>
             <div className="my-2 border-t border-border" />
-            {!collapsed && (
+            {collapsed ? (
+              <div className="flex justify-center py-1">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-3 h-3 text-text-3">
+                  <rect x="2" y="6" width="8" height="5" rx="1" /><path d="M4 6V4a2 2 0 114 0v2" />
+                </svg>
+              </div>
+            ) : (
               <div className="px-3 pb-1 font-mono text-[0.55rem] text-text-3 uppercase tracking-[0.1em]">
                 Admin
               </div>
@@ -139,30 +145,20 @@ export function Sidebar({ role }: { role?: string }) {
         )}
       </nav>
 
-      {/* Floating collapse toggle — fixed at the edge of the sidebar */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className={[
-          "absolute top-1/2 -translate-y-1/2 w-[20px] h-[40px] flex items-center justify-center",
-          "bg-surface border border-border rounded-r-md shadow-sm",
-          "text-text-3 hover:text-text-1 hover:bg-surface-2 transition-colors z-10",
-          "-right-[20px]",
-        ].join(" ")}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-      >
-        <svg
-          viewBox="0 0 12 12"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          className={[
-            "w-3 h-3 transition-transform",
-            collapsed ? "rotate-180" : "",
-          ].join(" ")}
+      {/* Bottom-docked collapse toggle */}
+      <div className="flex-shrink-0 border-t border-border px-2 py-1.5">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="w-full flex items-center justify-center gap-1 py-1.5 rounded text-[0.65rem] text-text-3 hover:text-text-1 hover:bg-surface-2 transition-colors"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <path d="M8 2L4 6l4 4" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"
+            className={`w-3 h-3 transition-transform ${collapsed ? "rotate-180" : ""}`}>
+            <path d="M8 2L4 6l4 4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {!collapsed && <span>Collapse</span>}
+        </button>
+      </div>
     </aside>
   );
 }
