@@ -33,10 +33,15 @@ export default async function MethodologyPage() {
 
   return (
     <div className="px-8 py-7 max-w-[1200px]">
+      <nav className="sticky top-0 z-10 bg-background border-b border-border py-2 mb-4 flex gap-4">
+        <a href="#gates" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Gates</a>
+        <a href="#dimensions" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Dimensions</a>
+        <a href="#cards" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Cards</a>
+      </nav>
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 1 — Hard gates
           ═══════════════════════════════════════════════════════════════ */}
-      <SecHead>Hard gates \u2014 run before scoring begins</SecHead>
+      <SecHead id="gates">Hard gates \u2014 run before scoring begins</SecHead>
       <p className="text-[0.78rem] text-text-2 mb-3 leading-relaxed">
         If any gate fires, the investor-startup pair is eliminated from the match output entirely, regardless of what score they would have received. There are three gates.
       </p>
@@ -104,7 +109,7 @@ export default async function MethodologyPage() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 2 — Scoring dimensions
           ═══════════════════════════════════════════════════════════════ */}
-      <SecHead>Scoring dimensions \u2014 weighted, not equal</SecHead>
+      <SecHead id="dimensions">Scoring dimensions \u2014 weighted, not equal</SecHead>
       <p className="text-[0.78rem] text-text-2 mb-3 leading-relaxed">
         Seven dimensions are scored after the hard gates clear. Dimensions are ranked by importance \u2014 higher-ranked dimensions carry greater weight. Maximum possible score: <strong className="text-text-1">14 points</strong>.
       </p>
@@ -220,7 +225,7 @@ export default async function MethodologyPage() {
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 4 — Design rationale
           ═══════════════════════════════════════════════════════════════ */}
-      <SecHead>Design rationale \u2014 why these choices</SecHead>
+      <SecHead id="cards">Design rationale \u2014 why these choices</SecHead>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
         {cards.map((c) => (
           <div key={c.id} className="bg-surface border border-border rounded-[10px] p-5">
