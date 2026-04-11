@@ -54,9 +54,10 @@ export default async function AuditPage({
       </p>
       <div className="space-y-2">
         {entries.length === 0 && (
-          <p className="text-sm text-text-3">
-            No audit entries match the filter.
-          </p>
+          <div className="border border-border rounded-lg bg-surface-2 px-6 py-8 text-center">
+            <p className="text-sm text-text-3">No audit entries match the filter.</p>
+            <p className="text-xs text-text-3 mt-1">Database writes by admins and the Assistant appear here automatically.</p>
+          </div>
         )}
         {entries.map((e) => (
           <AuditRow

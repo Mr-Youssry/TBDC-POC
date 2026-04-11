@@ -25,7 +25,7 @@ export function StatusSelect({ matchId, currentStatus, disabled }: StatusSelectP
 
   if (disabled) {
     return (
-      <span className="inline-block font-mono text-[0.68rem] px-2 py-[2px] bg-surface-2 border border-border rounded-[3px] text-text-2 whitespace-nowrap">
+      <span className={`inline-block font-mono text-[0.68rem] px-2 py-[2px] bg-surface-2 border border-border rounded-[3px] text-text-2 whitespace-nowrap ${value === "not_started" ? "border-dashed opacity-60" : ""}`}>
         {STATUS_LABELS[value] ?? value}
       </span>
     );
