@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { AssistantMarkdown } from "../../analyst/_components/assistant-markdown";
+import { TbdcButton } from "@/components/ui/tbdc-button";
 
 export function FileViewer({ path }: { path: string }) {
   const [content, setContent] = useState("");
@@ -33,12 +34,9 @@ export function FileViewer({ path }: { path: string }) {
           <span className="text-sm text-text-1 font-mono">{path}</span>
           <span className="text-[0.65rem] text-text-3 bg-surface-3 px-1.5 py-0.5 rounded">Read-only</span>
         </div>
-        <button
-          onClick={handleCopy}
-          className="border border-border px-3 py-1 rounded text-xs text-text-2 hover:bg-surface-3 transition-colors"
-        >
+        <TbdcButton variant="secondary" onClick={handleCopy}>
           {copied ? "Copied!" : "Copy"}
-        </button>
+        </TbdcButton>
       </div>
       <div className="flex-1 overflow-y-auto p-4 bg-surface-2/50">
         <AssistantMarkdown content={content} />

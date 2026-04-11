@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { TbdcButton } from "@/components/ui/tbdc-button";
 
 export function UploadModal({
   open,
@@ -100,21 +101,12 @@ export function UploadModal({
           )}
 
           <div className="flex justify-end gap-2 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={submitting}
-              className="border border-border px-4 py-2 rounded text-sm text-text-2 hover:bg-surface-2 transition-colors"
-            >
+            <TbdcButton variant="secondary" size="md" type="button" onClick={onClose} disabled={submitting}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={!content.trim() || submitting}
-              className="bg-t1-bg text-[#f5f4f0] px-4 py-2 rounded text-sm disabled:opacity-50 hover:opacity-90 transition-opacity"
-            >
-              {submitting ? "Uploading…" : "Upload"}
-            </button>
+            </TbdcButton>
+            <TbdcButton variant="primary" size="md" type="submit" disabled={!content.trim() || submitting}>
+              {submitting ? "Uploading\u2026" : "Upload"}
+            </TbdcButton>
           </div>
         </form>
       </div>

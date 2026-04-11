@@ -5,13 +5,20 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Markdown } from "tiptap-markdown";
 import { EditorToolbar } from "./editor-toolbar";
+import { TbdcButton } from "@/components/ui/tbdc-button";
 
 export function FileEditor({
   path,
   onDirtyChange,
+  cachedContent,
+  onContentChange,
+  onSaved,
 }: {
   path: string;
   onDirtyChange?: (path: string, dirty: boolean) => void;
+  cachedContent?: string;
+  onContentChange?: (path: string, content: string) => void;
+  onSaved?: (path: string) => void;
 }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -34,10 +41,14 @@ export function FileEditor({
         class: "outline-none min-h-[200px] px-4 py-3",
       },
     },
-    onUpdate: () => {
+    onUpdate: ({ editor: e }) => {
       // Only mark dirty AFTER the initial content load completes
       if (loadedRef.current) {
         setDirty(true);
+        // Cache content in parent so switching files preserves edits
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const md = (e.storage as any)?.markdown?.getMarkdown?.() ?? "";
+        if (md && onContentChange) onContentChange(path, md);
       }
     },
   });
@@ -133,18 +144,13 @@ export function FileEditor({
             <span className="text-[0.65rem] text-warn-txt flex-shrink-0">● Unsaved</span>
           )}
         </div>
-        <button
+        <TbdcButton
+          variant={dirty ? "primary" : "ghost"}
           onClick={handleSave}
           disabled={!dirty || saving}
-          className={[
-            "flex-shrink-0 px-4 py-1.5 rounded text-xs font-medium transition-all",
-            dirty
-              ? "bg-text-1 text-background hover:opacity-90 shadow-sm"
-              : "bg-surface-3 text-text-3 cursor-default",
-          ].join(" ")}
         >
           {saving ? "Saving\u2026" : "Save"}
-        </button>
+        </TbdcButton>
       </div>
 
       {/* Formatting toolbar */}
