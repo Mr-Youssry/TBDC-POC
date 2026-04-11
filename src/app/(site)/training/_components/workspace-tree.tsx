@@ -1,6 +1,22 @@
 "use client";
 import { useEffect, useState } from "react";
 
+const FileIcon = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-3.5 h-3.5 flex-shrink-0">
+    <path d="M4 1h5l4 4v10H4V1z" /><path d="M9 1v4h4" />
+  </svg>
+);
+
+const FolderIcon = ({ open }: { open: boolean }) => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-3.5 h-3.5 flex-shrink-0">
+    {open ? (
+      <path d="M2 4h4l1.5-2H14v10H2V4z M2 6h12" />
+    ) : (
+      <path d="M2 3h4l2 2h6v9H2V3z" />
+    )}
+  </svg>
+);
+
 type TreeNode = {
   name: string;
   type: "file" | "dir";
@@ -47,7 +63,7 @@ export function WorkspaceTree({
         key={fullPath}
         onClick={() => onSelect(fullPath, !!node.readOnly)}
         className={[
-          "w-full text-left px-3 py-1.5 text-[0.78rem] rounded transition-colors truncate",
+          "w-full text-left px-3 py-1.5 text-[0.78rem] rounded transition-colors flex items-center gap-1.5",
           active
             ? "bg-[#e8e6e1] text-text-1 font-semibold border-l-[3px] border-l-t1-txt"
             : dimmed
@@ -56,7 +72,8 @@ export function WorkspaceTree({
         ].join(" ")}
         title={fullPath}
       >
-        {node.name}
+        <FileIcon />
+        <span className="truncate">{node.name}</span>
       </button>
     );
   };
@@ -74,7 +91,7 @@ export function WorkspaceTree({
             dimmed ? "text-text-3/50" : "text-text-3",
           ].join(" ")}
         >
-          <span className="text-[0.6rem]">{isOpen ? "▾" : "▸"}</span>
+          <FolderIcon open={isOpen} />
           {node.name}
           {dimmed && <span className="text-[0.55rem] normal-case tracking-normal font-normal ml-1">(read-only)</span>}
         </button>
@@ -106,7 +123,7 @@ export function WorkspaceTree({
         onClick={() => toggle("__identity__")}
         className="flex items-center gap-1.5 text-xs font-semibold text-text-3 uppercase tracking-wider mb-1"
       >
-        <span className="text-[0.6rem]">{expanded.__identity__ ? "▾" : "▸"}</span>
+        <FolderIcon open={expanded.__identity__} />
         Identity
       </button>
       {expanded.__identity__ && (
