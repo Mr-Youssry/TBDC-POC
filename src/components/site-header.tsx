@@ -50,11 +50,11 @@ export async function SiteHeader() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="hidden md:flex gap-1.5 flex-wrap">
+          <div className="flex gap-1 flex-wrap">
             {chips.map((chip) => (
               <span
                 key={chip}
-                className="font-mono text-[0.6rem] px-[8px] py-[2px] border border-[#444] rounded-[4px] text-[#999]"
+                className="font-mono text-[0.55rem] px-[6px] py-[2px] border border-[#444] rounded-[4px] text-[#999]"
               >
                 {chip}
               </span>
