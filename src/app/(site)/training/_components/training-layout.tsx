@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { WorkspaceTree } from "./workspace-tree";
 import { FileEditor } from "./file-editor";
 import { FileViewer } from "./file-viewer";
@@ -17,11 +17,24 @@ export function TrainingLayout({
     readOnly: boolean;
   } | null>(null);
 
+  // Track which files have unsaved changes (keyed by path)
+  const [dirtyFiles, setDirtyFiles] = useState<Set<string>>(new Set());
+
+  const onDirtyChange = useCallback((path: string, dirty: boolean) => {
+    setDirtyFiles((prev) => {
+      const next = new Set(prev);
+      if (dirty) next.add(path);
+      else next.delete(path);
+      return next;
+    });
+  }, []);
+
   return (
     <div className="flex h-[calc(100vh-60px)]">
       {/* Left: file tree */}
       <WorkspaceTree
         selectedPath={selected?.path ?? null}
+        dirtyFiles={dirtyFiles}
         onSelect={(path, readOnly) => setSelected({ path, readOnly })}
       />
 
@@ -30,7 +43,11 @@ export function TrainingLayout({
         selected.readOnly ? (
           <FileViewer key={selected.path} path={selected.path} />
         ) : (
-          <FileEditor key={selected.path} path={selected.path} />
+          <FileEditor
+            key={selected.path}
+            path={selected.path}
+            onDirtyChange={onDirtyChange}
+          />
         )
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center text-sm text-text-3 italic px-8 text-center gap-1">

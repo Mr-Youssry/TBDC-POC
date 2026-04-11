@@ -1,12 +1,18 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Markdown } from "tiptap-markdown";
 import { EditorToolbar } from "./editor-toolbar";
 
-export function FileEditor({ path }: { path: string }) {
+export function FileEditor({
+  path,
+  onDirtyChange,
+}: {
+  path: string;
+  onDirtyChange?: (path: string, dirty: boolean) => void;
+}) {
   const [savedContent, setSavedContent] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -51,6 +57,21 @@ export function FileEditor({ path }: { path: string }) {
   }, [editor]);
 
   const hasChanges = editor ? getMarkdown() !== savedContent : false;
+
+  // Report dirty state to parent for tree indicators
+  const prevDirty = useRef(false);
+  useEffect(() => {
+    if (hasChanges !== prevDirty.current) {
+      prevDirty.current = hasChanges;
+      onDirtyChange?.(path, hasChanges);
+    }
+  }, [hasChanges, path, onDirtyChange]);
+
+  // Clean up dirty state on unmount
+  useEffect(() => {
+    return () => { onDirtyChange?.(path, false); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [path]);
 
   const handleSave = useCallback(async () => {
     const content = getMarkdown();

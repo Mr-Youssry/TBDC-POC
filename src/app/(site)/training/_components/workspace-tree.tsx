@@ -26,9 +26,11 @@ type TreeNode = {
 
 export function WorkspaceTree({
   selectedPath,
+  dirtyFiles,
   onSelect,
 }: {
   selectedPath: string | null;
+  dirtyFiles: Set<string>;
   onSelect: (path: string, readOnly: boolean) => void;
 }) {
   const [tree, setTree] = useState<TreeNode[]>([]);
@@ -58,6 +60,7 @@ export function WorkspaceTree({
     const fullPath = pathPrefix ? `${pathPrefix}/${node.name}` : node.name;
     const active = selectedPath === fullPath;
     const dimmed = node.readOnly;
+    const isDirty = dirtyFiles.has(fullPath);
     return (
       <button
         key={fullPath}
@@ -73,7 +76,8 @@ export function WorkspaceTree({
         title={fullPath}
       >
         <FileIcon />
-        <span className="truncate">{node.name}</span>
+        <span className="truncate flex-1">{node.name}</span>
+        {isDirty && <span className="text-warn-txt text-[0.6rem] flex-shrink-0" title="Unsaved changes">●</span>}
       </button>
     );
   };
@@ -117,7 +121,18 @@ export function WorkspaceTree({
   }
 
   return (
-    <aside className="w-[220px] flex-shrink-0 border-r border-border bg-surface p-3 overflow-y-auto">
+    <aside className="w-[220px] flex-shrink-0 border-r border-border bg-surface flex flex-col">
+      {/* Unsaved files indicator */}
+      {dirtyFiles.size > 0 && (
+        <div className="px-3 py-2 border-b border-border bg-surface-2 flex items-center gap-1.5">
+          <span className="text-warn-txt text-[0.6rem]">●</span>
+          <span className="text-[0.7rem] text-text-3">
+            {dirtyFiles.size} unsaved {dirtyFiles.size === 1 ? "file" : "files"}
+          </span>
+        </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto p-3">
       {/* Identity section (virtual group of root .md files) */}
       <button
         onClick={() => toggle("__identity__")}
@@ -134,6 +149,7 @@ export function WorkspaceTree({
 
       {/* Real directories: companies, memory, etc. */}
       {directories.map((d) => renderDir(d, ""))}
+      </div>
     </aside>
   );
 }
