@@ -12,7 +12,7 @@ export default async function SiteLayout({
       <SiteHeader />
       <div className="flex flex-1 min-h-0">
         <Sidebar role={role} />
-        <main className="flex-1 overflow-y-auto px-8 py-7 max-w-[1200px] w-full">
+        <main className="flex-1 overflow-y-auto">
           {children}
         </main>
       </div>

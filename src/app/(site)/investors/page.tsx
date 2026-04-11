@@ -95,41 +95,48 @@ export default async function InvestorsPage({ searchParams }: Props) {
   const us = allInvestors.find((g) => g.region === "US")?._count ?? 0;
   const global = allInvestors.find((g) => g.region === "Global")?._count ?? 0;
 
+  // Shared cell classes
   const th = "bg-surface-2 px-3 py-[9px] text-left font-mono text-[0.65rem] tracking-[0.05em] text-text-2 border-b border-border whitespace-nowrap font-normal";
+  const thSticky = `${th} sticky top-0 z-20`; // frozen header row
+  const thFrozen = `${th} sticky top-0 left-0 z-30 bg-surface-2`; // frozen header + frozen column intersection
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-3">
-        <SecHead className="mb-0 mt-0 pb-0 border-none">
-          Investor database — {total} funds profiled
-        </SecHead>
-        {editable && <AddInvestorButton />}
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* ── Pinned controls (don't scroll) ─────────────────────────────── */}
+      <div className="flex-shrink-0 px-8 py-4 bg-background border-b border-border">
+        <div className="flex items-center justify-between mb-3">
+          <SecHead className="mb-0 mt-0 pb-0 border-none">
+            Investor database — {total} funds profiled
+          </SecHead>
+          {editable && <AddInvestorButton />}
+        </div>
+
+        <InvestorFilters counts={{ total, canada, us, global }} />
+
+        <p className="text-[0.68rem] font-mono text-text-3">
+          Showing {sorted.length} of {total} investors
+          {regionFilter !== "All" && <> · {regionFilter}</>}
+          {typeFilter !== "All" && <> · {typeFilter}</>}
+          {sortParam && <> · sorted by {sortParam.replace("-", " ")}</>}
+        </p>
       </div>
 
-      <InvestorFilters counts={{ total, canada, us, global }} />
-
-      <p className="text-[0.68rem] font-mono text-text-3 mb-3">
-        Showing {sorted.length} of {total} investors
-        {regionFilter !== "All" && <> · {regionFilter}</>}
-        {typeFilter !== "All" && <> · {typeFilter}</>}
-        {sortParam && <> · sorted by {sortParam.replace("-", " ")}</>}
-      </p>
-
-      <div className="overflow-x-auto border border-border rounded-[10px] mb-6">
-        <table className="w-full text-[0.78rem] border-collapse">
+      {/* ── Scrollable table container ─────────────────────────────────── */}
+      <div className="flex-1 overflow-auto mx-8 my-4 border border-border rounded-[10px]">
+        <table className="text-[0.78rem] border-collapse">
           <thead>
             <tr>
-              {["Fund Name", "Type", "Region", "Stage", "Sectors", "Cheque", "Geo", "Lead", "Deals/yr", "Confidence", "Notable Portfolio", "Contact Approach", editable ? "" : null]
-                .filter((h) => h !== null)
+              <th className={thFrozen} style={{ minWidth: 180 }}>Fund Name</th>
+              {["Type", "Region", "Stage", "Sectors", "Cheque", "Geo", "Lead", "Deals/yr", "Confidence", "Notable Portfolio", "Contact Approach", ...(editable ? [""] : [])]
                 .map((h, i) => (
-                  <th key={i} className={th}>{h}</th>
+                  <th key={i} className={thSticky}>{h}</th>
                 ))}
             </tr>
           </thead>
           <tbody>
             {sorted.map((iv) => (
-              <tr key={iv.id} className="hover:bg-surface-2">
-                <td className="px-3 py-[9px] border-b border-border align-top">
+              <tr key={iv.id} className="hover:bg-surface-2 group">
+                <td className="px-3 py-[9px] border-b border-border align-top sticky left-0 z-10 bg-background group-hover:bg-surface-2 border-r border-border" style={{ minWidth: 180 }}>
                   <EditableCell
                     id={iv.id}
                     field="name"
@@ -266,9 +273,6 @@ export default async function InvestorsPage({ searchParams }: Props) {
           </tbody>
         </table>
       </div>
-      <p className="text-[0.72rem] font-mono text-text-3">
-        * Portfolio and deal data sourced from LinkedIn, public announcements, and direct market knowledge. Crunchbase/PitchBook integration recommended for production deployment.
-      </p>
-    </>
+    </div>
   );
 }
