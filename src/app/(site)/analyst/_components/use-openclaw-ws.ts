@@ -86,7 +86,7 @@ export function useOpenClawWs({
         const loaded: ChatMessage[] = data.messages.map((m: { timestamp: string; role: string; content: string }, i: number) => ({
           id: `hist-${m.timestamp}-${m.role}-${i}`,
           sender: m.role === "assistant" ? "assistant" as const : "user" as const,
-          senderName: m.role === "assistant" ? "Assistant" : currentUserName,
+          senderName: m.role === "assistant" ? "SCOTE" : currentUserName,
           content: m.content,
           timestamp: new Date(m.timestamp).getTime(),
         }));
@@ -158,7 +158,7 @@ export function useOpenClawWs({
             id: `sys-${Date.now()}`,
             sender: "system",
             senderName: "System",
-            content: `Assistant error: ${payload.error ?? "empty reply"}`,
+            content: `SCOTE error: ${payload.error ?? "empty reply"}`,
             timestamp: Date.now(),
           },
         ]);
@@ -171,7 +171,7 @@ export function useOpenClawWs({
         {
           id: `assistant-${Date.now()}`,
           sender: "assistant",
-          senderName: "Assistant",
+          senderName: "SCOTE",
           content: payload.reply ?? "",
           timestamp: Date.now(),
         },
