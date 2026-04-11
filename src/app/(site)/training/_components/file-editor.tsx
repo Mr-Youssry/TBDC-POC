@@ -1,30 +1,59 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+import { Markdown } from "tiptap-markdown";
+import { EditorToolbar } from "./editor-toolbar";
 
 export function FileEditor({ path }: { path: string }) {
-  const [content, setContent] = useState("");
   const [savedContent, setSavedContent] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Placeholder.configure({ placeholder: "Start typing\u2026" }),
+      Markdown.configure({
+        html: false,
+        transformPastedText: true,
+        transformCopiedText: true,
+      }),
+    ],
+    editorProps: {
+      attributes: {
+        class: "prose prose-sm max-w-none outline-none min-h-[200px] px-4 py-3 text-text-1 font-serif",
+      },
+    },
+  });
+
+  // Load file content
   useEffect(() => {
     setLoading(true);
     fetch(`/api/openclaw/workspace/file?path=${encodeURIComponent(path)}`)
       .then((r) => r.json())
       .then((data) => {
-        if (data.ok) {
-          setContent(data.content);
+        if (data.ok && editor) {
+          editor.commands.setContent(data.content);
           setSavedContent(data.content);
         }
       })
       .catch(() => setToast("Failed to load file"))
       .finally(() => setLoading(false));
-  }, [path]);
+  }, [path, editor]);
 
-  const hasChanges = content !== savedContent;
+  const getMarkdown = useCallback((): string => {
+    if (!editor) return "";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (editor.storage as any).markdown.getMarkdown();
+  }, [editor]);
+
+  const hasChanges = editor ? getMarkdown() !== savedContent : false;
 
   const handleSave = useCallback(async () => {
+    const content = getMarkdown();
     setSaving(true);
     setToast(null);
     try {
@@ -46,26 +75,31 @@ export function FileEditor({ path }: { path: string }) {
     } finally {
       setSaving(false);
     }
-  }, [path, content]);
+  }, [path, getMarkdown]);
 
   // Ctrl+S / Cmd+S shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
-        if (hasChanges && !saving) handleSave();
+        if (!saving) handleSave();
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [hasChanges, saving, handleSave]);
+  }, [saving, handleSave]);
 
-  if (loading) {
-    return <div className="flex-1 flex items-center justify-center text-sm text-text-3 italic">Loading…</div>;
+  if (loading || !editor) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-sm text-text-3 italic">
+        Loading...
+      </div>
+    );
   }
 
   return (
     <div className="flex-1 flex flex-col min-w-0">
+      {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-surface-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-text-1 font-mono">{path}</span>
@@ -75,18 +109,22 @@ export function FileEditor({ path }: { path: string }) {
         </div>
         <button
           onClick={handleSave}
-          disabled={!hasChanges || saving}
+          disabled={saving}
           className="bg-t1-bg text-[#f5f4f0] px-3 py-1 rounded text-xs disabled:opacity-40 hover:opacity-90 transition-opacity"
         >
-          {saving ? "Saving…" : "Save"}
+          {saving ? "Saving\u2026" : "Save"}
         </button>
       </div>
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        className="flex-1 w-full p-4 font-mono text-sm text-text-1 bg-background resize-none outline-none"
-        spellCheck={false}
-      />
+
+      {/* Formatting toolbar */}
+      <EditorToolbar editor={editor} />
+
+      {/* Editor content */}
+      <div className="flex-1 overflow-y-auto">
+        <EditorContent editor={editor} />
+      </div>
+
+      {/* Toast */}
       {toast && (
         <div className="px-4 py-2 text-xs text-text-2 bg-surface-2 border-t border-border">
           {toast}
