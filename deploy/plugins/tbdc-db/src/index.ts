@@ -1,6 +1,7 @@
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { makePrisma } from "./prisma.js";
 import { registerListInvestors } from "./tools/listInvestors.js";
+import { registerListCompanies } from "./tools/listCompanies.js";
 import { registerGetCompany } from "./tools/getCompany.js";
 import { registerListMatches } from "./tools/listMatches.js";
 import { registerGetMethodology } from "./tools/getMethodology.js";
@@ -82,6 +83,7 @@ export default definePluginEntry({
     }
 
     // Read tools — always registered.
+    registerListCompanies(api, prisma);
     registerListInvestors(api, prisma);
     registerGetCompany(api, prisma);
     registerListMatches(api, prisma);
@@ -94,10 +96,10 @@ export default definePluginEntry({
       registerUpdateCompany(api, prisma, deps);
       registerUpdateInvestor(api, prisma, deps);
       registerAppendAuditNote(api, prisma, deps);
-      api.logger?.info?.("[tbdc-db] registered 4 read tools + 4 write tools");
+      api.logger?.info?.("[tbdc-db] registered 5 read tools + 4 write tools");
     } else {
       api.logger?.info?.(
-        "[tbdc-db] registered 4 read tools (write tools disabled — no assistant user)",
+        "[tbdc-db] registered 5 read tools (write tools disabled — no assistant user)",
       );
     }
   },

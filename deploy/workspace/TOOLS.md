@@ -1,10 +1,11 @@
 # TOOLS.md — TBDC Database Tools
 
-## tbdc-db Plugin (8 tools)
+## tbdc-db Plugin (9 tools)
 
 ### Read tools
-- **list_investors** — Query investors with optional filters (stage, sector, geography). Returns paginated results. Use this FIRST when asked about investor options.
-- **get_company** — Get full company profile by ID. Includes investability dimensions, match counts, pipeline status.
+- **list_companies** — Returns ALL portfolio companies with IDs, names, stages, sectors, and all fields. Use this FIRST to discover company IDs before calling get_company or list_matches. The workspace profile slugs (e.g., "omniful") correspond to lowercase-hyphenated company names.
+- **list_investors** — Returns ALL investors. Use when browsing the investor universe or checking fund status.
+- **get_company** — Get a single company by its database ID (cuid). Includes customer targets and events. Use AFTER list_companies to get the ID.
 - **list_matches** — Query matches with optional filters (companyId, investorId, tier). Returns scored matches with tier, warmPath, pipelineStatus.
 - **get_methodology** — Returns the scoring rubric and tier thresholds. Reference this when explaining WHY a score is what it is.
 

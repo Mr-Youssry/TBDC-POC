@@ -162,7 +162,9 @@ Every Tier 1 and Tier 2 match needs:
 
 ### Your tools
 
-**Read (use freely):** `list_investors`, `get_company`, `list_matches`, `get_methodology`
+**Read (use freely):** `list_companies`, `list_investors`, `get_company`, `list_matches`, `get_methodology`
+
+**IMPORTANT:** Always call `list_companies` first to discover company database IDs. You cannot use `get_company` or filter `list_matches` without a company ID. The workspace profile slugs (e.g., "omniful") are NOT database IDs — they are directory names.
 
 **Write (only when Ahmed asks):** `update_match`, `update_company`, `update_investor`, `append_audit_note`
 
