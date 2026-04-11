@@ -13,10 +13,11 @@ export function FileEditor({
   path: string;
   onDirtyChange?: (path: string, dirty: boolean) => void;
 }) {
-  const [savedContent, setSavedContent] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const loadedRef = useRef(false);
 
   const editor = useEditor({
     extensions: [
@@ -30,48 +31,52 @@ export function FileEditor({
     ],
     editorProps: {
       attributes: {
-        class: "prose prose-sm max-w-none outline-none min-h-[200px] px-4 py-3 text-text-1 font-serif",
+        class: "outline-none min-h-[200px] px-4 py-3",
       },
+    },
+    onUpdate: () => {
+      // Only mark dirty AFTER the initial content load completes
+      if (loadedRef.current) {
+        setDirty(true);
+      }
     },
   });
 
   // Load file content
   useEffect(() => {
+    if (!editor) return;
+    loadedRef.current = false;
     setLoading(true);
+    setDirty(false);
     fetch(`/api/openclaw/workspace/file?path=${encodeURIComponent(path)}`)
       .then((r) => r.json())
       .then((data) => {
-        if (data.ok && editor) {
+        if (data.ok) {
           editor.commands.setContent(data.content);
-          setSavedContent(data.content);
+          // Small delay to let Tiptap finish processing before enabling dirty tracking
+          requestAnimationFrame(() => { loadedRef.current = true; });
         }
       })
       .catch(() => setToast("Failed to load file"))
       .finally(() => setLoading(false));
   }, [path, editor]);
 
-  const getMarkdown = useCallback((): string => {
-    if (!editor) return "";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (editor.storage as any).markdown.getMarkdown();
-  }, [editor]);
-
-  const hasChanges = editor ? getMarkdown() !== savedContent : false;
-
   // Report dirty state to parent for tree indicators
-  const prevDirty = useRef(false);
   useEffect(() => {
-    if (hasChanges !== prevDirty.current) {
-      prevDirty.current = hasChanges;
-      onDirtyChange?.(path, hasChanges);
-    }
-  }, [hasChanges, path, onDirtyChange]);
+    onDirtyChange?.(path, dirty);
+  }, [dirty, path, onDirtyChange]);
 
   // Clean up dirty state on unmount
   useEffect(() => {
     return () => { onDirtyChange?.(path, false); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path]);
+
+  const getMarkdown = useCallback((): string => {
+    if (!editor) return "";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (editor.storage as any).markdown.getMarkdown();
+  }, [editor]);
 
   const handleSave = useCallback(async () => {
     const content = getMarkdown();
@@ -85,7 +90,7 @@ export function FileEditor({
       });
       const data = await res.json();
       if (data.ok) {
-        setSavedContent(content);
+        setDirty(false);
         setToast("Saved. SCOTE will pick up this change on the next message.");
         setTimeout(() => setToast(null), 4000);
       } else {
@@ -103,12 +108,12 @@ export function FileEditor({
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
-        if (!saving) handleSave();
+        if (dirty && !saving) handleSave();
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [saving, handleSave]);
+  }, [dirty, saving, handleSave]);
 
   if (loading || !editor) {
     return (
@@ -120,18 +125,23 @@ export function FileEditor({
 
   return (
     <div className="flex-1 flex flex-col min-w-0">
-      {/* Header */}
+      {/* Header: filename + save button */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-surface-2">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-text-1 font-mono">{path}</span>
-          {hasChanges && (
-            <span className="text-[0.65rem] text-warn-txt">● Unsaved</span>
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-sm text-text-1 font-mono truncate">{path}</span>
+          {dirty && (
+            <span className="text-[0.65rem] text-warn-txt flex-shrink-0">● Unsaved</span>
           )}
         </div>
         <button
           onClick={handleSave}
-          disabled={saving}
-          className="bg-t1-bg text-[#f5f4f0] px-3 py-1 rounded text-xs disabled:opacity-40 hover:opacity-90 transition-opacity"
+          disabled={!dirty || saving}
+          className={[
+            "flex-shrink-0 px-4 py-1.5 rounded text-xs font-medium transition-all",
+            dirty
+              ? "bg-text-1 text-background hover:opacity-90 shadow-sm"
+              : "bg-surface-3 text-text-3 cursor-default",
+          ].join(" ")}
         >
           {saving ? "Saving\u2026" : "Save"}
         </button>
