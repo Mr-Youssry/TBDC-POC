@@ -201,6 +201,115 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // GET /history?sessionId=X — reads an OpenClaw session JSONL file and returns
+  // the most recent 50 user/assistant messages. Returns empty array if the
+  // session file doesn't exist yet (new sessions are fine).
+  const historyUrlPath = (req.url ?? "").split("?")[0];
+  if (
+    req.method === "GET" &&
+    (historyUrlPath === "/history" || historyUrlPath === "/api/openclaw/history")
+  ) {
+    const sessionId = new URL(req.url, "http://localhost").searchParams.get("sessionId") ?? "";
+    console.log(`[bridge] GET /history sessionId=${sessionId || "(none)"}`);
+    if (!sessionId) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: false, error: "missing sessionId query param" }));
+      return;
+    }
+    const filePath = `/state/agents/main/sessions/${sessionId}.jsonl`;
+    try {
+      const raw = await fsPromises.readFile(filePath, "utf8");
+      const messages = raw
+        .split("\n")
+        .filter((line) => line.trim().length > 0)
+        .map((line) => {
+          try { return JSON.parse(line); } catch { return null; }
+        })
+        .filter((entry) => entry !== null && entry.type === "message")
+        .filter((entry) => entry.message?.role === "user" || entry.message?.role === "assistant")
+        .map((entry) => ({
+          role: entry.message.role,
+          content: (Array.isArray(entry.message.content) ? entry.message.content : [])
+            .filter((block) => block.type === "text")
+            .map((block) => block.text ?? "")
+            .join("\n"),
+          timestamp: entry.timestamp ?? null,
+        }))
+        .slice(-50);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: true, messages }));
+      return;
+    } catch (err) {
+      if (err.code === "ENOENT") {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, messages: [] }));
+        return;
+      }
+      const msg = err instanceof Error ? err.message : String(err);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ ok: false, error: msg }));
+      return;
+    }
+  }
+
+  // POST /upload — saves text content to the agent workspace under
+  // /home/node/.openclaw/workspace/companies/{companySlug}/{filename}.
+  // Body: { companySlug, filename, content }. Max content size 500 KB.
+  const uploadUrlPath = (req.url ?? "").split("?")[0];
+  if (
+    req.method === "POST" &&
+    (uploadUrlPath === "/upload" || uploadUrlPath === "/api/openclaw/upload")
+  ) {
+    console.log("[bridge] POST /upload");
+    let uploadBody = "";
+    req.on("data", (chunk) => {
+      uploadBody += chunk;
+      if (uploadBody.length > 600_000) { req.destroy(); }
+    });
+    req.on("end", async () => {
+      let payload;
+      try {
+        payload = JSON.parse(uploadBody);
+      } catch {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: "invalid JSON body" }));
+        return;
+      }
+      const { companySlug, filename, content } = payload ?? {};
+      if (!companySlug || !filename || content === undefined || content === null) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: "companySlug, filename, and content are required" }));
+        return;
+      }
+      if (typeof content !== "string" || Buffer.byteLength(content, "utf8") > 500_000) {
+        res.writeHead(413, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: "content exceeds 500 KB limit" }));
+        return;
+      }
+      // Security: reject path traversal attempts in either field.
+      if (/[.]{2}|[/\\]/.test(String(companySlug)) || /[.]{2}|[/\\]/.test(String(filename))) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: "companySlug and filename must not contain path separators or .." }));
+        return;
+      }
+      const dir = `/home/node/.openclaw/workspace/companies/${companySlug}`;
+      const filePath = `${dir}/${filename}`;
+      try {
+        await fsPromises.mkdir(dir, { recursive: true });
+        await fsPromises.writeFile(filePath, content, "utf8");
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, path: `companies/${companySlug}/${filename}` }));
+        return;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: msg }));
+        return;
+      }
+    });
+    return;
+  }
+
   // Accept both /chat and /api/openclaw/chat so the bridge doesn't require
   // Caddy to strip a prefix (Caddy's uri strip_prefix didn't take effect
   // reliably when stacked with reverse_proxy in this setup).
