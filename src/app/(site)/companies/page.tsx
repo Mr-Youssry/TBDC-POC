@@ -25,24 +25,37 @@ export default async function CompaniesPage() {
   ]);
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-3">
-        <SecHead className="mb-0 mt-0 pb-0 border-none">
-          Portfolio company profiles — investability dimensions
-        </SecHead>
-        {editable && <AddCompanyButton />}
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Pinned controls */}
+      <div className="flex-shrink-0 px-8 py-4 bg-background border-b border-border">
+        <div className="flex items-center justify-between">
+          <SecHead className="mb-0 mt-0 pb-0 border-none">
+            Portfolio company profiles — investability dimensions
+          </SecHead>
+          {editable && <AddCompanyButton />}
+        </div>
+        <p className="text-[0.72rem] text-text-3 mt-1">
+          Showing {companies.length} {companies.length === 1 ? "company" : "companies"}
+        </p>
       </div>
 
-      <div className="overflow-x-auto border border-border rounded-[10px] mb-6">
-        <table className="w-full text-[0.78rem] border-collapse">
+      {/* Scrollable table */}
+      <div className="flex-1 overflow-auto mx-8 my-4 border border-border rounded-[10px]">
+        <table className="text-[0.78rem] border-collapse">
           <thead>
             <tr>
-              {["Company", "Cohort", "Stage", "Sector", "ARR / Traction", "Ask", "Home", "Target", "Founder Profile", "Investor Intros", editable ? "" : null]
+              {/* Company Name — frozen column + frozen row intersection */}
+              <th
+                className="sticky top-0 left-0 z-30 bg-surface-2 px-3 py-[9px] text-left font-mono text-[0.65rem] tracking-[0.05em] text-text-2 border-b border-border border-r whitespace-nowrap font-normal"
+              >
+                Company
+              </th>
+              {["Cohort", "Stage", "Sector", "ARR / Traction", "Ask", "Home", "Target", "Founder Profile", "Investor Intros", editable ? "" : null]
                 .filter((h) => h !== null)
                 .map((h, i) => (
                   <th
                     key={i}
-                    className="bg-surface-2 px-3 py-[9px] text-left font-mono text-[0.65rem] tracking-[0.05em] text-text-2 border-b border-border whitespace-nowrap font-normal"
+                    className="sticky top-0 z-20 bg-surface-2 px-3 py-[9px] text-left font-mono text-[0.65rem] tracking-[0.05em] text-text-2 border-b border-border whitespace-nowrap font-normal"
                   >
                     {h}
                   </th>
@@ -51,8 +64,11 @@ export default async function CompaniesPage() {
           </thead>
           <tbody>
             {companies.map((c) => (
-              <tr key={c.id} className="hover:bg-surface-2">
-                <td className="px-3 py-[9px] border-b border-border align-top">
+              <tr key={c.id} className="group bg-background hover:bg-surface-2">
+                <td
+                  className="sticky left-0 z-10 bg-background group-hover:bg-surface-2 border-r border-border px-3 py-[9px] border-b align-top"
+                  style={{ minWidth: 160 }}
+                >
                   <EditableCell
                     id={c.id}
                     field="name"
@@ -159,6 +175,6 @@ export default async function CompaniesPage() {
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 }
