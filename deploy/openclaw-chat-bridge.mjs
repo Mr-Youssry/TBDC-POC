@@ -310,6 +310,138 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // GET /workspace/tree — returns the full workspace directory tree as nested JSON.
+  {
+    const treePath = (req.url ?? "").split("?")[0];
+    if (
+      req.method === "GET" &&
+      (treePath === "/workspace/tree" || treePath === "/api/openclaw/workspace/tree")
+    ) {
+      console.log("[bridge] GET /workspace/tree");
+      const WORKSPACE = "/home/node/.openclaw/workspace";
+      const SKIP = new Set([".git", ".openclaw", "state", "node_modules"]);
+
+      async function buildTree(dir, relPath = "") {
+        const entries = await fsPromises.readdir(dir, { withFileTypes: true });
+        const result = [];
+        for (const e of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+          if (e.name.startsWith(".") || SKIP.has(e.name)) continue;
+          const childRel = relPath ? `${relPath}/${e.name}` : e.name;
+          if (e.isDirectory()) {
+            const children = await buildTree(`${dir}/${e.name}`, childRel);
+            if (children.length === 0) continue;
+            const isMemory = e.name === "memory";
+            result.push({ name: e.name, type: "dir", readOnly: isMemory, children });
+          } else if (e.name.endsWith(".md")) {
+            const isMemory = e.name === "MEMORY.md" || relPath.startsWith("memory");
+            result.push({ name: e.name, type: "file", readOnly: isMemory });
+          }
+        }
+        return result;
+      }
+
+      try {
+        const tree = await buildTree(WORKSPACE);
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, tree }));
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: msg }));
+      }
+      return;
+    }
+  }
+
+  // GET /workspace/file?path=SOUL.md — reads a single workspace file.
+  {
+    const filePath = (req.url ?? "").split("?")[0];
+    if (
+      req.method === "GET" &&
+      (filePath === "/workspace/file" || filePath === "/api/openclaw/workspace/file")
+    ) {
+      const reqPath = new URL(req.url, "http://localhost").searchParams.get("path") ?? "";
+      console.log(`[bridge] GET /workspace/file path=${reqPath || "(none)"}`);
+      if (!reqPath || /[.]{2}|^[/]|[\\]/.test(reqPath)) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: "missing or invalid path" }));
+        return;
+      }
+      const fullPath = `/home/node/.openclaw/workspace/${reqPath}`;
+      const isMemory = reqPath === "MEMORY.md" || reqPath.startsWith("memory/");
+      try {
+        const content = await fsPromises.readFile(fullPath, "utf8");
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: true, path: reqPath, content, readOnly: isMemory }));
+      } catch (err) {
+        if (err.code === "ENOENT") {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "file not found" }));
+          return;
+        }
+        const msg = err instanceof Error ? err.message : String(err);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: msg }));
+      }
+      return;
+    }
+  }
+
+  // PUT /workspace/file — saves content to an editable workspace file.
+  {
+    const putPath = (req.url ?? "").split("?")[0];
+    if (
+      req.method === "PUT" &&
+      (putPath === "/workspace/file" || putPath === "/api/openclaw/workspace/file")
+    ) {
+      let putBody = "";
+      req.on("data", (chunk) => {
+        putBody += chunk;
+        if (putBody.length > 600_000) req.destroy();
+      });
+      req.on("end", async () => {
+        let payload;
+        try { payload = JSON.parse(putBody); } catch {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "invalid JSON body" }));
+          return;
+        }
+        const filePath = String(payload.path ?? "").trim();
+        const content = payload.content;
+        console.log(`[bridge] PUT /workspace/file path=${filePath}`);
+
+        if (!filePath || /[.]{2}|^[/]|[\\]/.test(filePath)) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "missing or invalid path" }));
+          return;
+        }
+        if (filePath === "MEMORY.md" || filePath.startsWith("memory/")) {
+          res.writeHead(403, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "memory files are read-only" }));
+          return;
+        }
+        if (typeof content !== "string" || Buffer.byteLength(content, "utf8") > 500_000) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "content missing or exceeds 500KB" }));
+          return;
+        }
+        const fullPath = `/home/node/.openclaw/workspace/${filePath}`;
+        try {
+          const dir = fullPath.substring(0, fullPath.lastIndexOf("/"));
+          await fsPromises.mkdir(dir, { recursive: true });
+          await fsPromises.writeFile(fullPath, content, "utf8");
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: true, path: filePath }));
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: msg }));
+        }
+      });
+      return;
+    }
+  }
+
   // Accept both /chat and /api/openclaw/chat so the bridge doesn't require
   // Caddy to strip a prefix (Caddy's uri strip_prefix didn't take effect
   // reliably when stacked with reverse_proxy in this setup).
