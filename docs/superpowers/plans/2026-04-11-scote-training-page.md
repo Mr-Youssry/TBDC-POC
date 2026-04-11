@@ -254,10 +254,12 @@ In `use-openclaw-ws.ts`:
 2. Live response (~line 161): `senderName: "Assistant"` → `"SCOTE"`
 3. Error message (~line 144): `content: \`Assistant error:` → `content: \`SCOTE error:`
 
-- [ ] **Step 4: Rename "Assistant" → "SCOTE" in message-pane.tsx (2 locations)**
+- [ ] **Step 4: Rename "Assistant" → "SCOTE" in message-pane.tsx (4 locations)**
 
 1. In-flight banner (~line 129): `"Assistant is thinking…"` → `"SCOTE is thinking…"`
-2. Placeholder text (~line 196): `"Waiting for the Assistant to reply…"` → `"Waiting for SCOTE to reply…"`
+2. Empty-state prompt (~line 150): `"The Assistant knows the full match history"` → `"SCOTE knows the full match history"`
+3. Input placeholder active (~line 208): `"Type a message to the Assistant…"` → `"Type a message to SCOTE…"`
+4. Input placeholder waiting (~line 210): `"Waiting for the Assistant to reply…"` → `"Waiting for SCOTE to reply…"`
 
 - [ ] **Step 5: Verify build**
 
@@ -413,9 +415,8 @@ type TreeNode = {
   children?: TreeNode[];
 };
 
-const IDENTITY_FILES = new Set([
-  "SOUL.md", "IDENTITY.md", "USER.md", "AGENTS.md", "HEARTBEAT.md", "TOOLS.md",
-]);
+// Any root-level .md file that is NOT inside memory/ or companies/ is an identity file.
+// This is resilient to future file additions (e.g., AGENTS-TBDC-METHODOLOGY.md).
 
 export function WorkspaceTree({
   selectedPath,
@@ -443,10 +444,8 @@ export function WorkspaceTree({
   const toggle = (key: string) =>
     setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  // Separate identity files from directories
-  const identityFiles = tree.filter(
-    (n) => n.type === "file" && IDENTITY_FILES.has(n.name)
-  );
+  // Any root-level file is an identity file; directories are their own sections
+  const identityFiles = tree.filter((n) => n.type === "file");
   const directories = tree.filter((n) => n.type === "dir");
 
   const renderFile = (node: TreeNode, pathPrefix: string) => {
@@ -474,12 +473,12 @@ export function WorkspaceTree({
 
   const renderDir = (node: TreeNode, pathPrefix: string) => {
     const key = pathPrefix ? `${pathPrefix}/${node.name}` : node.name;
-    const isOpen = expanded[node.name] ?? false;
+    const isOpen = expanded[key] ?? false;
     const dimmed = node.readOnly;
     return (
       <div key={key}>
         <button
-          onClick={() => toggle(node.name)}
+          onClick={() => toggle(key)}
           className={[
             "flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider mb-1 mt-3",
             dimmed ? "text-text-3/50" : "text-text-3",
@@ -775,12 +774,10 @@ export function TrainingLayout({
           <FileEditor key={selected.path} path={selected.path} />
         )
       ) : (
-        <div className="flex-1 flex items-center justify-center text-sm text-text-3 italic px-8 text-center">
-          Select a file from the workspace to view or edit.
-          <br />
-          Identity files shape how SCOTE thinks and communicates.
-          <br />
-          Memory files are SCOTE&apos;s internal journal — browse them here.
+        <div className="flex-1 flex flex-col items-center justify-center text-sm text-text-3 italic px-8 text-center gap-1">
+          <p>Select a file from the workspace to view or edit.</p>
+          <p>Identity files shape how SCOTE thinks and communicates.</p>
+          <p>Memory files are SCOTE&apos;s internal journal — browse them here.</p>
         </div>
       )}
 
