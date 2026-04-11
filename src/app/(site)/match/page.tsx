@@ -122,38 +122,37 @@ export default async function MatchPage({
 
   return (
     <div className="flex h-full overflow-hidden">
-      {/* ── Sidebar ── */}
-      <aside className="w-[240px] flex-shrink-0 overflow-y-auto border-r border-border">
-        <div className="bg-surface border border-border rounded-[10px] overflow-hidden">
-          <div className="px-[14px] py-[10px] font-mono text-[0.65rem] tracking-[0.07em] uppercase text-text-3 bg-surface-2 border-b border-border">
+      {/* ── Company sidebar — matches global sidebar visual style ── */}
+      <aside className="w-[220px] flex-shrink-0 overflow-y-auto border-r border-border bg-surface">
+        <div>
+          <div className="px-3 py-2.5 font-mono text-[0.55rem] tracking-[0.1em] uppercase text-text-3">
             Select company
           </div>
           {cohorts.map((group, gi) => (
             <div key={group.label}>
-              <div
-                className={`px-[14px] py-[6px] font-mono text-[0.6rem] tracking-[0.07em] uppercase text-text-3 bg-surface-2 ${gi > 0 ? "border-t border-border" : ""} border-b border-border`}
-              >
+              {gi > 0 && <div className="my-1 border-t border-border mx-1.5" />}
+              <div className="px-3 pb-1 pt-2 font-mono text-[0.55rem] text-text-3 uppercase tracking-[0.1em]">
                 {group.label}
               </div>
               {group.items.map((c) => {
                 const isActive = c.id === selected.id;
                 const isWidmo = !c.acceptsInvestorIntros;
-                const classes = isActive
-                  ? isWidmo
-                    ? "bg-warn text-warn-txt border-l-warn-bdr"
-                    : "bg-surface text-[var(--text-1)] border-l-[var(--text-1)]"
-                  : isWidmo
-                    ? "bg-warn text-warn-txt border-l-warn-bdr opacity-90"
-                    : "bg-transparent text-text-2 border-l-transparent";
                 return (
                   <Link
                     key={c.id}
                     href={`/match?c=${c.id}`}
-                    className={`block w-full text-left border-b border-border border-l-[3px] px-[14px] py-[9px] text-[0.82rem] hover:bg-surface-2 hover:text-[var(--text-1)] ${classes}`}
+                    className={[
+                      "flex items-center gap-2.5 mx-1.5 px-2.5 py-2 rounded-md text-[0.78rem] transition-colors",
+                      isActive
+                        ? "bg-[#e8e6e1] text-text-1 font-semibold border-l-[3px] border-l-t1-txt"
+                        : isWidmo
+                          ? "text-warn-txt hover:bg-surface-2"
+                          : "text-text-3 hover:bg-surface-2 hover:text-text-2",
+                    ].join(" ")}
                   >
-                    {c.name}
-                    <span className="block font-mono text-[0.6rem] text-text-3 mt-[1px]">
-                      {c.sector.split("/")[0]?.trim()}
+                    <span className="truncate">
+                      {c.name}
+                      {isWidmo && " ⚠"}
                     </span>
                   </Link>
                 );

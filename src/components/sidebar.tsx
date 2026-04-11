@@ -67,11 +67,14 @@ const ADMIN_ITEMS = [
 
 export function Sidebar({ role }: { role?: string }) {
   const pathname = usePathname() ?? "";
-  const [collapsed, setCollapsed] = useState(false);
-  const isAdmin = role === "admin";
 
-  // Hide global sidebar on analyst page — it has its own channel sidebar
-  if (pathname.startsWith("/analyst")) return null;
+  // Auto-collapse on pages that have their own secondary sidebar
+  const forceCollapsed =
+    pathname.startsWith("/analyst") || pathname.startsWith("/match");
+
+  const [manualCollapsed, setManualCollapsed] = useState(false);
+  const collapsed = forceCollapsed || manualCollapsed;
+  const isAdmin = role === "admin";
 
   const renderItem = (item: { id: string; label: string; href: string }) => {
     const active =
@@ -145,20 +148,22 @@ export function Sidebar({ role }: { role?: string }) {
         )}
       </nav>
 
-      {/* Bottom-docked collapse toggle */}
-      <div className="flex-shrink-0 border-t border-border px-2 py-1.5">
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="w-full flex items-center justify-center gap-1 py-1.5 rounded text-[0.65rem] text-text-3 hover:text-text-1 hover:bg-surface-2 transition-colors"
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"
-            className={`w-3 h-3 transition-transform ${collapsed ? "rotate-180" : ""}`}>
-            <path d="M8 2L4 6l4 4" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          {!collapsed && <span>Collapse</span>}
-        </button>
-      </div>
+      {/* Bottom-docked collapse toggle — hidden when force-collapsed */}
+      {!forceCollapsed && (
+        <div className="flex-shrink-0 border-t border-border px-2 py-1.5">
+          <button
+            onClick={() => setManualCollapsed(!manualCollapsed)}
+            className="w-full flex items-center justify-center gap-1 py-1.5 rounded text-[0.65rem] text-text-3 hover:text-text-1 hover:bg-surface-2 transition-colors"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"
+              className={`w-3 h-3 transition-transform ${collapsed ? "rotate-180" : ""}`}>
+              <path d="M8 2L4 6l4 4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {!collapsed && <span>Collapse</span>}
+          </button>
+        </div>
+      )}
     </aside>
   );
 }
