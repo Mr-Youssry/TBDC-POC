@@ -118,9 +118,9 @@ export default async function MatchPage({
   const tier2 = matches.filter((m) => m.tier === 2);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6">
+    <div className="flex h-full overflow-hidden">
       {/* ── Sidebar ── */}
-      <aside className="md:sticky md:top-0 md:max-h-[80vh] md:overflow-y-auto">
+      <aside className="w-[240px] flex-shrink-0 overflow-y-auto border-r border-border">
         <div className="bg-surface border border-border rounded-[10px] overflow-hidden">
           <div className="px-[14px] py-[10px] font-mono text-[0.65rem] tracking-[0.07em] uppercase text-text-3 bg-surface-2 border-b border-border">
             Select company
@@ -161,7 +161,7 @@ export default async function MatchPage({
       </aside>
 
       {/* ── Main pane ── */}
-      <section>
+      <div className="flex-1 overflow-y-auto px-8 py-6">
         {/* Company profile card */}
         <div className="bg-surface border border-border rounded-[10px] p-5 mb-5">
           <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
@@ -465,7 +465,7 @@ export default async function MatchPage({
             )}
           </>
         )}
-      </section>
+      </div>
     </div>
   );
 }
