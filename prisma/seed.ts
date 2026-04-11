@@ -273,6 +273,24 @@ async function upsertInitialChatSessions(prisma: PrismaClient) {
     update: {},
   });
 
+  // Configure session for SCOTE Training page (singleton)
+  const CONFIGURE_SCOPE_SENTINEL = "__configure__";
+  await prisma.chatSession.upsert({
+    where: {
+      scopeType_scopeEntityId: {
+        scopeType: "general",
+        scopeEntityId: CONFIGURE_SCOPE_SENTINEL,
+      },
+    },
+    create: {
+      scopeType: "general",
+      scopeEntityId: CONFIGURE_SCOPE_SENTINEL,
+      openclawSessionId: "tbdc-configure",
+      displayName: "Configure SCOTE",
+    },
+    update: {},
+  });
+
   // One per company
   const companies = await prisma.company.findMany({
     select: { id: true, name: true },

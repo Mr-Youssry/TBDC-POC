@@ -21,6 +21,7 @@ export default async function AnalystPage({
   const activeSessionId = params.session ?? "tbdc-general";
 
   const channels = await prisma.chatSession.findMany({
+    where: { openclawSessionId: { not: "tbdc-configure" } },
     orderBy: [{ scopeType: "asc" }, { displayName: "asc" }],
     select: {
       id: true,

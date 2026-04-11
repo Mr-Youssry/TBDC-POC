@@ -39,6 +39,14 @@ const icons: Record<string, React.ReactNode> = {
       <path d="M4 14l4-4 3 3 5-6" strokeLinecap="round" strokeLinejoin="round" /><rect x="2" y="2" width="16" height="16" rx="2" />
     </svg>
   ),
+  training: (
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-[18px] h-[18px] flex-shrink-0">
+      <path d="M4 16V6l6-3 6 3v10" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4 9l6 3 6-3" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 12v5" strokeLinecap="round" />
+      <path d="M16 6v4" strokeLinecap="round" />
+    </svg>
+  ),
   audit: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-[18px] h-[18px] flex-shrink-0">
       <path d="M6 3h8l3 3v11a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1h2z" /><path d="M7 10h6M7 13h4" strokeLinecap="round" />
@@ -60,7 +68,8 @@ const NAV_ITEMS = [
 ];
 
 const ADMIN_ITEMS = [
-  { id: "analyst", label: "Analyst", href: "/analyst" },
+  { id: "analyst", label: "SCOTE", href: "/analyst" },
+  { id: "training", label: "SCOTE Training", href: "/training" },
   { id: "audit", label: "Audit Log", href: "/admin/audit" },
   { id: "clawadmin", label: "Mission Control", href: "/ClawAdmin" },
 ];
@@ -70,7 +79,7 @@ export function Sidebar({ role }: { role?: string }) {
 
   // Auto-collapse on pages that have their own secondary sidebar
   const forceCollapsed =
-    pathname.startsWith("/analyst") || pathname.startsWith("/match");
+    pathname.startsWith("/analyst") || pathname.startsWith("/match") || pathname.startsWith("/training");
 
   const [manualCollapsed, setManualCollapsed] = useState(false);
   const collapsed = forceCollapsed || manualCollapsed;
