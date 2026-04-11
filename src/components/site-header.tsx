@@ -1,6 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "@/auth";
 import { getSession } from "@/lib/guards";
+import { prisma } from "@/lib/prisma";
 
 async function signOutAction() {
   "use server";
@@ -11,30 +13,67 @@ export async function SiteHeader() {
   const session = await getSession();
   const email = session?.user?.email ?? null;
 
+  // Dynamic counts — run in parallel for speed
+  const [companyCount, investorCount, matchCount, dimensionCount] =
+    await Promise.all([
+      prisma.company.count(),
+      prisma.investor.count(),
+      prisma.match.count(),
+      prisma.methodologyDimension.count(),
+    ]);
+
+  const chips = [
+    `${companyCount} portfolio companies`,
+    `${investorCount} investors profiled`,
+    `${dimensionCount}-dimension weighted scoring`,
+    `${matchCount} scored matches`,
+  ];
+
   return (
-    <header className="bg-[var(--text-1)] text-[#f5f4f0] px-8 pt-7 pb-5">
-      <div className="flex items-start justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-[1.4rem] font-normal tracking-[-0.02em]">
-            TBDC Cohort — Investor Matching System
-          </h1>
-          <div className="font-mono text-[0.7rem] text-[#999] mt-[3px] tracking-[0.04em]">
-            PART 1 · POC v2 · AHMED KORAYEM · PARTNERSHIPS MANAGER APPLICATION
+    <header className="sticky top-0 z-50 bg-[var(--text-1)] text-[#f5f4f0] px-6 py-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/tbdc-logo.png"
+            alt="TBDC"
+            width={36}
+            height={36}
+            className="rounded-md"
+          />
+          <div>
+            <h1 className="text-[1.2rem] font-normal tracking-[-0.02em] leading-tight">
+              TBDC Cohort — Investor Matching System
+            </h1>
+            <div className="font-mono text-[0.65rem] text-[#999] tracking-[0.04em]">
+              AHMED KORAYEM · PARTNERSHIPS MANAGER APPLICATION
+            </div>
           </div>
         </div>
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex gap-1.5 flex-wrap">
+            {chips.map((chip) => (
+              <span
+                key={chip}
+                className="font-mono text-[0.6rem] px-[8px] py-[2px] border border-[#444] rounded-[4px] text-[#999]"
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
           {email ? (
             <form action={signOutAction} className="flex items-center gap-2">
               <Link
                 href="/admin/users"
-                className="font-mono text-[0.65rem] px-[10px] py-[3px] border border-[#444] rounded-[4px] text-[#aaa] hover:text-[#f5f4f0] hover:border-[#666]"
+                className="font-mono text-[0.6rem] px-[8px] py-[2px] border border-[#444] rounded-[4px] text-[#aaa] hover:text-[#f5f4f0] hover:border-[#666]"
               >
                 users
               </Link>
-              <span className="font-mono text-[0.65rem] text-[#aaa]">{email}</span>
+              <span className="font-mono text-[0.6rem] text-[#aaa] hidden lg:inline">
+                {email}
+              </span>
               <button
                 type="submit"
-                className="font-mono text-[0.65rem] px-[10px] py-[3px] border border-[#444] rounded-[4px] text-[#aaa] hover:text-[#f5f4f0] hover:border-[#666]"
+                className="font-mono text-[0.6rem] px-[8px] py-[2px] border border-[#444] rounded-[4px] text-[#aaa] hover:text-[#f5f4f0] hover:border-[#666]"
               >
                 sign out
               </button>
@@ -42,29 +81,12 @@ export async function SiteHeader() {
           ) : (
             <Link
               href="/login"
-              className="font-mono text-[0.65rem] px-[10px] py-[3px] border border-[#444] rounded-[4px] text-[#aaa] hover:text-[#f5f4f0] hover:border-[#666]"
+              className="font-mono text-[0.6rem] px-[8px] py-[2px] border border-[#444] rounded-[4px] text-[#aaa] hover:text-[#f5f4f0] hover:border-[#666]"
             >
               sign in
             </Link>
           )}
         </div>
-      </div>
-      <div className="flex gap-2 flex-wrap mt-3">
-        <span className="font-mono text-[0.65rem] px-[10px] py-[3px] border border-[#444] rounded-[4px] text-[#aaa]">
-          10 portfolio companies
-        </span>
-        <span className="font-mono text-[0.65rem] px-[10px] py-[3px] border border-[#444] rounded-[4px] text-[#aaa]">
-          24 investors profiled
-        </span>
-        <span className="font-mono text-[0.65rem] px-[10px] py-[3px] border border-[#444] rounded-[4px] text-[#aaa]">
-          7-dimension weighted scoring
-        </span>
-        <span className="font-mono text-[0.65rem] px-[10px] py-[3px] border border-[#444] rounded-[4px] text-[#aaa]">
-          Hard exclusion gates
-        </span>
-        <span className="font-mono text-[0.65rem] px-[10px] py-[3px] border border-[#444] rounded-[4px] text-[#aaa]">
-          WIDMO exception flagged
-        </span>
       </div>
     </header>
   );

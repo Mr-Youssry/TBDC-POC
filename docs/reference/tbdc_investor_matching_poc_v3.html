@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TBDC Investor Matching POC v3</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f4f0;--surface:#fff;--surface2:#f0ede8;--surface3:#e8e4de;
+  --border:#ddd9d2;--border2:#bbb6ae;
+  --text:#181715;--text2:#5a5752;--text3:#9a968f;
+  --t1bg:#eaf4e3;--t1txt:#275c18;--t1bdr:#4e9038;
+  --t2bg:#fef2df;--t2txt:#7a4b09;--t2bdr:#c4840c;
+  --t3bg:#fceaea;--t3txt:#8c2020;--t3bdr:#c94040;
+  --warn:#fff1ea;--warnbdr:#c85420;--warntxt:#7a3010;
+  --blue:#1a4fa0;--bluebg:#e8eef8;
+  --intl:#3a1a7a;--intlbg:#eeebfa;--intlbdr:#8070d0;
+  --green:#275c18;--red:#8c2020;
+  --radius:10px;--rsm:6px;--rmd:8px;
+}
+body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);min-height:100vh}
+.hdr{background:var(--text);color:#f5f4f0;padding:1.75rem 2rem 1.25rem}
+.hdr h1{font-size:1.4rem;font-weight:normal;letter-spacing:-0.02em}
+.hdr-sub{font-size:0.7rem;font-family:monospace;color:#999;margin-top:3px;letter-spacing:0.04em}
+.hdr-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hdr-pill{font-size:0.65rem;font-family:monospace;padding:3px 10px;border:1px solid #444;border-radius:4px;color:#aaa}
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:0;padding:0 2rem;overflow-x:auto}
+.nav-tab{padding:12px 15px;font-size:0.78rem;font-family:monospace;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;letter-spacing:0.03em;white-space:nowrap;transition:color 0.1s}
+.nav-tab:hover{color:var(--text2)}
+.nav-tab.on{color:var(--text);border-bottom-color:var(--text);font-weight:bold}
+.page{display:none;padding:1.75rem 2rem;max-width:1200px}
+.page.on{display:block}
+.sec-head{font-size:0.65rem;font-family:monospace;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin:1.5rem 0 0.75rem;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.sec-head:first-child{margin-top:0}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem}
+table{width:100%;border-collapse:collapse;font-size:0.78rem}
+th{background:var(--surface2);padding:9px 12px;text-align:left;font-family:monospace;font-size:0.65rem;letter-spacing:0.05em;color:var(--text2);border-bottom:1px solid var(--border);white-space:nowrap;font-weight:normal}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;line-height:1.45}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+.badge{display:inline-block;font-size:0.62rem;font-family:monospace;padding:2px 7px;border-radius:4px;white-space:nowrap;font-weight:bold}
+.b-seed{background:#e8eef8;color:#1a4fa0;border:1px solid #7090d0}
+.b-pre{background:#f3e8f8;color:#6a1a9a;border:1px solid #b070d0}
+.b-a{background:#e3f0e8;color:#1a6a30;border:1px solid #60b070}
+.b-b{background:#fdf0e0;color:#7a4a10;border:1px solid #d09040}
+.b-lead{background:#e8f8ef;color:#1a6a40;border:1px solid #50b080}
+.b-follow{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+.b-both{background:#f8f0e8;color:#6a4010;border:1px solid #c09050}
+.b-warm{background:var(--t1bg);color:var(--t1txt);border:1px solid var(--t1bdr)}
+.b-cond{background:var(--t2bg);color:var(--t2txt);border:1px solid var(--t2bdr)}
+.b-no{background:var(--t3bg);color:var(--t3txt);border:1px solid var(--t3bdr)}
+.b-flag{background:var(--warn);color:var(--warntxt);border:1px solid var(--warnbdr)}
+.b-intl{background:var(--intlbg);color:var(--intl);border:1px solid var(--intlbdr)}
+.b-type-vc{background:#e8eef8;color:#1a4fa0;border:1px solid #7090d0}
+.b-type-gov{background:#e8f4e8;color:#1a5a1a;border:1px solid #60a060}
+.b-na{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+.match-layout{display:grid;grid-template-columns:220px 1fr;gap:1.5rem}
+.sidebar{position:sticky;top:0;max-height:82vh;overflow-y:auto}
+.co-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.co-list-head{padding:10px 14px;font-size:0.65rem;font-family:monospace;letter-spacing:0.07em;color:var(--text3);background:var(--surface2);border-bottom:1px solid var(--border);text-transform:uppercase}
+.co-btn{display:block;width:100%;text-align:left;background:none;border:none;border-left:3px solid transparent;padding:9px 14px;font-family:'Georgia',serif;font-size:0.82rem;color:var(--text2);cursor:pointer;transition:all 0.1s;border-bottom:1px solid var(--border)}
+.co-btn:last-child{border-bottom:none}
+.co-btn:hover{color:var(--text);background:var(--surface2)}
+.co-btn.on{color:var(--text);background:var(--surface);border-left-color:var(--text)}
+.co-btn.w-on{border-left-color:var(--warnbdr);color:var(--warntxt);background:var(--warn)}
+.co-tag{font-size:0.6rem;font-family:monospace;color:var(--text3);display:block;margin-top:1px}
+.co-divider{padding:6px 14px;font-size:0.6rem;font-family:monospace;letter-spacing:0.07em;color:var(--text3);background:var(--surface2);text-transform:uppercase;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+/* sub-tabs within match page */
+.sub-nav{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.sub-tab{padding:6px 14px;font-size:0.72rem;font-family:monospace;cursor:pointer;border:1px solid var(--border);border-radius:var(--rsm);background:var(--surface2);color:var(--text2);transition:all 0.1s}
+.sub-tab:hover{background:var(--surface3)}
+.sub-tab.on{background:var(--surface);color:var(--text);border-color:var(--border2);font-weight:bold}
+.sub-pane{display:none}.sub-pane.on{display:block}
+/* profile */
+.profile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem}
+.profile-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.profile-name{font-size:1.4rem;font-weight:normal;letter-spacing:-0.02em;margin-bottom:2px}
+.profile-sub{font-size:0.82rem;color:var(--text2)}
+.profile-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.profile-rev{font-size:0.8rem;color:var(--text2);line-height:1.5;font-family:monospace}
+/* match cards */
+.match-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin-bottom:10px;transition:border-color 0.1s}
+.match-card:hover{border-color:var(--border2)}
+.mc-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.mc-vc{font-size:1rem;font-weight:bold;letter-spacing:-0.01em;margin-bottom:2px}
+.mc-meta{font-size:0.7rem;font-family:monospace;color:var(--text3)}
+.mc-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.signals{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.sig{font-size:0.68rem;font-family:monospace;padding:2px 6px;border-radius:3px}
+.sig-y{background:var(--t1bg);color:var(--t1txt);border:1px solid var(--t1bdr)}
+.sig-n{background:var(--t3bg);color:var(--t3txt);border:1px solid var(--t3bdr);opacity:.7}
+.mc-rat{font-size:0.82rem;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.mc-next{font-size:0.72rem;font-family:monospace;color:var(--blue);background:var(--bluebg);padding:5px 10px;border-radius:4px;display:block;line-height:1.5}
+/* intl card */
+.intl-card{background:var(--surface);border:1px solid var(--intlbdr);border-radius:var(--radius);padding:1.1rem 1.2rem;margin-bottom:10px}
+.intl-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.intl-vc{font-size:1rem;font-weight:bold;margin-bottom:2px}
+.intl-meta{font-size:0.7rem;font-family:monospace;color:var(--text3)}
+.intl-rat{font-size:0.82rem;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.intl-hook{font-size:0.72rem;font-family:monospace;background:var(--intlbg);color:var(--intl);padding:4px 10px;border-radius:4px;display:inline-block}
+/* pre-conditions */
+.precond-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin-bottom:10px}
+.precond-title{font-size:0.88rem;font-weight:bold;margin-bottom:10px;color:var(--text)}
+.precond-item{display:flex;gap:10px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.precond-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.precond-num{font-size:0.75rem;font-family:monospace;font-weight:bold;color:var(--text3);flex-shrink:0;min-width:18px;margin-top:2px}
+.precond-text{font-size:0.82rem;color:var(--text2);line-height:1.6}
+.precond-status{font-size:0.68rem;font-family:monospace;padding:2px 7px;border-radius:3px;display:inline-block;margin-top:4px}
+.ps-req{background:var(--warn);color:var(--warntxt);border:1px solid var(--warnbdr)}
+.ps-timing{background:var(--intlbg);color:var(--intl);border:1px solid var(--intlbdr)}
+.ps-framing{background:var(--t2bg);color:var(--t2txt);border:1px solid var(--t2bdr)}
+/* dnm */
+.dnm-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);padding:.85rem 1rem;margin-bottom:8px;display:flex;gap:10px;opacity:.75}
+.dnm-x{color:var(--red);font-size:0.75rem;margin-top:2px;flex-shrink:0;font-weight:bold}
+.dnm-vc{font-size:.85rem;font-weight:bold;margin-bottom:2px}
+.dnm-why{font-size:.78rem;color:var(--text2);line-height:1.5}
+/* widmo */
+.widmo-gate{background:var(--warn);border:1px solid var(--warnbdr);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem}
+.widmo-gate h3{font-size:.88rem;color:var(--warntxt);margin-bottom:6px;font-family:monospace}
+.widmo-gate p{font-size:.82rem;color:#6a3010;line-height:1.6}
+.cx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:8px}
+.cx-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);padding:.85rem 1rem}
+.cx-name{font-size:.85rem;font-weight:bold;margin-bottom:2px}
+.cx-row{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:5px}
+.cx-hq{font-size:.68rem;font-family:monospace;color:var(--text3)}
+.cx-desc{font-size:.76rem;color:var(--text2);line-height:1.45}
+.ev-pill{font-size:.68rem;font-family:monospace;padding:3px 9px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text2);display:inline-block;margin:2px 2px 2px 0}
+/* methodology */
+.meth-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+.meth-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.meth-card h3{font-size:.88rem;font-weight:bold;margin-bottom:8px}
+.meth-card p{font-size:.8rem;color:var(--text2);line-height:1.6}
+.score-legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px;margin-bottom:1.25rem}
+.sl-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--rsm);padding:10px 12px}
+.sl-score{font-size:1.1rem;font-weight:bold;font-family:monospace;margin-bottom:2px}
+.sl-label{font-size:.75rem;font-weight:bold;margin-bottom:2px}
+.sl-desc{font-size:.72rem;color:var(--text2)}
+.dim-table{width:100%;font-size:.78rem;border-collapse:collapse}
+.dim-table th{background:var(--surface2);padding:8px 10px;text-align:left;font-family:monospace;font-size:.65rem;color:var(--text2);border-bottom:1px solid var(--border);font-weight:normal}
+.dim-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.dim-table tr:last-child td{border-bottom:none}
+.w-bold{font-size:1rem;font-weight:bold;font-family:monospace}
+/* bonus */
+.bonus-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.bonus-card{background:var(--surface);border-radius:var(--radius);padding:1.1rem 1.2rem}
+.bonus-card.tier-a{border:2px solid var(--t1bdr)}
+.bonus-card.tier-b{border:2px solid var(--t2bdr)}
+.bonus-card.tier-c{border:2px solid var(--border2)}
+.bonus-tier{font-size:.65rem;font-family:monospace;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.bt-a{color:var(--t1txt)}
+.bt-b{color:var(--t2txt)}
+.bt-c{color:var(--text3)}
+.bonus-match{font-size:.95rem;font-weight:bold;margin-bottom:6px}
+.bonus-body{font-size:.8rem;color:var(--text2);line-height:1.55}
+@media(max-width:720px){
+  .match-layout{grid-template-columns:1fr}
+  .meth-grid{grid-template-columns:1fr}
+  .sidebar{position:static;max-height:none}
+  .page{padding:1rem}
+  .nav{padding:0 1rem}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h1>TBDC Cohort — Investor Matching System <span style="font-size:0.8rem;opacity:0.5;font-family:monospace">v3</span></h1>
+      <div class="hdr-sub">PARTS 1 & 2 · AHMED KORAYEM · PARTNERSHIPS MANAGER APPLICATION</div>
+    </div>
+  </div>
+  <div class="hdr-pills">
+    <span class="hdr-pill">10 portfolio companies</span>
+    <span class="hdr-pill">24+ investors profiled</span>
+    <span class="hdr-pill">International VCs per company</span>
+    <span class="hdr-pill">Pre-conditions checklist</span>
+    <span class="hdr-pill">WIDMO gate flagged</span>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-tab on" onclick="tab('methodology',this)">01 — Methodology</button>
+  <button class="nav-tab" onclick="tab('investors',this)">02 — Investor Database</button>
+  <button class="nav-tab" onclick="tab('companies',this)">03 — Portfolio Companies</button>
+  <button class="nav-tab" onclick="tab('matching',this)">04 — Match Output</button>
+  <button class="nav-tab" onclick="tab('bonus',this)">05 — Warm Path Bonus</button>
+</div>
+
+<!-- ══════════ PAGE 1 — METHODOLOGY ══════════ -->
+<div class="page on" id="p-methodology">
+  <div class="sec-head">Scoring dimensions — weighted, not equal</div>
+  <div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem">
+    <table class="dim-table">
+      <thead><tr><th>Dimension</th><th>Max Weight</th><th>Logic</th><th>Why this weight</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Hard gate — investor exclusion</strong></td><td><span class="badge b-flag">KILLS MATCH</span></td><td>Company declined investor intros → removed from all VC matching, rerouted to customer facilitation</td><td>Non-negotiable. Violating a founder's stated preference destroys trust and relationship capital simultaneously.</td></tr>
+        <tr><td><strong>Geographic mandate</strong></td><td><span class="w-bold">3 pts</span></td><td>Full match = 3 / Partial (expanding to Canada) = 1 / Outside = 0</td><td>Geographic mismatch is a structural kill — overrides sector and stage alignment. Highest weight after the hard gate.</td></tr>
+        <tr><td><strong>Stage fit</strong></td><td><span class="w-bold">3 pts</span></td><td>Exact match = 3 / Adjacent = 1 / Mismatch = 0</td><td>Stage determines whether a VC can legally deploy from their current fund. One degree of adjacency is acceptable.</td></tr>
+        <tr><td><strong>Sector thesis</strong></td><td><span class="w-bold">3 pts</span></td><td>Primary thesis = 3 / Adjacency = 1 / Outside = 0</td><td>Thesis mismatch means no conviction — and conviction drives follow-on investment.</td></tr>
+        <tr><td><strong>Revenue / traction threshold</strong></td><td><span class="w-bold">2 pts</span></td><td>Meets floor = 2 / Near floor = 1 / Below = 0</td><td>Revenue requirements have more flexibility at early stages. Weighted lower than structural dimensions.</td></tr>
+        <tr><td><strong>Cheque size vs. ask</strong></td><td><span class="w-bold">2 pts</span></td><td>Range covers ask = 2 / Partial = 1 / No coverage = 0</td><td>A VC who writes $500K cheques cannot lead a $5M round. Practical filter.</td></tr>
+        <tr><td><strong>Founder–investor fit</strong></td><td><span class="w-bold">2 pts</span></td><td>Background maps to VC conviction pattern = 2 / Some alignment = 1 / No signal = 0</td><td>Often the deciding variable in first meetings. Operator pedigree and repeat-founder status directly correlate with VC attention.</td></tr>
+        <tr><td><strong>Portfolio gap</strong></td><td><span class="w-bold">1 pt</span></td><td>Fills gap = 1 / Duplicates portfolio = 0</td><td>A VC who already has a supply chain company won't back another without a strong differentiation story.</td></tr>
+        <tr><td><strong>Warm path</strong></td><td><span class="w-bold">Activation modifier</span></td><td>Does not change score — changes activation protocol</td><td>Warm path is a tactical variable, not a thesis variable. Changes how you approach a match, not whether it's valid.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-head">Score tiers</div>
+  <div class="score-legend">
+    <div class="sl-item" style="border-color:var(--t1bdr)"><div class="sl-score" style="color:var(--t1txt)">13–16</div><div class="sl-label" style="color:var(--t1txt)">Tier 1 — Priority intro</div><div class="sl-desc">High-conviction match. Make the warm intro or targeted cold outreach immediately.</div></div>
+    <div class="sl-item" style="border-color:var(--t2bdr)"><div class="sl-score" style="color:var(--t2txt)">8–12</div><div class="sl-label" style="color:var(--t2txt)">Tier 2 — Qualified outreach</div><div class="sl-desc">Logical match with identified gaps. Worth an intro if framed correctly — typically as co-investor.</div></div>
+    <div class="sl-item" style="border-color:var(--border)"><div class="sl-score" style="color:var(--text3)">4–7</div><div class="sl-label" style="color:var(--text3)">Tier 3 — Monitor</div><div class="sl-desc">Premature or partial alignment. Log for reactivation at a future milestone.</div></div>
+    <div class="sl-item" style="border-color:var(--t3bdr)"><div class="sl-score" style="color:var(--t3txt)">0–3 / Gate</div><div class="sl-label" style="color:var(--t3txt)">Do not match</div><div class="sl-desc">Structural mismatch or hard gate triggered. This intro damages TBDC's credibility.</div></div>
+  </div>
+
+  <div class="sec-head">What's new in v3</div>
+  <div class="meth-grid">
+    <div class="meth-card">
+      <h3>International VC tab</h3>
+      <p>Each company now has a dedicated international VC list covering non-Canadian investors — primarily US, European, and MENA funds — with geographic rationale and a specific outreach hook per fund. These are not generic "global VCs" — each is matched against the company's actual investor thesis, stage, and geographic profile.</p>
+    </div>
+    <div class="meth-card">
+      <h3>Pre-conditions checklist</h3>
+      <p>Every match now includes a pre-conditions checklist: what the company needs to have in place before the introduction is made. Categorized as Foundational (must-have), Timing (wait until X), or Framing (how to position). An introduction made before these conditions are met is worse than no introduction — it wastes a warm relationship.</p>
+    </div>
+    <div class="meth-card">
+      <h3>Warm path bonus tab</h3>
+      <p>A separate tab documents where Ahmed Korayem can personally activate a meaningful meeting — warm paths within 2 weeks, cold outreaches with a specific conversion angle, and honest acknowledgment of where TBDC's institutional relationships are the right tool rather than a personal network claim.</p>
+    </div>
+    <div class="meth-card">
+      <h3>Activation next steps</h3>
+      <p>Every Tier 1 and Tier 2 match now includes a specific next step — not a status field, but a protocol: who to contact, what framing to lead with, what to hold back, and what sequence to follow. A match score is not an outcome. It is the beginning of a workflow.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 2 — INVESTOR DB ══════════ -->
+<div class="page" id="p-investors">
+  <div class="sec-head">Investor database — 24 funds profiled</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Fund Name</th><th>Type</th><th>Stage</th><th>Sectors</th><th>Cheque Size</th><th>Geography</th><th>Lead/Follow</th><th>Deals (12M est.)</th><th>Notable Portfolio</th><th>Contact Approach</th></tr></thead>
+      <tbody id="inv-tbody"></tbody>
+    </table>
+  </div>
+  <p style="font-size:.72rem;font-family:monospace;color:var(--text3)">* Data from LinkedIn Sales Navigator, public announcements, and direct market knowledge. Crunchbase/PitchBook integration recommended for production.</p>
+</div>
+
+<!-- ══════════ PAGE 3 — COMPANIES ══════════ -->
+<div class="page" id="p-companies">
+  <div class="sec-head">Portfolio company profiles — investability dimensions</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Company</th><th>Cohort</th><th>Stage</th><th>Sector</th><th>ARR / Traction</th><th>Ask Size</th><th>Home Market</th><th>Target Market</th><th>Founder Profile</th><th>Investor Intros</th></tr></thead>
+      <tbody id="co-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 4 — MATCH OUTPUT ══════════ -->
+<div class="page" id="p-matching">
+  <div class="match-layout">
+    <div class="sidebar">
+      <div class="co-list">
+        <div class="co-list-head">Select company</div>
+        <div id="co-nav"></div>
+      </div>
+    </div>
+    <div id="match-main"></div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 5 — BONUS ══════════ -->
+<div class="page" id="p-bonus">
+  <div class="sec-head">Where I can personally activate a meaningful meeting</div>
+  <p style="font-size:.83rem;color:var(--text2);line-height:1.6;margin-bottom:1.25rem">Three tiers: genuine warm paths activatable within two weeks (Tier A); cold outreaches where the angle is specific enough that conversion is plausible (Tier B); and honest acknowledgment of where TBDC's institutional relationships are the right tool (Tier C). The distinction matters — overstating warm path access loses credibility the first time an "introduction" lands cold.</p>
+  <div class="bonus-grid" id="bonus-grid"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// CORE DATA
+// ══════════════════════════════════════════════════════════════════
+var INVESTORS=[
+{n:"Radical Ventures",type:"VC",stage:"Seed–Series A",sectors:"Enterprise AI, Deep Tech, Applied ML",chk:"$2–15M CAD",geo:"Canada+US",lead:"Lead",deals:"6–8",port:"Cohere, Ada, Layer 6",contact:"Jordan Jacobs (Partner) — LinkedIn outreach or TBDC warm path"},
+{n:"Golden Ventures",type:"VC",stage:"Pre-seed–Seed",sectors:"B2B SaaS, Applied AI, Marketplace",chk:"$500K–$2M CAD",geo:"Canada",lead:"Lead",deals:"8–12",port:"Wealthsimple (early), Nudge, Drop",contact:"Janet Bannister (GP) — LinkedIn or Canadian VC network"},
+{n:"Panache Ventures",type:"VC",stage:"Pre-seed–Seed",sectors:"B2B SaaS, Deep Tech, Fintech",chk:"$500K–$1.5M CAD",geo:"Canada",lead:"Lead",deals:"10–15",port:"Voiceflow, Snapcommerce, Taloflow",contact:"Julien Brault or Karam Nijjar — LinkedIn"},
+{n:"Portage Ventures",type:"VC",stage:"Seed–Series B",sectors:"FinTech, InsurTech, WealthTech",chk:"$2–20M CAD",geo:"Canada+Global",lead:"Lead",deals:"4–6",port:"Wealthsimple, Koho, Borrowell",contact:"Adam Felesky (GP) — LinkedIn or InsurTech circuit"},
+{n:"Impression Ventures",type:"VC",stage:"Seed–Series A",sectors:"InsurTech, FinTech",chk:"$1–5M CAD",geo:"Canada+US",lead:"Lead",deals:"3–5",port:"Breathe Life, Foxquilt",contact:"Jason Barg (Partner) — LinkedIn"},
+{n:"Inovia Capital",type:"VC",stage:"Seed–Series B",sectors:"B2B SaaS, Marketplace, FinTech",chk:"$2–20M CAD",geo:"Canada+Global",lead:"Lead",deals:"6–10",port:"Lightspeed, Snaptravel, Breather",contact:"Patrick Pichette or Dennis Kavelman — via TBDC warm path"},
+{n:"OMERS Ventures",type:"VC",stage:"Series A–B",sectors:"Enterprise SaaS, FinTech, Health",chk:"$5–30M CAD",geo:"Canada+US+Europe",lead:"Lead",deals:"4–6",port:"Shopify (early), Wave",contact:"Jameel Khalfan — LinkedIn or via TBDC"},
+{n:"BDC Capital (IT)",type:"Government",stage:"Seed–Series B",sectors:"IT, SaaS, Enterprise Software",chk:"$500K–$5M CAD",geo:"Canada only",lead:"Follow",deals:"15–20",port:"Breather (co), Proposify",contact:"Regional BDC advisor — via TBDC relationship (warm)"},
+{n:"BDC Capital (Cleantech)",type:"Government",stage:"Seed–Series B",sectors:"Cleantech, Energy, Sustainability",chk:"$500K–$5M CAD",geo:"Canada only",lead:"Follow",deals:"8–12",port:"Various cleantech cos",contact:"BDC Cleantech Practice — via TBDC warm path"},
+{n:"MaRS IAF",type:"Government",stage:"Seed",sectors:"ICT, Cleantech, Life Sciences",chk:"$500K–$1M CAD",geo:"Ontario",lead:"Follow",deals:"12–18",port:"Various Ontario scale-ups",contact:"Via MaRS (TBDC existing connection)"},
+{n:"Cycle Capital",type:"VC",stage:"Seed–Series B",sectors:"Cleantech, Energy Transition, EV",chk:"$1–5M CAD",geo:"Canada",lead:"Lead",deals:"4–6",port:"Enerkem, Axis Labs",contact:"Andrée-Lise Méthot — cleantech event circuit"},
+{n:"Greensoil Proptech",type:"VC",stage:"Seed–Series A",sectors:"PropTech, Cleantech, Smart Buildings",chk:"$1–5M CAD",geo:"Canada+US",lead:"Lead",deals:"4–6",port:"Lane, Measurabl",contact:"Ben Zifkin — LinkedIn or Proptech Canada events"},
+{n:"Staircase Ventures",type:"VC",stage:"Pre-seed–Seed",sectors:"B2B SaaS, Fintech, AI",chk:"$250K–$1M CAD",geo:"Canada",lead:"Lead",deals:"8–12",port:"Various early-stage Canadian cos",contact:"Partners via LinkedIn"},
+{n:"Georgian",type:"VC",stage:"Series B–C",sectors:"B2B Applied AI, Enterprise SaaS",chk:"$20–80M CAD",geo:"Canada+US",lead:"Lead",deals:"4–6",port:"Canvass, Veriday, Q4",contact:"Simon Chong — LinkedIn (Series B+ only)"},
+{n:"Accel India",type:"VC",stage:"Seed–Series B",sectors:"FinTech, Consumer Tech, B2B SaaS",chk:"$2–25M USD",geo:"India+Global",lead:"Lead",deals:"10–15",port:"Flipkart, Freshworks, BrowserStack",contact:"Anand Daniel (Partner) — LinkedIn"},
+{n:"Peak XV (Sequoia India)",type:"VC",stage:"Seed–Series B",sectors:"Consumer Commerce, FinTech, SaaS",chk:"$5–50M USD",geo:"India+SE Asia",lead:"Lead",deals:"8–12",port:"Zomato, Meesho, Razorpay",contact:"Rajan Anandan — LinkedIn"},
+{n:"Lightspeed India",type:"VC",stage:"Seed–Series B",sectors:"Consumer Tech, FinTech, B2B",chk:"$2–20M USD",geo:"India+SE Asia+Global",lead:"Lead",deals:"8–12",port:"Byju's, OYO, ShareChat",contact:"Hemant Mohapatra — LinkedIn"},
+{n:"STV",type:"VC",stage:"Seed–Series B",sectors:"MENA SaaS, Logistics, FinTech",chk:"$1–20M USD",geo:"GCC+MENA",lead:"Lead",deals:"6–8",port:"Foodics, Lean, Baraka",contact:"Ahmed Shagar or Kholoud AlMeshal — MENA circuit (Ahmed Korayem warm path possible)"},
+{n:"Wamda Capital",type:"VC",stage:"Seed–Series A",sectors:"MENA Enterprise SaaS, Tech",chk:"$500K–$5M USD",geo:"MENA",lead:"Follow",deals:"4–6",port:"Souq (early), Fetchr",contact:"Via MENA network — Ahmed Korayem warm path possible"},
+{n:"Northzone",type:"VC",stage:"Seed–Series B",sectors:"SaaS, FinTech, Infrastructure, IoT",chk:"$5–30M USD",geo:"Europe+NA",lead:"Lead",deals:"6–8",port:"Spotify (early), Klarna, iZettle",contact:"Pär-Jörgen Pärson — LinkedIn or European tech circuit"},
+{n:"Earlybird (Deep Tech)",type:"VC",stage:"Seed–Series A",sectors:"Deep Tech, Enterprise SaaS, Industrial",chk:"$2–15M USD",geo:"Europe",lead:"Lead",deals:"6–10",port:"UiPath (early), N26, Trigo",contact:"Hendrik Brandis — LinkedIn"},
+{n:"EQT Ventures",type:"VC",stage:"Series A–B",sectors:"Nordic Deep Tech, SaaS, Climate",chk:"$10–50M USD",geo:"Europe+Global",lead:"Lead",deals:"4–6",port:"Ebury, Wolt, Peakon",contact:"EQT Ventures team — LinkedIn or Nordic tech circuit"},
+{n:"Balderton Capital",type:"VC",stage:"Seed–Series B",sectors:"European SaaS, FinTech, Marketplaces",chk:"$5–30M USD",geo:"Europe+Global",lead:"Lead",deals:"6–10",port:"Revolut, Depop, Talend",contact:"Daniel Waterhouse — LinkedIn"},
+{n:"MaRS ION",type:"Government",stage:"Seed",sectors:"CleanTech, Energy",chk:"$500K–$1.5M CAD",geo:"Ontario",lead:"Follow",deals:"6–10",port:"Various Ontario cleantech cos",contact:"Via MaRS (TBDC warm path)"}
+];
+
+var COMPANIES=[
+{n:"Fermi Dev",co:"Pivot 1",st:"Early Seed",sec:"Enterprise AI / Manufacturing",arr:"2 paying customers — Zeiss Pharma, Agora Analytics. 8 in pipeline.",ask:"$1–3M CAD",home:"Toronto",target:"Canada + India secondary",founder:"Operator (ex-Amazon, 9yr AI research)",inv:true},
+{n:"Aibo Fintech",co:"Pivot 1",st:"Pre-seed",sec:"InsurTech / B2B2C",arr:"Pre-revenue — 4 partners in discussion",ask:"$500K–$2M CAD",home:"Ontario",target:"Ontario + New Brunswick",founder:"Operator (IIM Bangalore, ex-Policybazaar, ex-RSA, ex-Kotak)",inv:true},
+{n:"Try and Buy",co:"Pivot 1",st:"Series A Ready",sec:"Fashion AI / Visual Commerce",arr:"Amazon US, Flipkart, Myntra, Rakuten, Coupang as clients. 70+ patents.",ask:"$5–15M USD",home:"India + USA",target:"Canada expansion",founder:"Technical + Operator (Amazon Innovator 2020)",inv:true},
+{n:"Monk Trader",co:"Pivot 1",st:"Seed",sec:"FinTech / Investment OS",arr:"16,000+ organic users. 12 white-label brokers in pipeline (UAE + Germany).",ask:"$2–5M USD",home:"India",target:"Canada / US / EU",founder:"Operator (ex-YES Securities President, built Angel Broking to 50M users)",inv:true},
+{n:"Omniful",co:"Pivot 1",st:"Series A",sec:"Supply Chain / OMS / SaaS",arr:"90+ clients, 20 countries, 5.1M+ orders. Aramex 4-yr partnership.",ask:"$5–15M USD",home:"GCC + India",target:"Canada Q1 2026",founder:"Operator + Technical (Egyptian-Canadian founder)",inv:true},
+{n:"Voltie",co:"Horizon 3",st:"Seed",sec:"EV Charging / Cleantech / Hardware",arr:"2,000+ EU deployments, 30+ resellers, 10x revenue growth 2023.",ask:"$2M CAD",home:"Latvia (EU)",target:"Canada — MURBs, condos, hospitality",founder:"Technical + Operator",inv:true},
+{n:"SaMMY PC",co:"Horizon 3",st:"Seed",sec:"Marina IoT / PropTech / Digital Twin",arr:"40+ EU marina deployments. 8,000+ berth bookings projected 2025.",ask:"€12M (grant + VC mix)",home:"Greece (EU)",target:"Ontario + East Coast Canada",founder:"Technical (IoT + maritime)",inv:true},
+{n:"Quanscient",co:"Horizon 3",st:"Series A",sec:"Deep Tech / Engineering Simulation",arr:"~€500K ARR. 15 enterprise clients incl. Bosch.",ask:"Series A (closing imminently)",home:"Finland",target:"Canada as NA GTM base",founder:"Technical (PhD physics + quantum)",inv:true},
+{n:"VEMOCO",co:"Horizon 3",st:"Seed–Series A",sec:"Fleet Telematics / SaaS",arr:"$501K–$1M ARR. Tesco, Vodafone, Heineken, KFC (EU clients).",ask:"Open to strategic — not actively raising",home:"Hungary + Toronto",target:"North America scale",founder:"Operator (enterprise SaaS)",inv:true},
+{n:"WIDMO Spectral",co:"Horizon 3",st:"Seed",sec:"Deep Tech / GPR / Mining",arr:"$250K–$500K ARR. €10M+ non-dilutive funding.",ask:"CAD $2.5M — customer meetings only",home:"Poland",target:"Canada — mining, aggregates, geotechnical",founder:"Technical (radar engineering)",inv:false}
+];
+
+// ══ MATCH DATA — Canadian VCs, International VCs, Pre-conditions ══
+var MATCHES=[
+// 0 — Fermi Dev
+{co:0,
+t1:[
+{v:"Radical Ventures",sc:14,geo:3,stage:3,sec:3,rev:2,chk:2,founder:1,gap:0,warm:"Cold — strong thesis case",tx:"Purpose-built AI thesis with deep tech conviction. Manufacturing AI is an identified portfolio gap across Canadian VC. Two paying enterprise customers at Early Seed is sufficient traction for a first conversation. Vaibhav's Amazon + UC + 9yr AI research pedigree directly hits Radical's founder quality signals.",next:"Cold LinkedIn outreach to Jordan Jacobs. Lead with the manufacturing AI portfolio gap angle and Zeiss Pharma as a reference name. Ask for 20 minutes, not a meeting."},
+{v:"Golden Ventures",sc:13,geo:3,stage:3,sec:3,rev:2,chk:2,founder:1,gap:-1,warm:"Cold",tx:"B2B SaaS and applied AI is their core thesis. Early Seed is their sweet spot. Enterprise customer logos signal the sales motion Golden responds to.",next:"Cold outreach to Janet Bannister. Frame around paying customers and pipeline size — not the technology."},
+{v:"Panache Ventures",sc:13,geo:3,stage:3,sec:3,rev:2,chk:2,founder:1,gap:-1,warm:"Cold",tx:"Strong B2B SaaS and deep tech mandate, Canadian-first. Manufacturing is underrepresented in their portfolio.",next:"Cold LinkedIn to Julien Brault or Karam Nijjar. Lead with Vaibhav's background before the company description."}
+],
+t2:[
+{v:"BDC Capital (IT)",sc:10,geo:3,stage:2,sec:2,rev:1,chk:2,founder:1,gap:-1,warm:"Warm via TBDC",tx:"Best approached after a Tier 1 lead is anchored. BDC follows well and the TBDC relationship is the warm path.",next:"TBDC advisor warm intro after Radical or Golden engagement is confirmed."},
+{v:"MaRS IAF",sc:9,geo:2,stage:2,sec:2,rev:2,chk:1,founder:1,gap:-1,warm:"Warm via TBDC",tx:"Small cheque but strategic — MaRS programming access and follow-on network. Best as bridge or co-invest.",next:"TBDC warm intro. Frame as program participation + bridge capital."}
+],
+dn:[{v:"Georgian",w:"Series B+ only — $20M+ cheques. 3–4 years premature. A premature intro burns a future warm relationship."},
+{v:"OMERS Ventures",w:"Series A minimum with enterprise ARR. Same timing logic — introducing too early is worse than not introducing."},
+{v:"Portage Ventures",w:"FinTech/InsurTech exclusive. Manufacturing AI has zero overlap — this signals poor judgment to the VC."}],
+intl:[
+{v:"Sequoia Capital (US)",hq:"Menlo Park / Global",focus:"Enterprise AI",hook:"Zeiss Pharma reference + manufacturing AI gap narrative",tx:"Applied AI in enterprise verticals is a core Sequoia thesis globally. Zeiss Pharma as a reference customer carries international weight. The Canada-first story is the hook for a US fund."},
+{v:"Bessemer Venture Partners",hq:"New York / Global",focus:"Enterprise Cloud",hook:"Amazon pedigree + enterprise customer logos",tx:"BVP has documented enterprise cloud thesis and has backed AI-enabled manufacturing adjacencies. Vaibhav's Amazon background resonates with their operator-founder preference."},
+{v:"Insight Partners",hq:"New York / Global",focus:"Enterprise SaaS at scale",hook:"Pipeline size + paying logos (timing: Series A)",tx:"Growth-stage but has scouts at Seed. Enterprise SaaS with paying customers is their entry signal. Build this relationship now for a Series A conversation later."}
+],
+precond:[
+{cat:"Foundational",txt:"Fermi needs a positioning statement that leads with customer outcome — 'Zeiss Pharma reduced automation consultant spend by X%' — not the technology description. The customer story must precede the technology story in every investor touchpoint."},
+{cat:"Foundational",txt:"The pipeline of eight companies needs to be described with specificity: industries, deal sizes, and stage of evaluation. 'Eight in pipeline' is a signal that means nothing without context."},
+{cat:"Framing",txt:"Vaibhav needs a 60-second verbal narrative connecting his Amazon experience directly to why manufacturing AI is underserved — the 'why me, why now' frame. This converts VC attention into a meeting request."},
+{cat:"Timing",txt:"Approach BDC and MaRS only after a Tier 1 lead is confirmed. Their co-invest signal strengthens the round; approaching them first signals that Tier 1 VCs passed."}
+]},
+// 1 — Aibo
+{co:1,
+t1:[
+{v:"Portage Ventures",sc:14,geo:3,stage:2,sec:3,rev:2,chk:2,founder:2,gap:0,warm:"Cold",tx:"InsurTech is Portage's primary vertical. Bilingual B2B2C distribution is differentiated. IIM Bangalore + Policybazaar + RSA + Kotak pedigree is exactly what Portage responds to.",next:"Cold outreach to Adam Felesky. Frame as B2B2C insurance distribution infrastructure — not an insurance product. Lead with multi-jurisdiction operator credentials before the technology."},
+{v:"Impression Ventures",sc:13,geo:3,stage:3,sec:3,rev:1,chk:2,founder:2,gap:-1,warm:"Cold",tx:"Impression has backed InsurTech at pre-revenue stage before. The multi-firm operator pedigree is a compelling signal.",next:"Cold outreach to Jason Barg. Lead with founder backgrounds before the product description."}
+],
+t2:[
+{v:"Golden Ventures",sc:10,geo:3,stage:3,sec:1,rev:1,chk:2,founder:1,gap:0,warm:"Cold",tx:"Pre-revenue OK and Canadian focus fits. InsurTech is not their primary thesis — approach only if Portage and Impression don't move.",next:"Hold 3 weeks for Portage/Impression responses. Then approach Golden with 'financial infrastructure SaaS' framing."}
+],
+dn:[{v:"OMERS Ventures",w:"Pre-revenue at pre-seed is categorically outside OMERS mandate."},
+{v:"Georgian",w:"Three to four stages premature."},
+{v:"Cycle Capital / Radical",w:"Cleantech and AI/ML research theses — no InsurTech relevance in either case."}],
+intl:[
+{v:"Flourish Ventures",hq:"San Francisco / Global",focus:"Inclusive FinTech / Insurance Distribution",hook:"Bilingual Ontario/NB market access angle",tx:"Flourish focuses on inclusive fintech and insurance distribution in underserved markets. The bilingual angle maps directly to their thesis around access to financial services."},
+{v:"QED Investors",hq:"Alexandria VA / Global",focus:"FinTech, Insurance Distribution",hook:"Policybazaar alumni + B2B2C distribution model",tx:"One of the leading fintech-focused VCs globally. Insurance distribution is an active sub-thesis. The Policybazaar alumni connection is a credible reference point — QED has backed Policybazaar-adjacent plays in other markets."},
+{v:"Anthemis Group",hq:"London / Global",focus:"InsurTech infrastructure",hook:"Embedded B2B2C insurance infrastructure thesis",tx:"European InsurTech specialist with global mandate. The B2B2C distribution model aligns with their thesis around embedded insurance infrastructure."}
+],
+precond:[
+{cat:"Foundational",txt:"The four partner relationships (2 insurance + 2 financial) need to be named or at minimum described by institution category with LOI status. Anonymous partnership discussions are not traction — they are aspiration."},
+{cat:"Foundational",txt:"The bilingual angle must be positioned as a structural regulatory moat, not a product feature. In Ontario and New Brunswick, bilingual distribution is a market access advantage — this is the defensibility story."},
+{cat:"Framing",txt:"Founders need to align on who leads the investor conversation and who leads the product conversation. Two co-founders in a meeting often dilute the narrative if roles are not clearly separated."},
+{cat:"Timing",txt:"Approach Portage and Impression simultaneously — do not sequence. Both should receive the introduction within the same week."}
+]},
+// 2 — Try and Buy
+{co:2,
+t1:[
+{v:"Inovia Capital",sc:14,geo:2,stage:3,sec:3,rev:2,chk:2,founder:2,gap:0,warm:"Possible via TBDC",tx:"Series A mandate and global appetite. Canada expansion is the TBDC leverage point. Amazon Innovator + 70+ patents is highly differentiated.",next:"TBDC warm path to Inovia. Frame the Canada expansion as the investment thesis — without it, a Canadian VC has no mandate to lead."}
+],
+t2:[
+{v:"OMERS Ventures",sc:10,geo:1,stage:3,sec:1,rev:2,chk:2,founder:1,gap:0,warm:"Possible via TBDC",tx:"Stage match works but OMERS is primarily B2B enterprise. Canada expansion is required framing. Without named Canadian retailer relationships, OMERS has no mandate basis.",next:"Approach after India-facing VCs are engaged. Canada expansion must be concrete first."}
+],
+dn:[{v:"Portage / Impression",w:"FinTech/InsurTech exclusive — fashion AI has no overlap."},
+{v:"Radical Ventures",w:"Pure AI/ML research thesis. Simulation-based fashion tech doesn't fit their academic-origin investment lens."},
+{v:"Panache / Golden / Staircase",w:"Stage mismatch — categorically. Series A with Amazon and Flipkart as clients has outgrown their mandate entirely."}],
+intl:[
+{v:"Accel India",hq:"Bangalore / Global",focus:"Consumer Commerce, FinTech",hook:"Flipkart + Myntra reference customers — shared ecosystem",tx:"Flipkart and Myntra are Accel portfolio companies. Frame the outreach around shared ecosystem familiarity — this is a warm conversation waiting to happen. Simulation AI + 70+ patents is the moat story."},
+{v:"Peak XV (Sequoia India)",hq:"Bangalore / Global",focus:"Consumer Commerce AI",hook:"Peak XV portfolio adjacency — same reference customers",tx:"Flipkart and Myntra are Peak XV portfolio adjacencies. The simulation-not-GenAI differentiation is a strong diligence story."},
+{v:"Lightspeed India",hq:"Bangalore / Global",focus:"Consumer Tech",hook:"Multi-market client base (US, India, Japan, Korea)",tx:"Strong India franchise. Run simultaneously with Accel and Peak XV — do not sequence these outreaches."},
+{v:"Tiger Global",hq:"New York / Global",focus:"High-growth commerce platforms",hook:"Multi-market revenue expansion at Series A",tx:"Tiger backs high-growth commerce platforms with proven cross-market revenue. The client list (Amazon, Flipkart, Rakuten, Coupang) is the signal they respond to."}
+],
+precond:[
+{cat:"Foundational",txt:"The Canada expansion plan must be concrete: which Canadian retailers are in conversation, what is the implementation timeline, what is year-one revenue target. A vague 'expanding to Canada' narrative does not give Inovia the hook they need for their investment committee."},
+{cat:"Foundational",txt:"The simulation AI vs. GenAI distinction must be front-of-pitch positioning, not a footnote. After 50+ GenAI fashion pitches, any sophisticated investor will ask this in the first minute — having a crisp answer is table stakes."},
+{cat:"Foundational",txt:"A one-page IP brief summarizing the 70+ patents needs to be prepared for diligence. VCs who see this number in a deck will ask for it in the first meeting — having it ready signals operational maturity."},
+{cat:"Timing",txt:"India-facing VCs (Accel, Peak XV, Lightspeed) should be approached simultaneously with Inovia — not after. The round narrative is stronger if multiple term sheets are possible simultaneously."}
+]},
+// 3 — Monk Trader
+{co:3,
+t1:[
+{v:"Portage Ventures",sc:14,geo:2,stage:2,sec:3,rev:2,chk:2,founder:2,gap:0,warm:"Cold",tx:"FinTech core thesis. White-label broker distribution is B2B2C financial infrastructure — not a retail investing app. Founder's 50M-user Angel Broking track record is a credibility signal that commands attention.",next:"Cold outreach to Adam Felesky. Frame as financial infrastructure for broker distribution. Lead with Angel Broking track record immediately."},
+{v:"Accel India",sc:13,geo:2,stage:2,sec:3,rev:2,chk:2,founder:2,gap:0,warm:"Cold",tx:"Accel India has backed B2B2C fintech infrastructure at Seed. 16K organic users + 12-broker pipeline is meaningful early distribution proof.",next:"Cold outreach to Anand Daniel. Lead with organic traction and the white-label distribution model."}
+],
+t2:[
+{v:"Impression Ventures",sc:11,geo:3,stage:2,sec:2,rev:2,chk:2,founder:1,gap:0,warm:"Cold",tx:"FinTech mandate fits. Retail investing adjacent to core. Worth approaching as co-investor once Portage engagement is established.",next:"Approach as co-invest conversation after Portage response."},
+{v:"Inovia Capital",sc:10,geo:2,stage:2,sec:2,rev:2,chk:2,founder:1,gap:-1,warm:"Possible via TBDC",tx:"Global portfolio appetite. Frame as 'financial infrastructure SaaS' — the B2B2C white-label angle is the investor-friendly framing.",next:"TBDC warm path if available. Canada expansion as the primary narrative hook."}
+],
+dn:[{v:"Radical Ventures",w:"AI/ML deep tech thesis. Monk Trader uses AI as a feature — not the scientific differentiation Radical requires."},
+{v:"Cycle Capital / Greensoil",w:"Cleantech and PropTech focus. No thesis overlap."},
+{v:"Georgian",w:"Stage and ARR requirements not met. Their lens doesn't map to B2B2C retail investing at 16K users."}],
+intl:[
+{v:"Ribbit Capital",hq:"Palo Alto / Global",focus:"FinTech B2B2C distribution",hook:"White-label broker model + India-to-West expansion",tx:"Ribbit is a fintech specialist with B2B2C distribution models in portfolio. The broker white-label angle aligns with their thesis around financial infrastructure rather than consumer apps."},
+{v:"Tiger Global",hq:"New York / Global",focus:"High-distribution FinTech",hook:"50M-user track record at Angel Broking",tx:"Tiger backs high-distribution fintech platforms at Seed and Series A. The founder's track record at Angel Broking is the signal they respond to."},
+{v:"Flourish Ventures",hq:"San Francisco / Global",focus:"Inclusive FinTech",hook:"Retail investor access + multi-market white-label model",tx:"Flourish focuses on fintech that expands access to financial services for underserved retail investors. The white-label broker model reaches segments traditional apps miss."}
+],
+precond:[
+{cat:"Foundational",txt:"The 12-broker pipeline needs to be categorized: which are at NDA/LOI stage versus early conversation? The distinction between 'in pipeline' and 'in contract' is the difference between a plausible story and a credible one."},
+{cat:"Foundational",txt:"The Canada expansion rationale must be grounded in regulatory specifics: IIROC licensing pathway, TFSA/RRSP integration opportunity, the underserved retail investor segment. The team must be able to articulate this clearly in a first meeting."},
+{cat:"Framing",txt:"The investor pitch must lead with the broker distribution model (B2B2C infrastructure), not with the 16K users (consumer signal). The two stories require completely different investor conversations — leading with the wrong one costs a meeting."},
+{cat:"Framing",txt:"Be prepared for: 'Why haven't the big Indian brokers already built this themselves?' This is the moat question. The answer needs to be rehearsed and specific."}
+]},
+// 4 — Omniful
+{co:4,
+t1:[
+{v:"OMERS Ventures",sc:14,geo:2,stage:3,sec:3,rev:2,chk:2,founder:2,gap:0,warm:"Possible via TBDC",tx:"Series A with significant enterprise revenue and Canada Q1 2026 expansion is exactly OMERS' entry profile. The Canadian expansion is the hook — without it this conversation doesn't happen.",next:"TBDC warm path to OMERS. Frame as a Canada-expansion investment, not a GCC company seeking Canadian capital. Canada GTM specifics are required before this meeting."},
+{v:"Inovia Capital",sc:13,geo:2,stage:3,sec:3,rev:2,chk:2,founder:2,gap:0,warm:"Possible via TBDC",tx:"Strong Series A profile with enterprise revenue. Global portfolio appetite supports GCC-origin company with genuine North American ambition.",next:"TBDC warm path simultaneously with OMERS. Inovia can be co-lead or follow-on."}
+],
+t2:[
+{v:"Wamda Capital",sc:11,geo:2,stage:2,sec:3,rev:2,chk:1,founder:2,gap:0,warm:"Possible — Ahmed MENA network",tx:"MENA-focused with enterprise SaaS appetite. Cheque size smaller than round likely needs — position as strategic co-investor. Ahmed's MENA network is the warm path.",next:"Ahmed MENA network approach. Position as strategic co-investor for GCC-credibility optics alongside Canadian lead."}
+],
+dn:[{v:"Golden / Panache / Staircase",w:"Pre-seed/Seed focused, $250K–$2M cheques. Omniful at Series A with 90+ clients has outgrown their mandate by 3 stages. Introducing now signals TBDC doesn't read the room."},
+{v:"Portage Ventures",w:"FinTech/InsurTech exclusive. Supply chain OMS has zero overlap regardless of SaaS delivery model."},
+{v:"Cycle Capital",w:"Cleantech focus. No alignment with supply chain SaaS."}],
+intl:[
+{v:"STV",hq:"Riyadh / GCC",focus:"MENA SaaS, Logistics Infrastructure",hook:"GCC-native supply chain replacing SAP — Aramex reference",tx:"GCC-native supply chain SaaS replacing SAP/Oracle/Manhattan is STV's natural territory. Aramex as a 4-year partner is a tier-1 GCC logistics reference. Strongest strategic fit of any investor for Omniful. Ahmed's MENA network + Egyptian-Cairo background shared with CEO Mostafa Abolnasr is a warm path amplifier."},
+{v:"Insight Partners",hq:"New York / Global",focus:"Scaling enterprise SaaS",hook:"20-country client base + Aramex partnership at Series A",tx:"Insight has backed supply chain and logistics SaaS globally at Series A. The enterprise scale — 90+ clients, 20 countries — is the signal they respond to."},
+{v:"Madrona Venture Group",hq:"Seattle / Global",focus:"Enterprise SaaS, Global expansion",hook:"Canada as North America base for GCC-origin platform",tx:"Enterprise SaaS with global expansion from a non-US origin is a thesis Madrona has backed. Canada as North America base is the framing hook."}
+],
+precond:[
+{cat:"Foundational",txt:"The Canada Q1 2026 expansion needs a concrete GTM plan before any Canadian VC conversation: named enterprise prospects, a named country manager or partnership arrangement, and a realistic year-one revenue target. Without this, OMERS and Inovia have no investment committee mandate to lead."},
+{cat:"Foundational",txt:"The Aramex partnership must be summarized in one paragraph explaining commercial terms, not just duration. Four years is impressive — but what does it generate? Revenue, exclusivity, data access? This is the first question any investor will ask."},
+{cat:"Framing",txt:"For the STV introduction: Ahmed Korayem's shared Egyptian-Cairo background with CEO Mostafa Abolnasr is a warm path amplifier — not the primary relationship but a credibility signal that the introduction comes from within the ecosystem."},
+{cat:"Timing",txt:"MENA investors (STV, Wamda) and Canadian investors (OMERS, Inovia) should be approached in parallel, not sequentially. A multi-geography term sheet dynamic strengthens the round."}
+]},
+// 5 — Voltie
+{co:5,
+t1:[
+{v:"Cycle Capital",sc:15,geo:3,stage:3,sec:3,rev:2,chk:2,founder:1,gap:1,warm:"Cold",tx:"Dedicated cleantech fund with EV thesis. MURB and condo market is a Canadian-specific policy-driven opportunity they understand intuitively. EU traction de-risks substantially.",next:"Cold outreach to Cycle Capital via cleantech event circuit. Frame around MURB market as uniquely Canadian policy opportunity."},
+{v:"Greensoil Proptech",sc:14,geo:3,stage:3,sec:3,rev:2,chk:2,founder:1,gap:1,warm:"Cold",tx:"PropTech + cleantech intersection is the MURB/condo EV charging story exactly. Greensoil's Canadian real estate network is a direct distribution advantage.",next:"Cold outreach to Ben Zifkin. Frame around Greensoil's ability to accelerate distribution — not just provide capital."}
+],
+t2:[
+{v:"BDC Capital (Cleantech)",sc:11,geo:3,stage:2,sec:3,rev:2,chk:2,founder:1,gap:-1,warm:"Warm via TBDC",tx:"BDC cleantech mandate fits. Hardware is harder for IT Venture Fund — approach Cleantech Practice specifically.",next:"TBDC warm path to BDC Cleantech Practice after Cycle or Greensoil engagement."}
+],
+dn:[{v:"Portage / Impression",w:"FinTech/InsurTech thesis. No relevance to EV hardware."},
+{v:"Radical Ventures",w:"AI/ML research thesis. Hardware-software EV doesn't fit their model."},
+{v:"Georgian",w:"Requires significant ARR at Series B+. Voltie is raising $2M CAD for GTM — years away."}],
+intl:[
+{v:"SOSV / HAX",hq:"New York / Shenzhen / Global",focus:"Hardware with North America GTM",hook:"EU validated hardware seeking Canadian certification and expansion",tx:"HAX is purpose-built for hardware startups with proven EU traction seeking North American expansion. Voltie's profile — EU deployed, North America GTM — is exactly the HAX thesis."},
+{v:"Energy Impact Partners",hq:"New York / Global",focus:"Climate and energy transition infrastructure",hook:"MURB EV charging = built environment decarbonization",tx:"EIP focuses on climate and energy transition infrastructure. MURB EV charging maps directly to their built environment decarbonization thesis."},
+{v:"Breakthrough Energy Ventures",hq:"Seattle / Global",focus:"Climate tech with large-scale impact",hook:"EV infrastructure at residential scale — large addressable impact",tx:"BEV backs climate tech with potential for gigaton-scale impact. Residential EV infrastructure is an active interest area given the scale of the housing stock opportunity globally."}
+],
+precond:[
+{cat:"Foundational",txt:"Canadian certification (UL, CSA) timeline must be confirmed and documented. A hardware product without Canadian regulatory clearance cannot be introduced to Canadian investors credibly — this is the single most important pre-condition."},
+{cat:"Foundational",txt:"At least one named Canadian property management company or condo developer must be in active discussion. EU traction is compelling but Canadian investors need to see Canadian market pull, not just EU push."},
+{cat:"Framing",txt:"The software component (smart AC charging as subscription layer) must be articulated separately from the hardware. This changes the investor conversation from 'hardware company' to 'hardware-enabled SaaS' — a significantly more investor-friendly category."},
+{cat:"Timing",txt:"Approach Cycle Capital and Greensoil simultaneously — both should receive the introduction in the same week. Do not sequence them."}
+]},
+// 6 — SaMMY
+{co:6,
+t1:[
+{v:"Greensoil Proptech",sc:14,geo:2,stage:2,sec:3,rev:2,chk:2,founder:1,gap:1,warm:"Cold",tx:"PropTech mandate with smart infrastructure interest. Marina management is a logical extension of their smart building thesis into waterfront and tourism infrastructure.",next:"Cold outreach to Ben Zifkin. Frame as waterfront infrastructure PropTech with EU validation — not marina software."}
+],
+t2:[
+{v:"BDC Capital (IT)",sc:10,geo:3,stage:2,sec:1,rev:2,chk:2,founder:1,gap:0,warm:"Warm via TBDC",tx:"Canada expansion hook for BDC. EU grant reduces perceived risk. Niche market is harder — frame as digital infrastructure for waterfront tourism, not marina-specific software.",next:"TBDC warm intro. Tourism infrastructure framing is essential."}
+],
+dn:[{v:"Portage / Impression",w:"FinTech/InsurTech thesis. No intersection with marina management IoT."},
+{v:"Radical Ventures",w:"AI/ML research thesis. SaMMY's IoT + digital twin doesn't fit research-origin model."},
+{v:"Accel India / Peak XV",w:"India-market focus. SaMMY has no India presence or roadmap."}],
+intl:[
+{v:"Northzone",hq:"Stockholm / London",focus:"European IoT, Smart Infrastructure",hook:"EU validated IoT with North America expansion — 40+ deployments",tx:"Northzone understands infrastructure IoT and is comfortable with European companies expanding to North America. The EU grant and 40+ deployment track record de-risk the product. Niche market is the hesitation."},
+{v:"Balderton Capital",hq:"London / Global",focus:"European tech with ESG angle",hook:"Maritime ESG + global port sustainability pressure",tx:"Maritime ESG is a credible framing angle given IMO emissions targets and global port sustainability pressure."},
+{v:"Blue Horizon Ventures",hq:"Zurich / Global",focus:"Sustainability, maritime ESG",hook:"Quantified carbon reduction per marina deployment",tx:"Sustainability and maritime ESG is an active thesis at Blue Horizon. SaMMY's impact metrics — carbon reduction from marine operations — are the hook."}
+],
+precond:[
+{cat:"Foundational",txt:"Named Ontario or East Coast marina operators must be in active conversation — not aspirational targets but active prospects. The EU deployment track record is compelling; Canadian market pull evidence is what converts it into an investment thesis."},
+{cat:"Foundational",txt:"ESG impact metrics need to be quantified: carbon reduction per marina deployment, measurable environmental benefit per berth. This is the Northzone and Balderton hook."},
+{cat:"Framing",txt:"The TAM framing must expand beyond marinas: waterfront tourism infrastructure broadly (marinas, harbours, waterfront hospitality) is a significantly larger market frame and answers the TAM objection proactively."},
+{cat:"Timing",txt:"The €12M mixed funding (EU grant + company) needs to be clearly described to investors. The grant component is not equity and should not be conflated with a VC raise — investors need to understand the capital stack clearly."}
+]},
+// 7 — Quanscient
+{co:7,
+t1:[
+{v:"Radical Ventures",sc:15,geo:2,stage:3,sec:3,rev:2,chk:2,founder:2,gap:1,warm:"Cold — strong thesis match",tx:"Purpose-built AI deep tech thesis. Multiphysics simulation with quantum modules is the technical moat Radical looks for. Bosch as a reference customer is a tier-1 signal. Canada GTM is the mandate hook.",next:"Cold outreach to Jordan Jacobs. Lead with Bosch reference and physics/quantum differentiation — not the SaaS wrapper. Radical responds to scientific moat."}
+],
+t2:[
+{v:"OMERS Ventures",sc:12,geo:2,stage:3,sec:2,rev:2,chk:2,founder:2,gap:0,warm:"Warm via TBDC",tx:"Series A with Bosch reference. OMERS' enterprise SaaS appetite fits. Canada GTM is the hook — must be positioned as Canadian-expansion play.",next:"TBDC warm path. Frame as Canada GTM investment with European validation. Bosch is the credibility anchor."}
+],
+dn:[{v:"Portage / Impression",w:"FinTech/InsurTech focus. Engineering simulation has zero overlap."},
+{v:"Golden / Panache / Staircase",w:"Stage mismatch — Quanscient closing a Series A with Bosch as a client is categorically outside their mandate."},
+{v:"Accel India",w:"India-market focus. Quanscient's customers and GTM are Europe and North America."}],
+intl:[
+{v:"Earlybird (Deep Tech Fund)",hq:"Berlin / Europe",focus:"European deep tech, industrial applications",hook:"Finnish deep tech — engineering simulation for aerospace/auto/semiconductor",tx:"Earlybird's deep tech fund is purpose-built for European companies like Quanscient. Finnish origin is squarely in-market. The Series A closing timeline creates urgency."},
+{v:"EQT Ventures",hq:"Stockholm / Global",focus:"Nordic deep tech B2B SaaS",hook:"Finnish origin + Canada GTM = Nordic-to-global expansion thesis",tx:"Nordic origin, Series A, B2B SaaS with deep tech moat. EQT actively backs Finnish deep tech. Canada GTM adds a credible North American chapter."},
+{v:"In-Q-Tel",hq:"Arlington VA",focus:"Defence, aerospace, quantum computing",hook:"Quantum module + aerospace/semiconductor customer base",tx:"IQT backs quantum computing and advanced simulation with defence and aerospace applications. The quantum module is the hook for this strategic investor."},
+{v:"Prosperity7 (Aramco Ventures)",hq:"Dhahran / Global",focus:"Deep tech with industrial applications",hook:"Engineering simulation for oil and gas applications",tx:"Prosperity7 backs deep tech with industrial applications globally. Engineering simulation for energy sector is a natural extension of their portfolio thesis."}
+],
+precond:[
+{cat:"Foundational",txt:"Canada GTM plan needs named targets before Radical or OMERS introductions are made: Pratt & Whitney Canada, Bombardier, Magna International, MDA Space are the most credible Canadian enterprise prospects for engineering simulation."},
+{cat:"Foundational",txt:"The quantum module must be separated from the core simulation product in investor communications. Position it as a roadmap module with a specific customer use case — not a current product feature — to avoid being dismissed as premature."},
+{cat:"Timing",txt:"Series A closing is described as imminent — if genuine, Tier 1 introductions must happen within two weeks or the round closes without them. Confirm round status immediately."},
+{cat:"Framing",txt:"Bosch must be the opening sentence of every investor outreach — not buried in a slide. It is the single most credible validation signal in the company's profile and should be the first thing any investor learns about Quanscient."}
+]},
+// 8 — VEMOCO
+{co:8,
+t1:[
+{v:"Inovia Capital",sc:13,geo:3,stage:2,sec:3,rev:2,chk:2,founder:1,gap:1,warm:"Possible via TBDC",tx:"SaaS, Canadian presence, meaningful ARR, and blue-chip EU clients. VEMOCO isn't actively raising — a strategic conversation with Inovia may naturally evolve into an investment discussion.",next:"TBDC warm intro framed as a strategic conversation about Canadian market expansion, not a fundraise meeting."},
+{v:"Northzone",sc:12,geo:2,stage:2,sec:3,rev:2,chk:2,founder:1,gap:0,warm:"Cold",tx:"Northzone understands European SaaS and enterprise logistics. Hungary + Toronto is a credible European-to-North America bridge story.",next:"Cold LinkedIn outreach to Northzone partners. Frame as EU SaaS company with enterprise logos expanding to North America."}
+],
+t2:[
+{v:"BDC Capital (IT)",sc:11,geo:3,stage:2,sec:2,rev:2,chk:2,founder:1,gap:0,warm:"Warm via TBDC",tx:"BDC's existing Sourcewell/Canoe vendor approval is the warm path. This is the first relationship call to make.",next:"Leverage TBDC-BDC relationship. Sourcewell approval is the warm path anchor — lead with it."},
+{v:"OMERS Ventures",sc:11,geo:3,stage:2,sec:2,rev:2,chk:2,founder:1,gap:0,warm:"Possible via TBDC",tx:"ARR is at lower end of OMERS threshold but EU logos are compelling. Approach only once VEMOCO signals active fundraising posture.",next:"Hold until VEMOCO is actively raising. Then TBDC warm path to OMERS."}
+],
+dn:[{v:"Portage / Impression",w:"FinTech/InsurTech exclusive. Fleet telematics has no overlap."},
+{v:"Radical Ventures",w:"AI/ML research thesis. VEMOCO's telematics SaaS is applied software — wrong investor identity."},
+{v:"Accel India / Peak XV",w:"India-market focus. No India presence or roadmap."}],
+intl:[
+{v:"Northzone",hq:"Stockholm / London",focus:"European enterprise SaaS, logistics",hook:"Tesco, Vodafone, Heineken as EU reference clients",tx:"Listed as Tier 1 Canadian match — also the primary international match given European origin and existing EU client relationships."},
+{v:"Earlybird",hq:"Berlin / Europe",focus:"European enterprise SaaS",hook:"EU client logos (Tesco, Vodafone, Heineken) recognized by German LPs",tx:"European enterprise SaaS with logistics and fleet applications. The Tesco and Vodafone logos are household names for Earlybird's LP base."},
+{v:"Insight Partners",hq:"New York / Global",focus:"Scaling B2B SaaS",hook:"EU ARR + enterprise logos + North America expansion",tx:"Insight backs scaling B2B SaaS companies with proven enterprise revenue. The EU client base and North America expansion story is a familiar playbook for them."}
+],
+precond:[
+{cat:"Foundational",txt:"VEMOCO must signal active fundraising intent before any investor introduction is made. Pressing an investor conversation on a company that is not raising creates relationship damage without upside."},
+{cat:"Foundational",txt:"The Toronto pilot needs to produce a named reference customer before Canadian investor conversations begin. 'Toronto pilot active' is promising — 'Toronto pilot with [company name]' is credible."},
+{cat:"Framing",txt:"The Sourcewell and Canoe vendor approvals must be surfaced explicitly in investor materials. European SaaS companies rarely hold these credentials — they significantly accelerate Canadian public sector procurement and are a genuine differentiator that investors won't notice unless it's called out."},
+{cat:"Timing",txt:"Approach Inovia with a strategic conversation framing — not a fundraise ask. VEMOCO's posture means leading with partnership and network value. The investment conversation can follow naturally."}
+]},
+// 9 — WIDMO
+{co:9,widmo:true,
+cx:[
+{n:"Agnico Eagle Mines",t:"Mining",h:"Toronto",d:"Canada's largest gold producer. Active exploration programs globally. GPR subsurface mapping directly applicable to site investigation workflows."},
+{n:"Kinross Gold",t:"Mining",h:"Toronto",d:"Major gold producer with global operations. Toronto HQ accessible. Strong GPR use case in site investigation programs."},
+{n:"Barrick Gold",t:"Mining",h:"Toronto",d:"Global mining giant with deep exploration budgets. One of the highest-value potential customer meetings TBDC can facilitate."},
+{n:"CRH Canada",t:"Aggregates",h:"Toronto",d:"Major aggregates and construction materials player. GPR for subsurface aggregate characterization is a direct application."},
+{n:"Holcim Canada",t:"Aggregates",h:"Mississauga",d:"European-origin aggregates company. WIDMO's Polish origin reduces adoption friction — European tech partners are familiar."},
+{n:"WSP Global (Golder)",t:"Geotechnical",h:"Montreal",d:"World's largest geotechnical consulting firm. Highest strategic relevance — WSP would use GPR internally and recommend WIDMO to mining clients, unlocking downstream opportunities."},
+{n:"Stantec",t:"Geotechnical",h:"Edmonton",d:"Major Canadian engineering firm with active geotechnical practice. GPR fits directly into their site characterization methodology."},
+{n:"Tetra Tech Canada",t:"Geotechnical",h:"Vancouver",d:"Environmental and geotechnical consulting — active in mining and resource projects with direct GPR applicability."}
+],
+ev:["PDAC 2026 (attended — follow up on contacts made immediately)","CIM Convention 2026","Mines and Money Toronto"]}
+];
+
+// ══ BONUS DATA ══
+var BONUS=[
+{tier:"A",match:"Omniful × STV (Riyadh)",body:"My MENA network, combined with a shared Egyptian-Cairo background with Omniful's CEO Mostafa Abolnasr, gives me a credible warm path to an STV introduction. STV is GCC's most active Series A fund and Omniful is the strongest strategic fit in this cohort. I would approach this via the Arab tech community network — a shared-context introduction lands differently than a cold email from a Canadian accelerator."},
+{tier:"A",match:"Omniful × Wamda Capital (Dubai)",body:"Wamda has MENA-network touchpoints I can access directly. This is a co-investor conversation rather than a round lead, but it adds GCC credibility to Omniful's cap table that has value beyond the cheque size."},
+{tier:"B",match:"Try and Buy × Accel India",body:"The Flipkart and Myntra reference customers are Accel India companies. An outreach framed around this shared ecosystem familiarity — 'you already trust the customers who trust Try and Buy' — is a specific and plausible angle for a cold LinkedIn message to Anand Daniel. The conversion probability is real if the framing is precise."},
+{tier:"B",match:"Quanscient × Earlybird",body:"Earlybird's deep tech fund thesis is well documented and Finnish deep tech is squarely in their mandate. A cold outreach to Hendrik Brandis referencing Bosch as a reference customer and the Canada GTM angle is a plausible conversion — I have done this type of outreach before with similar company profiles."},
+{tier:"B",match:"Fermi Dev × Radical Ventures",body:"Jordan Jacobs has written publicly about manufacturing as an underserved AI vertical in Canadian portfolios. A cold outreach that references this specific gap — framed around Zeiss Pharma and Agora Analytics as early paying customers — has a genuine conversion probability. I would not promise a meeting, but I would commit to a thoughtful approach."},
+{tier:"C",match:"BDC Capital, MaRS IAF, OMERS Ventures",body:"My honest assessment is that the most efficient path to these institutions runs through TBDC's existing relationships rather than my direct network. I can support these introductions — preparing company briefs, drafting outreach language, attending meetings as a context-setter — but claiming a personal warm path here without TBDC backing would be overstating what I bring on day one. What I bring instead is the knowledge of how to frame each company's narrative for each investor's specific thesis — the skill that converts a warm introduction into a meeting that actually advances."}
+];
+
+// ══════════════════════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ══════════════════════════════════════════════════════════════════
+function tab(id,el){
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('on')});
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
+  el.classList.add('on');
+  document.getElementById('p-'+id).classList.add('on');
+}
+
+function stB(s){
+  if(s.indexOf('Pre-seed')>=0||s.indexOf('Pre-')>=0) return '<span class="badge b-pre">'+s+'</span>';
+  if(s.indexOf('Series A')>=0) return '<span class="badge b-a">'+s+'</span>';
+  if(s.indexOf('Series B')>=0||s.indexOf('Growth')>=0) return '<span class="badge b-b">'+s+'</span>';
+  if(s.indexOf('Seed')>=0) return '<span class="badge b-seed">'+s+'</span>';
+  return '<span class="badge b-na">'+s+'</span>';
+}
+
+function typeB(t){
+  if(t==='VC') return '<span class="badge b-type-vc">VC</span>';
+  if(t==='Government') return '<span class="badge b-type-gov">Gov</span>';
+  return '<span class="badge b-na">'+t+'</span>';
+}
+
+function leadB(l){
+  if(l==='Lead') return '<span class="badge b-lead">Lead</span>';
+  if(l==='Follow') return '<span class="badge b-follow">Follow</span>';
+  return '<span class="badge b-both">'+l+'</span>';
+}
+
+(function(){
+  var h='';
+  INVESTORS.forEach(function(iv){
+    h+='<tr><td><strong>'+iv.n+'</strong></td><td>'+typeB(iv.type)+'</td><td>'+stB(iv.stage)+'</td><td style="font-size:.73rem">'+iv.sectors+'</td><td style="font-family:monospace;font-size:.72rem">'+iv.chk+'</td><td style="font-size:.73rem">'+iv.geo+'</td><td>'+leadB(iv.lead)+'</td><td style="font-family:monospace;font-size:.72rem;color:var(--text3)">'+iv.deals+'</td><td style="font-size:.73rem">'+iv.port+'</td><td style="font-size:.72rem;color:var(--text2)">'+iv.contact+'</td></tr>';
+  });
+  document.getElementById('inv-tbody').innerHTML=h;
+})();
+
+(function(){
+  var h='';
+  COMPANIES.forEach(function(c){
+    h+='<tr><td><strong>'+c.n+'</strong></td><td style="font-family:monospace;font-size:.7rem">'+c.co+'</td><td>'+stB(c.st)+'</td><td style="font-size:.73rem">'+c.sec+'</td><td style="font-size:.73rem">'+c.arr+'</td><td style="font-family:monospace;font-size:.72rem">'+c.ask+'</td><td style="font-size:.73rem">'+c.home+'</td><td style="font-size:.73rem">'+c.target+'</td><td style="font-size:.73rem">'+c.founder+'</td><td>'+(c.inv?'<span class="badge b-lead">Open</span>':'<span class="badge b-flag">⚠ Declined</span>')+'</td></tr>';
+  });
+  document.getElementById('co-tbody').innerHTML=h;
+})();
+
+(function(){
+  var h='';
+  var divs=[{i:0,l:"Pivot Cohort 1"},{i:5,l:"Horizon Cohort 3"}];
+  var di=0;
+  COMPANIES.forEach(function(c,i){
+    if(di<divs.length&&i===divs[di].i){
+      h+='<div class="co-divider">'+divs[di].l+'</div>';
+      di++;
+    }
+    h+='<button class="co-btn'+(i===0?' on':'')+(c.inv?'':' w-on')+'" onclick="pickCo('+i+')" id="cb'+i+'">'+c.n+(c.inv?'':' ⚠')+'<span class="co-tag">'+c.sec.split('/')[0].trim()+'</span></button>';
+  });
+  document.getElementById('co-nav').innerHTML=h;
+})();
+
+(function(){
+  var h='';
+  BONUS.forEach(function(b){
+    var cls=b.tier==='A'?'tier-a':b.tier==='B'?'tier-b':'tier-c';
+    var tcls=b.tier==='A'?'bt-a':b.tier==='B'?'bt-b':'bt-c';
+    var tlbl=b.tier==='A'?'Tier A — Warm path (< 2 weeks)':b.tier==='B'?'Tier B — Cold outreach (specific angle)':'Tier C — TBDC institutional path';
+    h+='<div class="bonus-card '+cls+'"><div class="bonus-tier '+tcls+'">'+tlbl+'</div><div class="bonus-match">'+b.match+'</div><div class="bonus-body">'+b.body+'</div></div>';
+  });
+  document.getElementById('bonus-grid').innerHTML=h;
+})();
+
+function wm(w){return w&&(w.indexOf('Possible')>=0||w.indexOf('Warm')>=0||w.indexOf('Ahmed')>=0);}
+
+function scoreB(sc){
+  var cls=sc>=13?'b-warm':sc>=8?'b-cond':'b-no';
+  var lbl=sc>=13?'Tier 1':sc>=8?'Tier 2':'Tier 3';
+  return '<span class="badge '+cls+'">'+lbl+' · '+sc+'/16</span>';
+}
+
+function dims(m){
+  var dd=[{l:'Geo',v:m.geo,max:3},{l:'Stage',v:m.stage,max:3},{l:'Sector',v:m.sec,max:3},{l:'Revenue',v:m.rev,max:2},{l:'Cheque',v:m.chk,max:2},{l:'Founder',v:m.founder,max:2}];
+  return dd.map(function(d){
+    var ok=d.v>=d.max;var part=d.v>0&&!ok;
+    return '<span class="sig '+(ok?'sig-y':part?'sig-y':'sig-n')+'">'+(ok?'✓':part?'~':'✗')+' '+d.l+' '+d.v+'/'+d.max+'</span>';
+  }).join('');
+}
+
+function mcard(m){
+  return '<div class="match-card"><div class="mc-top"><div><div class="mc-vc">'+m.v+'</div><div class="mc-meta">'+m.warm+'</div></div><div class="mc-right">'+scoreB(m.sc)+'</div></div><div class="signals">'+dims(m)+'</div><div class="mc-rat">'+m.tx+'</div><div class="mc-next">Next step: '+m.next+'</div></div>';
+}
+
+function intlcard(m){
+  return '<div class="intl-card"><div class="intl-top"><div><div class="intl-vc">'+m.v+'</div><div class="intl-meta">'+m.hq+' · Focus: '+m.focus+'</div></div><span class="badge b-intl">International</span></div><div class="intl-rat">'+m.tx+'</div><span class="intl-hook">Outreach hook: '+m.hook+'</span></div>';
+}
+
+var pcat={'Foundational':'ps-req','Timing':'ps-timing','Framing':'ps-framing'};
+function precondcard(p){
+  return '<div class="precond-item"><div class="precond-num">'+['①','②','③','④','⑤'][0]+'</div><div class="precond-text">'+p.txt+'<br><span class="precond-status '+(pcat[p.cat]||'ps-req')+'">'+p.cat+'</span></div></div>';
+}
+
+function renderWidmo(m){
+  var h='<div class="widmo-gate"><h3>⚠ Hard gate — investor introductions explicitly declined</h3><p>WIDMO has stated they do not want investor introductions. This is the first thing any partnerships manager should register when reviewing this company. WIDMO is removed from all investor matching logic and redirected to customer meeting facilitation in mining, aggregates, and geotechnical sectors.</p></div>';
+  h+='<div class="sec-head">Customer meeting targets</div><div class="cx-grid">';
+  m.cx.forEach(function(t){h+='<div class="cx-card"><div class="cx-row"><div class="cx-name">'+t.n+'</div><span class="badge b-na" style="font-size:.6rem">'+t.t+'</span></div><div class="cx-hq">'+t.h+'</div><div class="cx-desc">'+t.d+'</div></div>';});
+  h+='</div><div class="sec-head" style="margin-top:1.5rem">Industry events for customer activation</div>';
+  m.ev.forEach(function(e){h+='<span class="ev-pill">'+e+'</span>';});
+  return h;
+}
+
+function renderMatch(d,pane){
+  if(d.widmo) return renderWidmo(d);
+  if(pane==='canadian'){
+    var h='';
+    if(d.t1&&d.t1.length){h+='<div class="sec-head">Tier 1 — priority introductions</div>';d.t1.forEach(function(m){h+=mcard(m);});}
+    if(d.t2&&d.t2.length){h+='<div class="sec-head">Tier 2 — qualified outreach</div>';d.t2.forEach(function(m){h+=mcard(m);});}
+    if(d.dn&&d.dn.length){
+      h+='<div class="sec-head">Do not match — reason logged</div>';
+      d.dn.forEach(function(m){h+='<div class="dnm-item"><div class="dnm-x">✗</div><div><div class="dnm-vc">'+m.v+'</div><div class="dnm-why">'+m.w+'</div></div></div>';});
+    }
+    return h;
+  }
+  if(pane==='international'){
+    var h='<div class="sec-head">International VC matches — non-Canadian investors</div>';
+    if(d.intl&&d.intl.length){d.intl.forEach(function(m){h+=intlcard(m);});}
+    else{h+='<p style="font-size:.82rem;color:var(--text3)">International matches not yet profiled for this company.</p>';}
+    return h;
+  }
+  if(pane==='precond'){
+    var h='<div class="sec-head">Pre-conditions before making introductions</div>';
+    if(d.precond&&d.precond.length){
+      h+='<div class="precond-card"><div class="precond-title">What must be in place before any introduction is made</div>';
+      d.precond.forEach(function(p,i){
+        h+='<div class="precond-item"><div class="precond-num">'+(i+1)+'</div><div class="precond-text">'+p.txt+'<br><span class="precond-status '+(pcat[p.cat]||'ps-req')+'">'+p.cat+'</span></div></div>';
+      });
+      h+='</div>';
+    }
+    return h;
+  }
+  return '';
+}
+
+var curCo=0;
+var curPane='canadian';
+
+function pickPane(p,el){
+  document.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  curPane=p;
+  var co=COMPANIES[curCo];
+  var md=MATCHES[curCo];
+  if(md.widmo){document.getElementById('sub-content').innerHTML=renderWidmo(md);return;}
+  document.getElementById('sub-content').innerHTML=renderMatch(md,p);
+}
+
+function pickCo(i){
+  curCo=i;
+  document.querySelectorAll('.co-btn').forEach(function(b){b.classList.remove('on');b.classList.remove('w-on');});
+  var btn=document.getElementById('cb'+i);
+  var c=COMPANIES[i];
+  if(c.inv) btn.classList.add('on'); else btn.classList.add('w-on');
+
+  var tags=[c.st,c.home,c.ask].map(function(s){return '<span style="font-size:.68rem;font-family:monospace;padding:2px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text2);display:inline-block;margin:2px 2px 2px 0">'+s+'</span>';}).join('');
+  var md=MATCHES[i];
+
+  var subNav='';
+  if(!md.widmo){
+    subNav='<div class="sub-nav"><button class="sub-tab '+(curPane==='canadian'?'on':'')+'" onclick="pickPane(\'canadian\',this)">Canadian VCs</button><button class="sub-tab '+(curPane==='international'?'on':'')+'" onclick="pickPane(\'international\',this)">International VCs</button><button class="sub-tab '+(curPane==='precond'?'on':'')+'" onclick="pickPane(\'precond\',this)">Pre-conditions</button></div>';
+  }
+
+  var html='<div class="profile"><div class="profile-top"><div><div style="font-size:.65rem;font-family:monospace;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px">TBDC '+c.co+'</div><div class="profile-name">'+c.n+'</div><div class="profile-sub">'+c.sec+'</div></div>'+(c.inv?'':'<span class="badge b-flag">⚠ NO INVESTOR INTRODUCTIONS</span>')+'</div><div class="profile-tags">'+tags+'</div><div class="profile-rev">'+c.arr+'</div></div>';
+  html+=subNav;
+  html+='<div id="sub-content">';
+  if(md.widmo) html+=renderWidmo(md);
+  else html+=renderMatch(md,curPane);
+  html+='</div>';
+
+  document.getElementById('match-main').innerHTML=html;
+}
+
+pickCo(0);
+</script>
+</body>
+</html>
