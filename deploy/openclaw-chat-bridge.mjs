@@ -275,15 +275,15 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ ok: false, error: "invalid JSON body" }));
         return;
       }
-      const { companySlug, filename, content } = payload ?? {};
-      if (!companySlug || !filename || content === undefined || content === null) {
+      const { companySlug, filename, content, contentBase64 } = payload ?? {};
+      if (!companySlug || !filename) {
         res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ ok: false, error: "companySlug, filename, and content are required" }));
+        res.end(JSON.stringify({ ok: false, error: "companySlug and filename are required" }));
         return;
       }
-      if (typeof content !== "string" || Buffer.byteLength(content, "utf8") > 500_000) {
-        res.writeHead(413, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ ok: false, error: "content exceeds 500 KB limit" }));
+      if (!content && !contentBase64) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ ok: false, error: "content or contentBase64 is required" }));
         return;
       }
       // Security: reject path traversal attempts in either field.
@@ -292,11 +292,28 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ ok: false, error: "companySlug and filename must not contain path separators or .." }));
         return;
       }
+      // Determine what to write
+      let fileBuffer;
+      if (contentBase64) {
+        fileBuffer = Buffer.from(contentBase64, "base64");
+        if (fileBuffer.length > 5_000_000) {
+          res.writeHead(413, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "file exceeds 5 MB limit" }));
+          return;
+        }
+      } else {
+        if (Buffer.byteLength(content, "utf8") > 500_000) {
+          res.writeHead(413, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ ok: false, error: "content exceeds 500 KB limit" }));
+          return;
+        }
+        fileBuffer = content;
+      }
       const dir = `/home/node/.openclaw/workspace/companies/${companySlug}`;
       const filePath = `${dir}/${filename}`;
       try {
         await fsPromises.mkdir(dir, { recursive: true });
-        await fsPromises.writeFile(filePath, content, "utf8");
+        await fsPromises.writeFile(filePath, fileBuffer, contentBase64 ? undefined : "utf8");
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ ok: true, path: `companies/${companySlug}/${filename}` }));
         return;
