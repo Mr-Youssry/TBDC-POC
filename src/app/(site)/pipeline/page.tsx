@@ -42,32 +42,34 @@ export default async function PipelinePage() {
   ]);
 
   return (
-    <div>
-      <h1 className="font-serif text-xl text-text-1 mb-1">Pipeline</h1>
-      <p className="text-text-3 text-sm mb-5">
-        Track outreach status for each investor-company match.
-      </p>
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Pinned header */}
+      <div className="flex-shrink-0 px-8 py-4 bg-background border-b border-border">
+        <h1 className="font-serif text-xl text-text-1 mb-1">Pipeline</h1>
+        <p className="text-sm text-text-3">Track outreach status for each investor-company match.</p>
+      </div>
 
-      <div className="bg-surface border border-border rounded-[10px] overflow-hidden">
-        <table className="w-full border-collapse">
+      {/* Scrollable table */}
+      <div className="flex-1 overflow-auto mx-8 my-4 border border-border rounded-[10px]">
+        <table className="text-[0.78rem] border-collapse">
           <thead>
             <tr className="bg-surface-2 text-text-3 font-mono text-xs uppercase tracking-wider">
-              <th className="px-3 py-2 text-left font-medium">Company</th>
-              <th className="px-3 py-2 text-left font-medium">Investor</th>
-              <th className="px-3 py-2 text-left font-medium">Score</th>
-              <th className="px-3 py-2 text-left font-medium">Warm Path</th>
-              <th className="px-3 py-2 text-left font-medium">Status</th>
-              <th className="px-3 py-2 text-left font-medium">Bonus</th>
-              <th className="px-3 py-2 text-left font-medium">Next Step</th>
+              <th className="sticky top-0 left-0 z-30 bg-surface-2 px-3 py-2 text-left font-medium">Company</th>
+              <th className="sticky top-0 z-20 bg-surface-2 px-3 py-2 text-left font-medium">Investor</th>
+              <th className="sticky top-0 z-20 bg-surface-2 px-3 py-2 text-left font-medium">Score</th>
+              <th className="sticky top-0 z-20 bg-surface-2 px-3 py-2 text-left font-medium">Warm Path</th>
+              <th className="sticky top-0 z-20 bg-surface-2 px-3 py-2 text-left font-medium">Status</th>
+              <th className="sticky top-0 z-20 bg-surface-2 px-3 py-2 text-left font-medium">Bonus</th>
+              <th className="sticky top-0 z-20 bg-surface-2 px-3 py-2 text-left font-medium">Next Step</th>
             </tr>
           </thead>
           <tbody>
-            {matches.map((m, i) => (
+            {matches.map((m) => (
               <tr
                 key={m.id}
-                className={`border-b border-border text-sm${i % 2 === 0 ? " bg-surface" : ""}`}
+                className="group bg-background hover:bg-surface-2 border-b border-border"
               >
-                <td className="px-3 py-2 text-text-1 font-medium whitespace-nowrap">
+                <td className="sticky left-0 z-10 bg-background group-hover:bg-surface-2 border-r border-border px-3 py-2 text-text-1 font-medium whitespace-nowrap" style={{ minWidth: 140 }}>
                   {m.company.name}
                 </td>
                 <td className="px-3 py-2 text-text-1 whitespace-nowrap">
@@ -96,7 +98,7 @@ export default async function PipelinePage() {
             ))}
             {matches.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-3 py-6 text-center text-text-3 text-sm">
+                <td colSpan={7} className="px-3 py-6 text-center text-text-3">
                   No matches found.
                 </td>
               </tr>
