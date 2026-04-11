@@ -28,13 +28,13 @@ export function ChannelSidebar({
     <Link
       key={c.id}
       href={`/analyst?session=${encodeURIComponent(c.openclawSessionId)}`}
-      className={`block px-3 py-1.5 text-sm rounded transition-colors ${
+      className={`block px-3 py-1.5 text-[0.78rem] rounded-full transition-colors ${
         c.openclawSessionId === activeId
-          ? "bg-t1-bg text-text-1 font-medium"
-          : "text-text-2 hover:bg-surface-2"
+          ? "bg-t1-bg text-[#f5f4f0] font-medium"
+          : "text-text-2 hover:bg-surface-3 bg-surface-2/60"
       }`}
     >
-      # {c.displayName}
+      {c.displayName}
     </Link>
   );
 

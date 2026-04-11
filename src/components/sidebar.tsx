@@ -36,7 +36,7 @@ const icons: Record<string, React.ReactNode> = {
   ),
   analyst: (
     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-[18px] h-[18px] flex-shrink-0">
-      <path d="M4 14l4-4 3 3 5-6" strokeLinecap="round" strokeLinejoin="round" /><rect x="2" y="2" width="16" height="16" rx="2" />
+      <path d="M4 4h12a1 1 0 011 1v8a1 1 0 01-1 1H7l-3 3V5a1 1 0 011-1z" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   training: (
