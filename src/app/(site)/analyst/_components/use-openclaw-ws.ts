@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * v2.0 analyst chat hook — HTTP POST bridge, NOT WebSocket.
@@ -72,12 +72,29 @@ export function useOpenClawWs({
   const [state, setState] = useState<ConnectionState>("open");
   const inFlightRef = useRef(false);
 
-  // Reset the message log when the user switches channels. We don't try to
-  // hydrate past history from the server — each channel starts fresh in the
-  // UI; the gateway's own session store remembers the conversation for
-  // follow-up turns via `--session-id`.
-  // (intentionally no useEffect: the component's `key={openclawSessionId}`
-  // in page.tsx already forces a re-mount per channel)
+  // Load persistent chat history when this session mounts. The component's
+  // `key={openclawSessionId}` in page.tsx forces a re-mount on channel switch,
+  // so this effect fires once per session. History is fetched directly from
+  // the bridge via Caddy (/api/openclaw/history → bridge /history); no
+  // Next.js route handler needed. Failures are silent — empty history is fine.
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/openclaw/history?sessionId=${encodeURIComponent(openclawSessionId)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (cancelled || !data.ok) return;
+        const loaded: ChatMessage[] = data.messages.map((m: { timestamp: string; role: string; content: string }) => ({
+          id: `hist-${m.timestamp}-${m.role}`,
+          sender: m.role === "assistant" ? "assistant" as const : "user" as const,
+          senderName: m.role === "assistant" ? "Assistant" : currentUserName,
+          content: m.content,
+          timestamp: new Date(m.timestamp).getTime(),
+        }));
+        setMessages(loaded);
+      })
+      .catch(() => { /* fail silently — empty history is fine */ });
+    return () => { cancelled = true; };
+  }, [openclawSessionId, currentUserName]);
 
   const sendMessage = async (content: string) => {
     const trimmed = content.trim();
