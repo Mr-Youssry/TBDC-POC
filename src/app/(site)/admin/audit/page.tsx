@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Audit Log — TBDC POC" };
+
 import { prisma } from "@/lib/prisma";
 import { requireSessionForPage } from "@/lib/guards";
 import { AuditRow } from "./_components/audit-row";

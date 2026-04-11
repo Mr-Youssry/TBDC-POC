@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Pipeline — TBDC POC" };
+
 import { prisma } from "@/lib/prisma";
 import { isLoggedIn } from "@/lib/guards";
 import { StatusSelect } from "./_components/status-select";

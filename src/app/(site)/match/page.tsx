@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Match Output — TBDC POC" };
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { isLoggedIn } from "@/lib/guards";

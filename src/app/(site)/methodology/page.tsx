@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Methodology — TBDC POC" };
+
 import { prisma } from "@/lib/prisma";
 import { isLoggedIn } from "@/lib/guards";
 import { SecHead } from "@/components/sec-head";

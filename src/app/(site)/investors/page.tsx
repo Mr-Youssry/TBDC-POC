@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Investor Database — TBDC POC" };
+
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isLoggedIn } from "@/lib/guards";

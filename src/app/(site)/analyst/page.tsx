@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Analyst — TBDC POC" };
+
 import { requireSessionForPage } from "@/lib/guards";
 import { prisma } from "@/lib/prisma";
 import { ChannelSidebar } from "./_components/channel-sidebar";
