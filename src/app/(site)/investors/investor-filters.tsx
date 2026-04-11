@@ -42,7 +42,7 @@ export function InvestorFilters({ counts }: { counts: { total: number; canada: n
       className={[
         "px-[10px] py-[4px] rounded-[4px] text-[0.68rem] font-mono tracking-[0.03em] border transition-colors whitespace-nowrap",
         active
-          ? "bg-text-1 text-bg border-text-1"
+          ? "bg-text-1 text-[#f5f4f0] border-text-1"
           : "bg-surface border-border text-text-2 hover:bg-surface-2",
       ].join(" ")}
     >

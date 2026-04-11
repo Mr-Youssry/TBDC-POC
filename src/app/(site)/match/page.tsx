@@ -13,24 +13,24 @@ import {
 
 export const dynamic = "force-dynamic";
 
-function scoreBadge(sc: number) {
-  if (sc >= 13) {
+function scoreBadge(sc: number, tier: number) {
+  if (tier === 1) {
     return (
       <span className="inline-block font-mono text-[0.62rem] px-[7px] py-[2px] rounded-[4px] bg-t1-bg text-t1-txt border border-t1-bdr font-bold whitespace-nowrap">
-        Tier 1 · {sc}/16
+        Tier 1 · {sc}/14
       </span>
     );
   }
-  if (sc >= 8) {
+  if (tier === 2) {
     return (
       <span className="inline-block font-mono text-[0.62rem] px-[7px] py-[2px] rounded-[4px] bg-t2-bg text-t2-txt border border-t2-bdr font-bold whitespace-nowrap">
-        Tier 2 · {sc}/16
+        Tier 2 · {sc}/14
       </span>
     );
   }
   return (
     <span className="inline-block font-mono text-[0.62rem] px-[7px] py-[2px] rounded-[4px] bg-t3-bg text-t3-txt border border-t3-bdr font-bold whitespace-nowrap">
-      Tier 3 · {sc}/16
+      Tier 3 · {sc}/14
     </span>
   );
 }
@@ -198,7 +198,7 @@ export default async function MatchPage({
           <>
             {tier1.length > 0 && (
               <>
-                <SecHead>Tier 1 — priority introductions (score 13–16/16)</SecHead>
+                <SecHead>Tier 1 — priority introductions (score 11–14/14)</SecHead>
                 {tier1.map((m) => (
                   <div
                     key={m.id}
@@ -220,7 +220,7 @@ export default async function MatchPage({
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-1.5">
-                        {scoreBadge(m.score)}
+                        {scoreBadge(m.score, m.tier)}
                         <div className="font-mono text-[0.68rem] text-text-3">
                           Gap:{" "}
                           <EditableCell
@@ -234,12 +234,10 @@ export default async function MatchPage({
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-1.5 mb-2.5">
-                      {dimSignal("Geo", m.geoPts, 3)}
-                      {dimSignal("Stage", m.stagePts, 3)}
                       {dimSignal("Sector", m.sectorPts, 3)}
-                      {dimSignal("Revenue", m.revenuePts, 2)}
+                      {dimSignal("Stage", m.stagePts, 3)}
                       {dimSignal("Cheque", m.chequePts, 2)}
-                      {dimSignal("Founder", m.founderPts, 2)}
+                      {dimSignal("Founder", m.founderPts, 1)}
                       {dimSignal("Gap", m.gapPts, 1)}
                     </div>
                     <div className="text-[0.82rem] text-text-2 leading-relaxed mb-1.5">
@@ -273,7 +271,7 @@ export default async function MatchPage({
             )}
             {tier2.length > 0 && (
               <>
-                <SecHead>Tier 2 — qualified outreach (score 8–12/16)</SecHead>
+                <SecHead>Tier 2 — qualified outreach (score 7–10/14)</SecHead>
                 {tier2.map((m) => (
                   <div
                     key={m.id}
@@ -295,7 +293,7 @@ export default async function MatchPage({
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-1.5">
-                        {scoreBadge(m.score)}
+                        {scoreBadge(m.score, m.tier)}
                         <div className="font-mono text-[0.68rem] text-text-3">
                           Gap:{" "}
                           <EditableCell
@@ -309,12 +307,10 @@ export default async function MatchPage({
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-1.5 mb-2.5">
-                      {dimSignal("Geo", m.geoPts, 3)}
-                      {dimSignal("Stage", m.stagePts, 3)}
                       {dimSignal("Sector", m.sectorPts, 3)}
-                      {dimSignal("Revenue", m.revenuePts, 2)}
+                      {dimSignal("Stage", m.stagePts, 3)}
                       {dimSignal("Cheque", m.chequePts, 2)}
-                      {dimSignal("Founder", m.founderPts, 2)}
+                      {dimSignal("Founder", m.founderPts, 1)}
                       {dimSignal("Gap", m.gapPts, 1)}
                     </div>
                     <div className="text-[0.82rem] text-text-2 leading-relaxed mb-1.5">
