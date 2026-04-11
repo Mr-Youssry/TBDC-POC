@@ -103,7 +103,7 @@ Reuses the existing `MessagePane` + `useOpenClawWs` hook from the analyst page.
 
 ## Bridge endpoints (3 new)
 
-All follow the existing dual-path pattern (`/endpoint` + `/api/openclaw/endpoint`). All use the existing `fsPromises` import.
+All follow the existing dual-path pattern (`/endpoint` + `/api/openclaw/endpoint`). All use the existing `fsPromises` import. The frontend calls these directly via the Caddy passthrough (`/api/openclaw/workspace/tree`, `/api/openclaw/workspace/file`) — no Next.js route handler needed (same pattern as `/api/openclaw/history`).
 
 ### GET /workspace/tree
 
@@ -144,9 +144,11 @@ Returns the full directory tree of `/home/node/.openclaw/workspace/`.
 }
 ```
 
-**ReadOnly logic:** Any path under `memory/` or the file `MEMORY.md` is `readOnly: true`. Everything else is `readOnly: false`.
+**ReadOnly logic:** `path === "MEMORY.md" || path.startsWith("memory/")` → `readOnly: true`. Everything else is `readOnly: false`.
 
 **Exclusions:** Skip `.git/`, `.openclaw/`, `state/`, `node_modules/`, and any dotfiles. Only return `.md` files.
+
+**Frontend grouping:** The bridge returns the flat workspace tree. The client-side `workspace-tree.tsx` component groups root-level `.md` files (SOUL.md, IDENTITY.md, USER.md, AGENTS.md, HEARTBEAT.md, TOOLS.md) into a virtual "Identity" section. The `memory/` and `companies/` directories become their own collapsible sections.
 
 ### GET /workspace/file?path=SOUL.md
 
@@ -163,6 +165,8 @@ Reads a single file from the workspace.
   "readOnly": false
 }
 ```
+
+**File not found:** Return `404` with `{ "ok": false, "error": "file not found" }`.
 
 ### PUT /workspace/file
 
@@ -191,21 +195,35 @@ Saves edited content to the workspace.
 
 ## Database seed
 
-One new `ChatSession` row for the configure session:
+One new `ChatSession` row for the configure session. Add to the existing `upsertInitialChatSessions()` function in `prisma/seed.ts` using the same `prisma.chatSession.upsert()` pattern:
 
-```sql
-INSERT INTO "ChatSession" (id, "scopeType", "openclawSessionId", "displayName", "createdAt")
-VALUES (gen_random_uuid(), 'general', 'tbdc-configure', 'Configure SCOTE', NOW());
+```typescript
+await prisma.chatSession.upsert({
+  where: { scopeType_scopeEntityId: { scopeType: "general", scopeEntityId: "__configure__" } },
+  create: {
+    scopeType: "general",
+    scopeEntityId: "__configure__",
+    openclawSessionId: "tbdc-configure",
+    displayName: "Configure SCOTE",
+  },
+  update: {},
+});
 ```
 
-This row is NOT returned in the analyst page's channel query (filtered by excluding `openclawSessionId = 'tbdc-configure'`).
+**Analyst page exclusion:** The analyst page's `prisma.chatSession.findMany()` currently has NO `where` clause — it returns all sessions. Add a filter to exclude the configure session: `where: { openclawSessionId: { not: "tbdc-configure" } }`. Without this, "Configure SCOTE" will appear in the analyst's channel sidebar.
 
 ## Agent naming
 
-Replace "Assistant" with "SCOTE" in:
-- `use-openclaw-ws.ts`: the `senderName` for assistant messages → `"SCOTE"`
-- `message-pane.tsx`: the placeholder text "Assistant is thinking…" → "SCOTE is thinking…"
-- `message-pane.tsx`: error messages "Assistant error:" → "SCOTE error:"
+Replace "Assistant" with "SCOTE" in these exact locations:
+
+**`use-openclaw-ws.ts`** (3 occurrences):
+- History loading: `senderName: m.role === "assistant" ? "Assistant"` → `"SCOTE"` (line ~89)
+- Live response: `senderName: "Assistant"` → `"SCOTE"` (line ~161)
+- Error message: `"Assistant error:"` → `"SCOTE error:"` (line ~144)
+
+**`message-pane.tsx`** (2 occurrences):
+- In-flight banner: `"Assistant is thinking…"` → `"SCOTE is thinking…"` (line ~129)
+- Placeholder text: `"Waiting for the Assistant to reply…"` → `"Waiting for SCOTE to reply…"` (line ~196)
 
 ## File structure (new files)
 
@@ -217,7 +235,9 @@ Replace "Assistant" with "SCOTE" in:
 | `src/app/(site)/training/_components/file-viewer.tsx` | Client component: read-only rendered markdown + copy |
 | `src/app/(site)/training/_components/training-layout.tsx` | Client component: three-panel layout orchestrator |
 
-Reused from analyst: `MessagePane`, `useOpenClawWs`, `ToolCallPill`, `AssistantMarkdown`.
+**Shared components (reused from analyst):** `MessagePane`, `useOpenClawWs`, `ToolCallPill`.
+
+**Component extraction required:** `AssistantMarkdown` is currently a file-private function inside `message-pane.tsx`. Extract it into `src/app/(site)/analyst/_components/assistant-markdown.tsx` and export it, so both `MessagePane` and the training page's `file-viewer.tsx` can import it.
 
 ## What is NOT in scope
 
@@ -227,3 +247,4 @@ Reused from analyst: `MessagePane`, `useOpenClawWs`, `ToolCallPill`, `AssistantM
 - File deletion from the UI
 - The BOOTSTRAP.md first-run flow (Ahmed can reference it manually in the chat)
 - Streaming responses (same HTTP bridge pattern as analyst)
+- Concurrent edit detection (last-write-wins is acceptable for single-user POC)
