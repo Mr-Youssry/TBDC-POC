@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function UploadModal({
   open,
@@ -16,6 +16,9 @@ export function UploadModal({
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Clear stale error when modal reopens
+  useEffect(() => { if (open) setError(null); }, [open]);
 
   if (!open) return null;
 

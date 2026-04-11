@@ -83,8 +83,8 @@ export function useOpenClawWs({
       .then(r => r.json())
       .then(data => {
         if (cancelled || !data.ok) return;
-        const loaded: ChatMessage[] = data.messages.map((m: { timestamp: string; role: string; content: string }) => ({
-          id: `hist-${m.timestamp}-${m.role}`,
+        const loaded: ChatMessage[] = data.messages.map((m: { timestamp: string; role: string; content: string }, i: number) => ({
+          id: `hist-${m.timestamp}-${m.role}-${i}`,
           sender: m.role === "assistant" ? "assistant" as const : "user" as const,
           senderName: m.role === "assistant" ? "Assistant" : currentUserName,
           content: m.content,

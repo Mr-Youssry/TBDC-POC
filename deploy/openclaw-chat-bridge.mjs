@@ -211,9 +211,9 @@ const server = http.createServer(async (req, res) => {
   ) {
     const sessionId = new URL(req.url, "http://localhost").searchParams.get("sessionId") ?? "";
     console.log(`[bridge] GET /history sessionId=${sessionId || "(none)"}`);
-    if (!sessionId) {
+    if (!sessionId || /[.]{2}|[/\\]/.test(sessionId)) {
       res.writeHead(400, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ ok: false, error: "missing sessionId query param" }));
+      res.end(JSON.stringify({ ok: false, error: "missing or invalid sessionId" }));
       return;
     }
     const filePath = `/state/agents/main/sessions/${sessionId}.jsonl`;
