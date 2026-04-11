@@ -56,7 +56,15 @@ export async function toggleAcceptsIntros(id: string, accepts: boolean): Promise
   return { ok: true };
 }
 
-export async function addCompany(): Promise<Result> {
+export async function addCompany(input?: {
+  name?: string;
+  cohort?: string;
+  stage?: string;
+  sector?: string;
+  askSize?: string;
+  homeMarket?: string;
+  targetMarket?: string;
+}): Promise<Result> {
   try {
     await requireAdmin();
   } catch {
@@ -65,14 +73,14 @@ export async function addCompany(): Promise<Result> {
   const max = await prisma.company.aggregate({ _max: { sortOrder: true } });
   await prisma.company.create({
     data: {
-      name: "New company",
-      cohort: "Pivot 1",
-      stage: "Seed",
-      sector: "—",
+      name: input?.name?.trim() || "New company",
+      cohort: input?.cohort || "Pivot 1",
+      stage: input?.stage || "Seed",
+      sector: input?.sector?.trim() || "—",
       arrTraction: "—",
-      askSize: "—",
-      homeMarket: "—",
-      targetMarket: "—",
+      askSize: input?.askSize?.trim() || "—",
+      homeMarket: input?.homeMarket?.trim() || "—",
+      targetMarket: input?.targetMarket?.trim() || "—",
       founderProfile: "—",
       acceptsInvestorIntros: true,
       sortOrder: (max._max.sortOrder ?? 0) + 1,

@@ -42,7 +42,15 @@ export async function updateInvestorField(
   return { ok: true };
 }
 
-export async function addInvestor(): Promise<Result> {
+export async function addInvestor(input?: {
+  name?: string;
+  type?: string;
+  stage?: string;
+  sectors?: string;
+  chequeSize?: string;
+  geography?: string;
+  leadOrFollow?: string;
+}): Promise<Result> {
   try {
     await requireAdmin();
   } catch {
@@ -51,13 +59,13 @@ export async function addInvestor(): Promise<Result> {
   const max = await prisma.investor.aggregate({ _max: { sortOrder: true } });
   await prisma.investor.create({
     data: {
-      name: "New investor",
-      type: "VC",
-      stage: "Seed",
-      sectors: "—",
-      chequeSize: "—",
-      geography: "—",
-      leadOrFollow: "Lead",
+      name: input?.name?.trim() || "New investor",
+      type: input?.type || "VC",
+      stage: input?.stage || "Seed",
+      sectors: input?.sectors?.trim() || "—",
+      chequeSize: input?.chequeSize?.trim() || "—",
+      geography: input?.geography?.trim() || "—",
+      leadOrFollow: input?.leadOrFollow || "Lead",
       deals12m: "—",
       notablePortfolio: "—",
       contactApproach: "—",
