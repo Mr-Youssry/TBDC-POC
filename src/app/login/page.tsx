@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { loginAction, type LoginState } from "./actions";
 
 const initialState: LoginState = {};
@@ -12,6 +13,12 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-sm border border-border rounded-[10px] bg-surface p-8">
+        <div className="flex flex-col items-center mb-4">
+          <Image src="/tbdc-logo.png" alt="TBDC" width={48} height={48} className="rounded-lg mb-2" />
+          <p className="text-[0.7rem] font-mono text-text-3 tracking-[0.04em]">
+            TBDC Investor Matching System
+          </p>
+        </div>
         <div className="mb-6">
           <div className="text-[0.65rem] font-mono text-text-3 uppercase tracking-[0.06em] mb-2">
             TBDC POC — sign in
