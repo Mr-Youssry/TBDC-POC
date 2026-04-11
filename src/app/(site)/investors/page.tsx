@@ -135,7 +135,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
           </thead>
           <tbody>
             {sorted.map((iv) => (
-              <tr key={iv.id} className="hover:bg-surface-2 group">
+              <tr key={iv.id} className="group bg-background hover:bg-surface-2">
                 <td className="px-3 py-[9px] border-b border-border align-top sticky left-0 z-10 bg-background group-hover:bg-surface-2 border-r border-border" style={{ minWidth: 180 }}>
                   <EditableCell
                     id={iv.id}
