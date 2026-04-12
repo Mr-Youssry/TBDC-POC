@@ -1,4 +1,4 @@
-# SCOTE Platform Vision
+# SKIPR Platform Vision
 
 **From a $10/month demo to the operating system for venture ecosystems.**
 
@@ -10,7 +10,7 @@
 
 In one week, we built a working AI-powered partnerships management system for the Toronto Business Development Centre. It costs $10/month to run. It has:
 
-- An AI analyst (SCOTE) that internalized an 11-step investor matching methodology and applies it with judgment — not keyword matching
+- An AI analyst (SKIPR) that internalized an 11-step investor matching methodology and applies it with judgment — not keyword matching
 - A structured database of 10 portfolio companies, 171 investors, and 63 scored matches with activation logic
 - A training interface where a non-technical partnerships manager can edit the agent's identity, methodology, and knowledge base — like configuring a new hire
 - Persistent per-company chat sessions where context accumulates across conversations
@@ -46,7 +46,7 @@ The methodology is always in someone's head. When that person leaves, the method
 
 ## The Vision: Three Products
 
-### Product 1: SCOTE for Cohorts (B2B SaaS)
+### Product 1: SKIPR for Cohorts (B2B SaaS)
 
 **What it is:** A white-labeled platform for incubators, accelerators, and program managers to manage investor-company matching with an AI analyst that internalizes their specific methodology.
 
@@ -54,17 +54,17 @@ The methodology is always in someone's head. When that person leaves, the method
 
 **How it works:**
 
-1. **Onboarding.** The program manager goes through a training conversation with SCOTE (like we built in the SCOTE Training page). They describe their methodology — or use ours as a starting point. SCOTE internalizes it into AGENTS.md.
+1. **Onboarding.** The program manager goes through a training conversation with SKIPR (like we built in the SKIPR Training page). They describe their methodology — or use ours as a starting point. SKIPR internalizes it into AGENTS.md.
 
-2. **Company intake.** Each cohort company fills out a structured intake form. SCOTE builds their investability profile automatically. The six dimensions (capital type, stage, revenue, ask size, geography, founder profile) are populated from the form and enriched from public data.
+2. **Company intake.** Each cohort company fills out a structured intake form. SKIPR builds their investability profile automatically. The six dimensions (capital type, stage, revenue, ask size, geography, founder profile) are populated from the form and enriched from public data.
 
-3. **Investor database.** The program seeds their investor database — or connects to the shared Global Investor Graph (Product 3). SCOTE profiles each investor on the seven scoring dimensions.
+3. **Investor database.** The program seeds their investor database — or connects to the shared Global Investor Graph (Product 3). SKIPR profiles each investor on the seven scoring dimensions.
 
-4. **Matching.** SCOTE runs the methodology: route → gate → score → classify → activate. Every match has a tier, a warm path classification, pre-conditions, and a named next step. No match lists without activation logic.
+4. **Matching.** SKIPR runs the methodology: route → gate → score → classify → activate. Every match has a tier, a warm path classification, pre-conditions, and a named next step. No match lists without activation logic.
 
-5. **Pipeline management.** Matched companies move through the pipeline: not_started → outreach_sent → meeting_set → follow_up → term_sheet → closed. SCOTE monitors the pipeline via heartbeat and flags stale Tier 1 matches.
+5. **Pipeline management.** Matched companies move through the pipeline: not_started → outreach_sent → meeting_set → follow_up → term_sheet → closed. SKIPR monitors the pipeline via heartbeat and flags stale Tier 1 matches.
 
-6. **Institutional memory.** When the program manager changes, the methodology stays. It's in the files. The new PM reads SOUL.md, AGENTS.md, the company profiles — and SCOTE is the same analyst it was before the transition. This is the killer feature: **the methodology outlives the person.**
+6. **Institutional memory.** When the program manager changes, the methodology stays. It's in the files. The new PM reads SOUL.md, AGENTS.md, the company profiles — and SKIPR is the same analyst it was before the transition. This is the killer feature: **the methodology outlives the person.**
 
 **Pricing model:** Per-cohort subscription. $200-500/month per active cohort. Includes the AI analyst, the database, the matching engine, the training interface, and the pipeline tracker. Self-hosted option for organizations with data sovereignty requirements.
 
@@ -82,23 +82,23 @@ The methodology is always in someone's head. When that person leaves, the method
 
 ---
 
-### Product 2: SCOTE for Founders (B2C / Prosumer)
+### Product 2: SKIPR for Founders (B2C / Prosumer)
 
-**What it is:** A personal AI analyst for individual entrepreneurs who are fundraising. SCOTE helps them identify the right investors, prepare for outreach, and manage their pipeline — without needing a program manager.
+**What it is:** A personal AI analyst for individual entrepreneurs who are fundraising. SKIPR helps them identify the right investors, prepare for outreach, and manage their pipeline — without needing a program manager.
 
 **Who buys it:** Founders who are raising capital and don't have an incubator's investor network. The person currently cold-emailing 200 VCs from a Crunchbase export.
 
 **How it works:**
 
-1. **Founder profile.** The founder describes their company through a structured conversation. SCOTE builds their investability profile.
+1. **Founder profile.** The founder describes their company through a structured conversation. SKIPR builds their investability profile.
 
-2. **Investor discovery.** SCOTE queries the Global Investor Graph (Product 3) to find investors that match on all seven dimensions — not just sector and stage. It runs the full methodology: route, gate, score, classify.
+2. **Investor discovery.** SKIPR queries the Global Investor Graph (Product 3) to find investors that match on all seven dimensions — not just sector and stage. It runs the full methodology: route, gate, score, classify.
 
-3. **Outreach preparation.** For each Tier 1 and Tier 2 match, SCOTE writes a custom outreach strategy: who to contact, how to frame the ask, what pre-conditions need to be met, and what warm paths exist through the founder's network.
+3. **Outreach preparation.** For each Tier 1 and Tier 2 match, SKIPR writes a custom outreach strategy: who to contact, how to frame the ask, what pre-conditions need to be met, and what warm paths exist through the founder's network.
 
-4. **Pipeline tracking.** The founder logs intro outcomes. SCOTE maintains the pipeline and suggests next actions. When an investor passes, SCOTE adjusts the strategy.
+4. **Pipeline tracking.** The founder logs intro outcomes. SKIPR maintains the pipeline and suggests next actions. When an investor passes, SKIPR adjusts the strategy.
 
-5. **MCP integration.** For technical founders who already use Claude or Claude Code — SCOTE exposes the investor database as an MCP server. The founder can query investor data, run matches, and check their pipeline from their existing AI workflow without switching tools.
+5. **MCP integration.** For technical founders who already use Claude or Claude Code — SKIPR exposes the investor database as an MCP server. The founder can query investor data, run matches, and check their pipeline from their existing AI workflow without switching tools.
 
 **Pricing model:** Freemium. Free tier: 5 investor matches per month, basic scoring. Paid tier ($29/month): unlimited matches, full activation logic, pipeline tracking, MCP access. Premium tier ($99/month): includes Global Investor Graph data feed.
 
@@ -137,7 +137,7 @@ The methodology is always in someone's head. When that person leaves, the method
    - "Golden Ventures partner Sarah Chen moved to Version One" → partner_at edge updated, old fund's coverage gaps identified
    - "BDC Cleantech Practice announced new $200M allocation" → non-dilutive funding opportunity surfaced to eligible companies
 
-4. **Heartbeat integration.** SCOTE's heartbeat checks the feed. When a relevant event occurs for a matched investor or company, SCOTE surfaces it: "Earlybird just closed their new fund — they were in fundraising-hold for Omniful. Re-score and consider activating."
+4. **Heartbeat integration.** SKIPR's heartbeat checks the feed. When a relevant event occurs for a matched investor or company, SKIPR surfaces it: "Earlybird just closed their new fund — they were in fundraising-hold for Omniful. Re-score and consider activating."
 
 5. **API access.** Third-party tools can query the graph:
    - `GET /investors?sector=fintech&stage=seed&geography=canada&fund_phase=active`
@@ -147,15 +147,15 @@ The methodology is always in someone's head. When that person leaves, the method
 
 **Pricing model:** API subscription. $500/month for startups, $2,000/month for programs, $5,000/month for enterprise (VC firms, corporate development). Data contribution discount: programs that contribute fund status updates get 50% off.
 
-**Moat:** The graph gets better with every program that uses it. Each incubator that runs SCOTE for Cohorts contributes data about investor responsiveness, meeting outcomes, and deal conversion — data that no public API has. Over time, the graph knows not just who invests in what, but **who responds to warm intros, who ghosted after a meeting, and who actually deploys capital when they say they will.**
+**Moat:** The graph gets better with every program that uses it. Each incubator that runs SKIPR for Cohorts contributes data about investor responsiveness, meeting outcomes, and deal conversion — data that no public API has. Over time, the graph knows not just who invests in what, but **who responds to warm intros, who ghosted after a meeting, and who actually deploys capital when they say they will.**
 
 ---
 
 ## Additional Product Ideas
 
-### SCOTE for VCs (Portfolio Support)
+### SKIPR for VCs (Portfolio Support)
 
-**What it is:** A version of SCOTE that sits inside a VC firm's portfolio support function. Instead of matching companies to investors, it matches portfolio companies to customers, partners, and talent.
+**What it is:** A version of SKIPR that sits inside a VC firm's portfolio support function. Instead of matching companies to investors, it matches portfolio companies to customers, partners, and talent.
 
 **Who buys it:** Portfolio support leads at VC firms with 20+ portfolio companies.
 
@@ -164,11 +164,11 @@ The methodology is always in someone's head. When that person leaves, the method
 - "Company X needs a VP Engineering in Toronto. Do any of our portfolio alumni fit?"
 - "Company Y is expanding to Europe. Which of our LPs have European distribution networks?"
 
-### SCOTE for Angel Networks (Deal Flow Screening)
+### SKIPR for Angel Networks (Deal Flow Screening)
 
 **What it is:** A version that helps angel network managers screen deal flow and match incoming companies to the right member investors based on their stated preferences, past investment patterns, and portfolio gaps.
 
-**Difference from the cohort version:** Angel networks don't have cohorts — they have continuous deal flow. SCOTE would run as a triage system: company applies → SCOTE scores against member preferences → top matches surfaced to relevant members.
+**Difference from the cohort version:** Angel networks don't have cohorts — they have continuous deal flow. SKIPR would run as a triage system: company applies → SKIPR scores against member preferences → top matches surfaced to relevant members.
 
 ### The Feed App (Mobile)
 
@@ -184,9 +184,9 @@ The methodology is always in someone's head. When that person leaves, the method
 
 ### MCP Marketplace Plugin
 
-**What it is:** SCOTE's investor matching capability packaged as an MCP server that any AI coding assistant can query.
+**What it is:** SKIPR's investor matching capability packaged as an MCP server that any AI coding assistant can query.
 
-**How it works:** A founder using Claude Code or Cursor types: "Find me Series A VCs in Canada that invest in supply chain SaaS and have portfolio gaps in logistics." SCOTE's MCP server processes the query against the Global Investor Graph and returns structured results — right in the IDE.
+**How it works:** A founder using Claude Code or Cursor types: "Find me Series A VCs in Canada that invest in supply chain SaaS and have portfolio gaps in logistics." SKIPR's MCP server processes the query against the Global Investor Graph and returns structured results — right in the IDE.
 
 **Distribution:** Claude Code MCP marketplace, Cursor plugin store, VS Code marketplace.
 
@@ -214,8 +214,8 @@ The methodology is always in someone's head. When that person leaves, the method
 
 | Product | Customer | Pricing | Year 1 Target |
 |---|---|---|---|
-| SCOTE for Cohorts | Incubators, accelerators | $200-500/mo per cohort | 10 programs, $36K ARR |
-| SCOTE for Founders | Individual entrepreneurs | $29-99/mo | 500 users, $120K ARR |
+| SKIPR for Cohorts | Incubators, accelerators | $200-500/mo per cohort | 10 programs, $36K ARR |
+| SKIPR for Founders | Individual entrepreneurs | $29-99/mo | 500 users, $120K ARR |
 | Global Investor Graph API | Ecosystem tools, VCs | $500-5,000/mo | 20 subscribers, $240K ARR |
 | Feed App (Mobile) | Founders, PMs, VCs | $9.99/mo | Part of founder subscription |
 | MCP Plugin | Technical founders | Included in founder tier | Distribution channel, not revenue |
@@ -238,7 +238,7 @@ The methodology is always in someone's head. When that person leaves, the method
                           ┌────────────────────┤────────────────────┐
                           │                    │                    │
                 ┌─────────▼──────────┐ ┌──────▼───────┐ ┌─────────▼──────────┐
-                │ SCOTE for Cohorts  │ │ SCOTE for    │ │   Graph API        │
+                │ SKIPR for Cohorts  │ │ SKIPR for    │ │   Graph API        │
                 │ (per-tenant)       │ │ Founders     │ │   (public)         │
                 │                    │ │              │ │                    │
                 │ OpenClaw Gateway   │ │ Shared       │ │ REST + GraphQL     │
@@ -276,11 +276,11 @@ The methodology is always in someone's head. When that person leaves, the method
 
 1. **The methodology layer is the moat, not the technology.** Anyone can build a CRM. No one has built a system where the matching methodology is externalized, trainable, persistent, and transferable between program managers. We have.
 
-2. **The Global Investor Graph gets better with use.** Every program that runs SCOTE contributes signal about investor behavior — who responds, who deploys, who ghosts. This data doesn't exist in Crunchbase or PitchBook. It's proprietary and compounds.
+2. **The Global Investor Graph gets better with use.** Every program that runs SKIPR contributes signal about investor behavior — who responds, who deploys, who ghosts. This data doesn't exist in Crunchbase or PitchBook. It's proprietary and compounds.
 
-3. **Network effects between products.** Founders using SCOTE for Founders discover investors through the graph. Those investors get better deal flow because programs using SCOTE for Cohorts pre-qualify companies. The more programs that use it, the more valuable the graph becomes for founders, and vice versa.
+3. **Network effects between products.** Founders using SKIPR for Founders discover investors through the graph. Those investors get better deal flow because programs using SKIPR for Cohorts pre-qualify companies. The more programs that use it, the more valuable the graph becomes for founders, and vice versa.
 
-4. **Single-tenant architecture prevents vendor lock-in concerns.** Each program can self-host their SCOTE instance. The data stays with them. The graph is opt-in. This removes the biggest objection incubators have to SaaS tools: "who owns the data?"
+4. **Single-tenant architecture prevents vendor lock-in concerns.** Each program can self-host their SKIPR instance. The data stays with them. The graph is opt-in. This removes the biggest objection incubators have to SaaS tools: "who owns the data?"
 
 5. **$10/month proof point.** We can demonstrate the entire system running on minimal infrastructure. The sales conversation starts with: "Here's a working demo. It costs $10/month. What would you pay for this if it had your investor database?"
 
@@ -291,7 +291,7 @@ The methodology is always in someone's head. When that person leaves, the method
 ### Immediate (next 2 weeks)
 - Demo TBDC POC to Ahmed Korayem's network — collect feedback from 3-5 program managers
 - Record a 5-minute Loom walkthrough showing the full flow: training → matching → pipeline → heartbeat
-- Package the SCOTE Training page as the "onboarding experience" for new programs
+- Package the SKIPR Training page as the "onboarding experience" for new programs
 
 ### Short-term (next 90 days)
 - Deploy second tenant (different program, different methodology) to prove multi-tenancy
@@ -300,7 +300,7 @@ The methodology is always in someone's head. When that person leaves, the method
 - Build the mobile feed prototype (React Native or PWA)
 
 ### Medium-term (6-12 months)
-- Launch SCOTE for Founders as a standalone product
+- Launch SKIPR for Founders as a standalone product
 - Build the MCP plugin for Claude Code / Cursor integration
 - Add PitchBook and LinkedIn data sources to the graph
 - Launch cohort analytics dashboard
@@ -308,7 +308,7 @@ The methodology is always in someone's head. When that person leaves, the method
 
 ### Long-term (12-24 months)
 - Global Investor Graph API public launch
-- SCOTE for VCs (portfolio support variant)
+- SKIPR for VCs (portfolio support variant)
 - Angel network deal flow screening variant
 - Series A fundraise for Ready4VC / GatheringX based on ARR + graph data asset
 

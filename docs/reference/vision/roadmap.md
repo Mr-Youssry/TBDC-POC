@@ -1,4 +1,6 @@
-# SCOTE Platform — Product Roadmap
+# SKIPR Platform — Product Roadmap
+
+**SKIPR** — **S**ynthetic **K**nowledge for **I**nvestor **P**airing & **R**aising
 
 **Sequenced epics. Each one ships on top of the last. The database comes first — everything else queries it.**
 
@@ -24,7 +26,7 @@ Epic 1: Global Investor Graph          ← THE FOUNDATION (ship first)
   │     Heartbeat integration
   │     Push notifications
   │
-  ├──► Epic 4: SCOTE for Cohorts v2     ← FIRST PAID PRODUCT
+  ├──► Epic 4: SKIPR for Cohorts v2     ← FIRST PAID PRODUCT
   │     Queries the graph (not local DB)
   │     Multi-tenant
   │     White-label
@@ -34,7 +36,7 @@ Epic 1: Global Investor Graph          ← THE FOUNDATION (ship first)
   │     Connection matching
   │     Relationship scoring
   │
-  ├──► Epic 6: SCOTE for Founders       ← MASS MARKET
+  ├──► Epic 6: SKIPR for Founders       ← MASS MARKET
   │     Personal AI analyst
   │     Queries the graph
   │     Pipeline tracking
@@ -57,7 +59,7 @@ A master Neo4j graph database that continuously collects, normalizes, and connec
 
 ### Why it ships first
 
-Every other product is a view on top of this database. SCOTE for Cohorts currently has 171 investors in a local Postgres table — that's a seed, not a product. The graph replaces the local investor table with a queryable, continuously-updated, relationship-aware data layer that any product can query with whatever criteria they need.
+Every other product is a view on top of this database. SKIPR for Cohorts currently has 171 investors in a local Postgres table — that's a seed, not a product. The graph replaces the local investor table with a queryable, continuously-updated, relationship-aware data layer that any product can query with whatever criteria they need.
 
 ### What's in the graph
 
@@ -179,13 +181,13 @@ A running Neo4j instance with ~50K nodes (investors, funds, partners, companies,
 
 ### What it is
 
-A REST/GraphQL API and an MCP server that lets any product — or any individual user with Claude/Cursor — query the Global Investor Graph with flexible criteria. This is how SCOTE (and everyone else) accesses the data.
+A REST/GraphQL API and an MCP server that lets any product — or any individual user with Claude/Cursor — query the Global Investor Graph with flexible criteria. This is how SKIPR (and everyone else) accesses the data.
 
 ### Why this architecture matters
 
-The current TBDC POC has investors hardcoded in Postgres. When we ship the graph, SCOTE won't have its own investor database anymore — it will query the graph for investors that match the criteria for each company. This means:
+The current TBDC POC has investors hardcoded in Postgres. When we ship the graph, SKIPR won't have its own investor database anymore — it will query the graph for investors that match the criteria for each company. This means:
 
-- **Any matching methodology works.** A program that scores on 7 dimensions queries the graph differently than one that scores on 3. The graph doesn't impose a methodology — it provides the data. The methodology lives in SCOTE's AGENTS.md.
+- **Any matching methodology works.** A program that scores on 7 dimensions queries the graph differently than one that scores on 3. The graph doesn't impose a methodology — it provides the data. The methodology lives in SKIPR's AGENTS.md.
 - **Queries are parametric.** "Find me active-deploying VCs in Canada that invest $2-5M in seed-stage SaaS companies with portfolio gaps in supply chain" is a Cypher query, not a feature request.
 - **Results are fresh.** The graph is updated daily. A query today returns investors whose fund phase was verified this week, not six months ago.
 
@@ -241,16 +243,16 @@ get_feed(entity_id, since)           → recent events
 - [ ] Portfolio gap analysis endpoint
 - [ ] Rate limiting, API key auth, usage tracking
 
-**Sprint 6 (weeks 11-12): MCP Server + SCOTE integration**
+**Sprint 6 (weeks 11-12): MCP Server + SKIPR integration**
 - [ ] MCP server wrapping the REST API
 - [ ] Claude Code / Cursor integration testing
-- [ ] SCOTE plugin migration: replace local `list_investors` with graph API queries
-- [ ] SCOTE AGENTS.md update: "when matching, query the Global Investor Graph instead of the local database"
+- [ ] SKIPR plugin migration: replace local `list_investors` with graph API queries
+- [ ] SKIPR AGENTS.md update: "when matching, query the Global Investor Graph instead of the local database"
 - [ ] Documentation and examples
 
 ### Deliverable
 
-A running API + MCP server. SCOTE queries the graph instead of its local investor table. Any Claude Code user can install the MCP plugin and search investors.
+A running API + MCP server. SKIPR queries the graph instead of its local investor table. Any Claude Code user can install the MCP plugin and search investors.
 
 ---
 
@@ -282,7 +284,7 @@ Graph change detected (new edge, updated property)
   Relevance matcher
   "Who cares about this?"
         │
-        ├── Programs monitoring this investor  → push to SCOTE heartbeat
+        ├── Programs monitoring this investor  → push to SKIPR heartbeat
         ├── Founders with this investor in pipeline  → push notification
         ├── VCs with co-investment relationship → portfolio alert
         └── API subscribers watching this entity → webhook
@@ -290,7 +292,7 @@ Graph change detected (new edge, updated property)
         ▼
   Delivery
         ├── In-app feed (web + mobile)
-        ├── SCOTE heartbeat integration
+        ├── SKIPR heartbeat integration
         ├── Webhook to subscriber endpoints
         ├── Email digest (daily/weekly)
         └── Push notification (mobile)
@@ -306,24 +308,24 @@ Graph change detected (new edge, updated property)
 - [ ] Feed API endpoint (`GET /v1/feed`)
 
 **Sprint 8 (week 15): Delivery channels**
-- [ ] SCOTE heartbeat feed integration (HEARTBEAT.md reads the feed)
+- [ ] SKIPR heartbeat feed integration (HEARTBEAT.md reads the feed)
 - [ ] Webhook delivery for API subscribers
 - [ ] Email digest generation (daily summary)
 - [ ] Push notification infrastructure (for Epic 7 mobile app)
 
 ### Deliverable
 
-SCOTE's heartbeat now checks the global feed — not just its local database. Programs get notified when an investor they matched goes from "fundraising" to "active." Founders get a push when their pipeline investor closes a new fund.
+SKIPR's heartbeat now checks the global feed — not just its local database. Programs get notified when an investor they matched goes from "fundraising" to "active." Founders get a push when their pipeline investor closes a new fund.
 
 ---
 
-## Epic 4: SCOTE for Cohorts v2 (Multi-Tenant)
+## Epic 4: SKIPR for Cohorts v2 (Multi-Tenant)
 
 **Ship target:** 4 weeks | **Prerequisite:** Epic 2 (API)
 
 ### What it is
 
-The current TBDC POC, but multi-tenant. Each program gets their own SCOTE instance with their own methodology, company data, and workspace — but they all query the shared Global Investor Graph.
+The current TBDC POC, but multi-tenant. Each program gets their own SKIPR instance with their own methodology, company data, and workspace — but they all query the shared Global Investor Graph.
 
 ### What changes from the POC
 
@@ -374,7 +376,7 @@ Crunchbase tells you who invested in what. LinkedIn tells you who you know. Nobo
 2. **Match to graph.** System matches contacts against Partner and Investor nodes in the graph using name + company + title fuzzy matching.
 3. **Build relationship paths.** For each matched contact, traverse the graph: contact → works_at → investor. Contact → co_invested_with → investor. Contact → graduated_from → program → other_alumni → works_at → investor.
 4. **Score relationships.** Each path gets a strength score based on: directness (1st degree vs 2nd degree), recency (met last month vs 3 years ago), context (co-investor vs conference acquaintance).
-5. **Store on portfolio.** Warm paths are recorded on the user's portfolio/company record. When SCOTE matches a company to an investor, it checks: "Does anyone in this program have a warm path to this investor?"
+5. **Store on portfolio.** Warm paths are recorded on the user's portfolio/company record. When SKIPR matches a company to an investor, it checks: "Does anyone in this program have a warm path to this investor?"
 
 ### Sprint breakdown
 
@@ -386,18 +388,18 @@ Crunchbase tells you who invested in what. LinkedIn tells you who you know. Nobo
 
 **Sprint 12 (weeks 22-23): Portfolio integration**
 - [ ] Warm path storage per company-investor pair
-- [ ] SCOTE integration: warm path lookup during matching
+- [ ] SKIPR integration: warm path lookup during matching
 - [ ] Warm path sharing across program team (program manager + associates)
 - [ ] MCP tool: `find_warm_paths(company, investor)` → returns paths with scores
 - [ ] Privacy controls (users choose what to share, what stays private)
 
 ### Deliverable
 
-Ahmed uploads his 2,000 LinkedIn connections. The system finds 47 matches to graph nodes. 12 of those create warm paths to investors currently in Tier 1 matches. SCOTE's activation logic now says "Warm via Ahmed's LinkedIn connection to Jordan Jacobs (met at Collision 2025)" instead of "Cold."
+Ahmed uploads his 2,000 LinkedIn connections. The system finds 47 matches to graph nodes. 12 of those create warm paths to investors currently in Tier 1 matches. SKIPR's activation logic now says "Warm via Ahmed's LinkedIn connection to Jordan Jacobs (met at Collision 2025)" instead of "Cold."
 
 ---
 
-## Epic 6: SCOTE for Founders
+## Epic 6: SKIPR for Founders
 
 **Ship target:** 4 weeks | **Prerequisite:** Epic 2 (API) + Epic 5 (warm paths)
 
@@ -410,7 +412,7 @@ A standalone product for individual entrepreneurs. Same AI analyst, same methodo
 | Cohort version | Founder version |
 |---|---|
 | 10-30 companies per instance | 1 company per user |
-| Program manager operates SCOTE | Founder operates SCOTE directly |
+| Program manager operates SKIPR | Founder operates SKIPR directly |
 | Methodology set by program | Methodology is default (our rubric) or customized |
 | Investor data from program's curation | Investor data from Global Investor Graph |
 | Warm paths from program team | Warm paths from founder's own contacts |
@@ -471,11 +473,11 @@ A mobile app that a program manager or founder opens 3 times a day to check: "Wh
 | Epic | Weeks | What ships | Revenue impact |
 |---|---|---|---|
 | 1. Global Investor Graph | 1-8 | Running graph database with 50K+ nodes, daily crawlers | Foundation — no direct revenue |
-| 2. Query API + MCP | 9-12 | REST API + MCP server, SCOTE queries the graph | API subscriptions begin ($500-5K/mo) |
+| 2. Query API + MCP | 9-12 | REST API + MCP server, SKIPR queries the graph | API subscriptions begin ($500-5K/mo) |
 | 3. Feed Engine | 13-15 | Real-time event stream, heartbeat integration | Retention — keeps users engaged |
-| 4. SCOTE for Cohorts v2 | 16-19 | Multi-tenant platform, second paying program | First cohort revenue ($200-500/mo per program) |
+| 4. SKIPR for Cohorts v2 | 16-19 | Multi-tenant platform, second paying program | First cohort revenue ($200-500/mo per program) |
 | 5. Warm Path Network | 20-23 | Contact matching, relationship scoring | Deepens moat — proprietary relationship data |
-| 6. SCOTE for Founders | 24-27 | Consumer product, MCP plugin | Mass market ($29-99/mo per founder) |
+| 6. SKIPR for Founders | 24-27 | Consumer product, MCP plugin | Mass market ($29-99/mo per founder) |
 | 7. Mobile Feed App | 28-31 | Mobile feed with push notifications | Engagement + retention |
 
 **Total timeline: ~8 months from start to full product suite.**
@@ -490,7 +492,7 @@ A mobile app that a program manager or founder opens 3 times a day to check: "Wh
 
 2. **Epic 5 builds the network asset.** Every user who uploads contacts adds proprietary relationship data that no API provides. This compounds — the more users, the more warm paths, the more valuable the graph.
 
-3. **Epic 4 builds the methodology asset.** Every program that trains SCOTE contributes a refined matching methodology. Over time, we learn which scoring dimensions actually predict successful introductions — data that no competitor has.
+3. **Epic 4 builds the methodology asset.** Every program that trains SKIPR contributes a refined matching methodology. Over time, we learn which scoring dimensions actually predict successful introductions — data that no competitor has.
 
 4. **These three assets reinforce each other.** Better data → better matches → more users → more relationship data → better warm paths → more valuable matches → more users. The flywheel spins.
 
