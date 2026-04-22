@@ -46,15 +46,19 @@ export default async function AuditPage({
   });
 
   return (
-    <div className="px-8 py-7 max-w-[1200px]">
-      <h1 className="font-serif text-2xl text-text-1 mb-2">Audit Log</h1>
-      <p className="text-sm text-text-3 mb-6">
-        Every database write performed by admins and the Assistant. Click
-        Revert to undo a field-level change.
-      </p>
+    <div className="app-page mx-auto max-w-[1200px]">
+      <section className="app-hero mb-5">
+        <div className="font-mono text-[0.68rem] uppercase tracking-[0.12em] text-text-3">
+          Audit trail
+        </div>
+        <h1 className="app-page-title mt-3">Audit Log</h1>
+        <p className="app-page-copy">
+          Every database write performed by admins and the Assistant. Revert remains available at the row level, but the page now opens with a calmer review surface.
+        </p>
+      </section>
       <div className="space-y-2">
         {entries.length === 0 && (
-          <div className="border border-border rounded-lg bg-surface-2 px-6 py-8 text-center">
+          <div className="app-surface-muted px-6 py-8 text-center">
             <p className="text-sm text-text-3">No audit entries match the filter.</p>
             <p className="text-xs text-text-3 mt-1">Database writes by admins and the Assistant appear here automatically.</p>
           </div>

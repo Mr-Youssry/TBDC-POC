@@ -2,184 +2,144 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/*
-  TBDC POC — design tokens ported verbatim from the original static
-  prototype (docs/reference/tbdc_investor_matching_poc_v2.html).
-  Goal: pixel-parity with the original editorial aesthetic —
-  warm off-white paper feel, Georgia serif body, monospace accents,
-  traffic-light tier colors, thin borders, subtle hover states.
-  Dark mode intentionally omitted for POC.
-*/
-
 :root {
-  /* ── Surfaces & text (mapped to shadcn semantic names) ── */
-  --background:        #f5f4f0;
-  --foreground:        #181715;
+  --background: #f6f7fb;
+  --foreground: #11131a;
 
-  --card:              #ffffff;
-  --card-foreground:   #181715;
+  --card: #ffffff;
+  --card-foreground: #11131a;
 
-  --popover:           #ffffff;
-  --popover-foreground: #181715;
+  --popover: #ffffff;
+  --popover-foreground: #11131a;
 
-  --primary:           #181715;
-  --primary-foreground: #f5f4f0;
+  --primary: #ff4f8d;
+  --primary-foreground: #ffffff;
 
-  --secondary:         #f0ede8;
-  --secondary-foreground: #181715;
+  --secondary: #f3f6fb;
+  --secondary-foreground: #30374a;
 
-  --muted:             #f0ede8;
-  --muted-foreground:  #5a5752;
+  --muted: #f4f6fa;
+  --muted-foreground: #7d8496;
 
-  --accent:            #e8e4de;
-  --accent-foreground: #181715;
+  --accent: #fff2f8;
+  --accent-foreground: #eb2f77;
 
-  --destructive:       #8c2020;
+  --destructive: #cf335f;
+  --input: #e3e8f1;
+  --ring: rgba(255, 79, 141, 0.28);
+  --border: #e3e8f1;
 
-  --border:            #ddd9d2;
-  --input:             #ddd9d2;
-  --ring:              #bbb6ae;
-
-  /* ── Original TBDC design tokens (kept verbatim) ── */
-  --bg:      #f5f4f0;
+  --bg: #f6f7fb;
   --surface: #ffffff;
-  --surface2: #f0ede8;
-  --surface3: #e8e4de;
-  --border-1: #ddd9d2;
-  --border-2: #bbb6ae;
+  --surface2: #f4f6fa;
+  --surface3: #eef2f7;
+  --border-1: #e3e8f1;
+  --border-2: #ccd5e2;
 
-  --text-1:  #181715;
-  --text-2:  #5a5752;
-  --text-3:  #9a968f;
+  --text-1: #11131a;
+  --text-2: #4b5567;
+  --text-3: #7d8496;
 
-  /* Tier 1 — priority intro (green) */
-  --t1bg:   #eaf4e3;
-  --t1txt:  #275c18;
-  --t1bdr:  #4e9038;
+  --t1bg: rgba(21, 184, 122, 0.12);
+  --t1txt: #0e8f62;
+  --t1bdr: rgba(21, 184, 122, 0.24);
 
-  /* Tier 2 — qualified outreach (amber) */
-  --t2bg:   #fef2df;
-  --t2txt:  #7a4b09;
-  --t2bdr:  #c4840c;
+  --t2bg: rgba(245, 158, 11, 0.14);
+  --t2txt: #9b6600;
+  --t2bdr: rgba(245, 158, 11, 0.24);
 
-  /* Tier 3 / Do not match (red) */
-  --t3bg:   #fceaea;
-  --t3txt:  #8c2020;
-  --t3bdr:  #c94040;
+  --t3bg: rgba(255, 79, 141, 0.12);
+  --t3txt: #cf335f;
+  --t3bdr: rgba(255, 79, 141, 0.24);
 
-  /* Warning / hard gate (orange) */
-  --warn:    #fff1ea;
-  --warnbdr: #c85420;
-  --warntxt: #7a3010;
+  --warn: rgba(245, 158, 11, 0.12);
+  --warnbdr: rgba(245, 158, 11, 0.28);
+  --warntxt: #9b6600;
 
-  /* Blue accents (stage, type:VC badges) */
-  --blue:   #1a4fa0;
-  --bluebg: #e8eef8;
+  --blue: #4b6bff;
+  --bluebg: rgba(75, 107, 255, 0.12);
+  --green: #15b87a;
+  --red: #cf335f;
 
-  /* Generic semantic aliases used in original */
-  --green:  #275c18;
-  --red:    #8c2020;
-
-  /* Radii */
-  --radius:    0.625rem; /* shadcn default — used by shadcn components */
-  --radius-og: 10px;     /* original TBDC card radius */
+  --radius: 0.5rem;
+  --radius-og: 8px;
   --radius-md-og: 8px;
   --radius-sm-og: 6px;
 
-  /* Chart colors — tier palette reused */
-  --chart-1: #4e9038;
-  --chart-2: #c4840c;
-  --chart-3: #c94040;
-  --chart-4: #1a4fa0;
-  --chart-5: #5a5752;
+  --chart-1: #ff4f8d;
+  --chart-2: #15b87a;
+  --chart-3: #4b6bff;
+  --chart-4: #f59e0b;
+  --chart-5: #7d8496;
 
-  /* Sidebar (used by shadcn sidebar components if needed) */
-  --sidebar:                   #ffffff;
-  --sidebar-foreground:        #181715;
-  --sidebar-primary:           #181715;
-  --sidebar-primary-foreground: #f5f4f0;
-  --sidebar-accent:            #f0ede8;
-  --sidebar-accent-foreground: #181715;
-  --sidebar-border:            #ddd9d2;
-  --sidebar-ring:              #bbb6ae;
+  --sidebar: #13141d;
+  --sidebar-foreground: rgba(255, 255, 255, 0.88);
+  --sidebar-primary: #ff4f8d;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(255, 255, 255, 0.06);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: rgba(255, 79, 141, 0.28);
 }
 
 @theme inline {
-  /* ── Shadcn-standard bindings ── */
-  --color-background:        var(--background);
-  --color-foreground:        var(--foreground);
-  --color-card:              var(--card);
-  --color-card-foreground:   var(--card-foreground);
-  --color-popover:           var(--popover);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  --color-primary:           var(--primary);
+  --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-secondary:         var(--secondary);
+  --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted:             var(--muted);
-  --color-muted-foreground:  var(--muted-foreground);
-  --color-accent:            var(--accent);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-destructive:       var(--destructive);
-  --color-border:            var(--border);
-  --color-input:             var(--input);
-  --color-ring:              var(--ring);
-  --color-chart-1:           var(--chart-1);
-  --color-chart-2:           var(--chart-2);
-  --color-chart-3:           var(--chart-3);
-  --color-chart-4:           var(--chart-4);
-  --color-chart-5:           var(--chart-5);
-  --color-sidebar:           var(--sidebar);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-border-2: var(--border-2);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary:   var(--sidebar-primary);
+  --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent:    var(--sidebar-accent);
+  --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border:    var(--sidebar-border);
-  --color-sidebar-ring:      var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 
-  /* ── TBDC semantic tokens exposed as Tailwind utilities ── */
-  /* Surfaces */
-  --color-surface:   var(--surface);
+  --color-surface: var(--surface);
   --color-surface-2: var(--surface2);
   --color-surface-3: var(--surface3);
-
-  /* Text ramp */
   --color-text-1: var(--text-1);
   --color-text-2: var(--text-2);
   --color-text-3: var(--text-3);
-
-  /* Tier 1 */
-  --color-t1-bg:  var(--t1bg);
+  --color-t1-bg: var(--t1bg);
   --color-t1-txt: var(--t1txt);
   --color-t1-bdr: var(--t1bdr);
-
-  /* Tier 2 */
-  --color-t2-bg:  var(--t2bg);
+  --color-t2-bg: var(--t2bg);
   --color-t2-txt: var(--t2txt);
   --color-t2-bdr: var(--t2bdr);
-
-  /* Tier 3 */
-  --color-t3-bg:  var(--t3bg);
+  --color-t3-bg: var(--t3bg);
   --color-t3-txt: var(--t3txt);
   --color-t3-bdr: var(--t3bdr);
-
-  /* Warn / hard gate */
-  --color-warn:     var(--warn);
+  --color-warn: var(--warn);
   --color-warn-bdr: var(--warnbdr);
   --color-warn-txt: var(--warntxt);
-
-  /* Blue accents */
-  --color-tbdc-blue:    var(--blue);
+  --color-tbdc-blue: var(--blue);
   --color-tbdc-blue-bg: var(--bluebg);
-
-  /* ── Fonts ── */
-  --font-sans:    "Georgia", serif;
-  --font-serif:   "Georgia", serif;
-  --font-mono:    ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
-  --font-heading: "Georgia", serif;
-
-  /* ── Radii (shadcn ramp kept for shadcn components) ── */
+  --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+  --font-heading: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -193,12 +153,174 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    background:
+      radial-gradient(circle at top left, rgba(255, 79, 141, 0.1), transparent 28%),
+      linear-gradient(180deg, #fff4f9 0 220px, var(--background) 220px 100%);
   }
+
   html {
     font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background: rgba(255, 79, 141, 0.16);
+    color: var(--foreground);
+  }
+}
+
+@layer components {
+  .app-page {
+    padding: 24px;
+  }
+
+  .app-page-tight {
+    padding: 20px 24px 28px;
+  }
+
+  .app-surface {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--border-1);
+    border-radius: var(--radius-og);
+    box-shadow: 0 18px 40px rgba(17, 19, 26, 0.06);
+  }
+
+  .app-surface-muted {
+    background: var(--surface2);
+    border: 1px solid var(--border-1);
+    border-radius: var(--radius-og);
+  }
+
+  .app-hero {
+    background:
+      linear-gradient(180deg, rgba(255, 79, 141, 0.05) 0%, rgba(255, 255, 255, 0.98) 100%);
+    border: 1px solid rgba(255, 79, 141, 0.12);
+    border-radius: var(--radius-og);
+    box-shadow: 0 18px 40px rgba(17, 19, 26, 0.06);
+    padding: 24px;
+  }
+
+  .app-page-title {
+    font-size: clamp(2rem, 3vw, 2.85rem);
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+    font-weight: 800;
+    color: var(--text-1);
+  }
+
+  .app-page-copy {
+    margin-top: 12px;
+    max-width: 62rem;
+    color: var(--text-2);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .app-topbar {
+    position: sticky;
+    top: 14px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: var(--radius-og);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 10px 24px rgba(17, 19, 26, 0.04);
+  }
+
+  .app-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--border-1);
+    color: var(--text-2);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .app-chip--active {
+    background: rgba(255, 79, 141, 0.12);
+    border-color: rgba(255, 79, 141, 0.18);
+    color: var(--accent-foreground);
+  }
+
+  .app-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+
+  .app-stat-card {
+    padding: 18px;
+    border-radius: var(--radius-og);
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--border-1);
+    box-shadow: 0 14px 30px rgba(17, 19, 26, 0.05);
+  }
+
+  .app-stat-card__label {
+    display: block;
+    color: var(--text-3);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .app-stat-card__value {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-1);
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .app-stat-card__copy {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-2);
+    font-size: 0.8rem;
+    line-height: 1.55;
+  }
+
+  .app-table-wrap {
+    overflow: auto;
+    border: 1px solid var(--border-1);
+    border-radius: var(--radius-og);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 18px 40px rgba(17, 19, 26, 0.06);
+  }
+
+  .app-table-wrap table {
+    width: 100%;
+  }
+
+  .app-table-wrap thead th {
+    background: #f8fafe;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-page,
+  .app-page-tight {
+    padding: 14px 14px 22px;
+  }
+
+  .app-hero {
+    padding: 18px;
   }
 }
 
@@ -225,7 +347,7 @@
 .tiptap strong { font-weight: 600; color: var(--color-text-1); }
 .tiptap em { font-style: italic; }
 .tiptap hr { border-color: var(--color-border); margin: 1rem 0; }
-.tiptap a { color: var(--color-t1-fg); text-decoration: underline; }
+.tiptap a { color: var(--color-primary); text-decoration: underline; }
 .tiptap .is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;

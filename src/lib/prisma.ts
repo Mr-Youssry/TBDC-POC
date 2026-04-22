@@ -1,11 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { getMockPrisma } from "./mock-prisma";
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
 
 function createPrismaClient(): PrismaClient {
+  if (process.env.USE_DUMMY_DATA === "true") {
+    return getMockPrisma();
+  }
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error(

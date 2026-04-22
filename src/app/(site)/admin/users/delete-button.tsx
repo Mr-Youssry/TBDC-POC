@@ -52,7 +52,7 @@ export function DeleteUserButton({
             }
           })
         }
-        className="text-[0.72rem] font-mono text-[var(--t3txt)] font-bold"
+        className="text-[0.72rem] font-mono font-bold text-[var(--t3txt)]"
       >
         confirm
       </button>

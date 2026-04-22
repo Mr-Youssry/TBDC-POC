@@ -40,15 +40,15 @@ export function InvestorFilters({ counts }: { counts: { total: number; canada: n
       key={label}
       onClick={onClick}
       className={[
-        "px-[10px] py-[4px] rounded-[4px] text-[0.68rem] font-mono tracking-[0.03em] border transition-colors whitespace-nowrap",
+        "inline-flex min-h-[34px] items-center rounded-full border px-3 text-[0.72rem] font-medium transition-colors whitespace-nowrap",
         active
-          ? "bg-text-1 text-[#f5f4f0] border-text-1"
-          : "bg-surface border-border text-text-2 hover:bg-surface-2",
+          ? "border-primary/18 bg-accent text-accent-foreground"
+          : "border-border bg-surface text-text-2 hover:border-primary/16 hover:text-text-1",
       ].join(" ")}
     >
       {label}
       {count !== undefined && (
-        <span className={`ml-1 ${active ? "text-text-3/60" : "text-text-3"}`}>
+        <span className={`ml-2 rounded-full px-1.5 py-0.5 text-[0.62rem] ${active ? "bg-white/70 text-accent-foreground/70" : "bg-surface-2 text-text-3"}`}>
           {count}
         </span>
       )}
@@ -56,10 +56,9 @@ export function InvestorFilters({ counts }: { counts: { total: number; canada: n
   );
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 text-[0.72rem]">
-      {/* Region filter */}
-      <div className="flex items-center gap-1">
-        <span className="font-mono text-[0.62rem] uppercase tracking-[0.06em] text-text-3 mr-1">Region</span>
+    <div className="grid gap-3 lg:grid-cols-[auto_auto_1fr]">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="mr-1 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-text-3">Region</span>
         {REGIONS.map((r) =>
           pill(
             r,
@@ -70,19 +69,17 @@ export function InvestorFilters({ counts }: { counts: { total: number; canada: n
         )}
       </div>
 
-      {/* Type filter */}
-      <div className="flex items-center gap-1">
-        <span className="font-mono text-[0.62rem] uppercase tracking-[0.06em] text-text-3 mr-1">Type</span>
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="mr-1 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-text-3">Type</span>
         {TYPES.map((t) => pill(t, type === t, () => setParam("type", t)))}
       </div>
 
-      {/* Sort */}
-      <div className="flex items-center gap-1">
-        <span className="font-mono text-[0.62rem] uppercase tracking-[0.06em] text-text-3 mr-1">Sort</span>
+      <div className="flex items-center gap-2 lg:justify-end">
+        <span className="mr-1 font-mono text-[0.62rem] uppercase tracking-[0.12em] text-text-3">Sort</span>
         <select
           value={sort}
           onChange={(e) => setParam("sort", e.target.value)}
-          className="px-[8px] py-[3px] rounded-[4px] text-[0.68rem] font-mono border border-border bg-surface text-text-2 cursor-pointer"
+          className="min-h-[34px] rounded-full border border-border bg-surface px-3 text-[0.72rem] font-medium text-text-2 cursor-pointer"
         >
           {SORTS.map((s) => (
             <option key={s.value} value={s.value}>

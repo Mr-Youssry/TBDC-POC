@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireSessionForPage } from "@/lib/guards";
+import {
+  appendMockConversation,
+  buildMockReply,
+  isDummyOpenClawEnabled,
+} from "@/lib/mock-openclaw";
 
 /**
  * v2.0 analyst chat HTTP bridge — server-side Next.js route handler.
@@ -72,6 +77,12 @@ export async function POST(req: NextRequest) {
       { ok: false, error: "session missing user id" },
       { status: 500 },
     );
+  }
+
+  if (isDummyOpenClawEnabled()) {
+    const reply = buildMockReply(sessionId, message);
+    appendMockConversation(sessionId, message, reply);
+    return NextResponse.json({ ok: true, reply });
   }
 
   // Forward to the bridge. The bridge runs inside the openclaw-gateway

@@ -1,0 +1,634 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Editorial Ops - TBDC UI Exploration</title>
+    <link rel="stylesheet" href="./mockups.css" />
+  </head>
+  <body class="concept concept--editorial-ops">
+    <main class="concept-shell">
+      <header class="concept-header">
+        <div class="concept-header__copy">
+          <div class="eyebrow">Concept direction</div>
+          <h1>Editorial Ops</h1>
+          <p>Treats each route like a chapter in a weekly operating brief. Large spacing, strong typography, and chapter summaries make dense material feel deliberate instead of compressed.</p>
+          <div class="header-meta">
+            <span><strong>Tone:</strong> Editorial, strategic, composed, premium.</span>
+            <span><strong>Best for:</strong> Methodology, Activation Playbook, Audit Log, Mission Control</span>
+            <span><strong>Why it reduces crowding:</strong> Useful when the product needs to read like an executive system rather than a classic SaaS dashboard.</span>
+          </div>
+        </div>
+        <div class="header-side">
+          <img class="brand-mark" src="/tbdc-logo.png" alt="TBDC" />
+          <a class="ghost-link" href="./index.html">Back to concept list</a>
+        </div>
+      </header>
+      <section class="summary-grid summary-grid--concept">
+        <article class="summary-card">
+          <h3>Current problems this solves</h3>
+          <ul class="bullet-list">
+            <li>Too many pages lead with full-width tables, which forces scanning across dozens of columns before the user understands what matters.</li><li>Primary decisions and secondary reference material sit at the same visual weight, so the eye has no stable starting point.</li><li>Filters, counts, and edit controls are exposed all at once instead of appearing when the user is in selection or editing mode.</li>
+          </ul>
+        </article>
+        <article class="summary-card">
+          <h3>Reference logic applied</h3>
+          <ul class="bullet-list">
+            <li><strong>OpenVC:</strong> Search-first investor discovery with a clear taxonomy for stage, type, and location. It reduces cognitive load by making filters feel like a guided narrowing step rather than a permanent wall of controls.</li><li><strong>b2match dashboard pattern:</strong> Hub-like dashboard logic with widgets that act as gateways into deeper pages. It keeps the top layer concise while still making dense workflows discoverable through progressive disclosure.</li>
+          </ul>
+        </article>
+      </section>
+      
+  <nav class="route-toc">
+    <a href="#activation">Activation Playbook</a><a href="#methodology">Methodology</a><a href="#investors">Investor Database</a><a href="#companies">Portfolio Companies</a><a href="#match">Match Output</a><a href="#pipeline">Pipeline</a><a href="#analyst">SCOTE Analyst</a><a href="#training">SCOTE Training</a><a href="#admin-users">Admin Users</a><a href="#admin-audit">Audit Log</a><a href="#mission-control">Mission Control</a><a href="#login">Login</a>
+  </nav>
+
+      <div class="route-stack">
+        
+  <section id="activation" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Action hub</div>
+      <h2>Activation Playbook</h2>
+      <p>Turn high-scoring matches into a smaller, calmer action queue with one active detail context.</p>
+    </div>
+    
+  <div class="screen screen--dashboard">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">Action hub</span>
+      <strong>12 live priorities</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>4 blocked reactivations</strong>
+    </div>
+  </div>
+
+    
+  <div class="chip-row">
+    <span>Ready now</span><span>Warm paths only</span><span>Needs follow-up</span>
+  </div>
+
+    <div class="screen-grid">
+      <div class="stack">
+        
+  <div class="list-shell">
+    
+      <div class="list-row">
+        <div>
+          <strong>Aibo Fintech x Inovia</strong>
+          <p>Warm intro available through fintech operator circle.</p>
+        </div>
+        <span class="list-chip">Ready now</span>
+      </div>
+    
+      <div class="list-row">
+        <div>
+          <strong>Voltie x Whitecap</strong>
+          <p>Needs one traction proof point before outreach copy is sent.</p>
+        </div>
+        <span class="list-chip">Follow-up</span>
+      </div>
+    
+      <div class="list-row">
+        <div>
+          <strong>Quanscient x Deeptech Angels</strong>
+          <p>Reactivation path tied to customer validation milestone.</p>
+        </div>
+        <span class="list-chip">Blocked</span>
+      </div>
+    
+  </div>
+
+        <div class="widget-grid">
+          <div class="widget"><span>Top queue</span><strong>4</strong><p>Only four intros sit above the fold.</p></div>
+          <div class="widget"><span>Guardrails</span><strong>2</strong><p>Matches waiting on proof, not hidden in noise.</p></div>
+          <div class="widget"><span>Reactivation</span><strong>3</strong><p>Blocked paths rerouted to customer access.</p></div>
+        </div>
+      </div>
+      <aside class="aside-stack">
+        <div class="detail-card">
+          <span class="eyebrow">Selected match</span>
+          <h4>Why this intro matters</h4>
+          <p>Conviction, risk, and next action live together so the user does not need to scan multiple cards before deciding.</p>
+        </div>
+        <div class="detail-card">
+          <span class="eyebrow">Execution loop</span>
+          <p>Daily follow-up rhythm, owner, and unlock condition appear in one compact panel.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  </section>
+
+  <section id="methodology" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Knowledge system</div>
+      <h2>Methodology</h2>
+      <p>Explain the scoring logic without forcing the user through three uninterrupted tables.</p>
+    </div>
+    
+  <div class="screen screen--knowledge">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">Knowledge system</span>
+      <strong>3 hard gates</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>8 weighted dimensions</strong>
+    </div>
+  </div>
+
+    <div class="knowledge-grid">
+      <div class="chapter-list">
+        <div><strong>01</strong><span>Hard gates</span></div>
+        <div><strong>02</strong><span>Weighted dimensions</span></div>
+        <div><strong>03</strong><span>Tier protocol</span></div>
+      </div>
+      <div class="stack">
+        
+  <div class="table-shell">
+    <div class="table-head">
+      <span>Layer</span><span>Purpose</span><span>Display treatment</span>
+    </div>
+    
+      <div class="table-row">
+        <span>Gates</span><span>Stop bad matches early</span><span>Alert band</span>
+      </div>
+    
+      <div class="table-row">
+        <span>Dimensions</span><span>Explain weighted scoring</span><span>Accordion rows</span>
+      </div>
+    
+      <div class="table-row">
+        <span>Action tiers</span><span>Translate score to next step</span><span>Decision ladder</span>
+      </div>
+    
+  </div>
+
+        <div class="tier-band">
+          <div><span>11-14</span><strong>Priority intro</strong></div>
+          <div><span>7-10</span><strong>Qualified outreach</strong></div>
+          <div><span>3-6</span><strong>Monitor</strong></div>
+          <div><span>0-2</span><strong>Do not match</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </section>
+
+  <section id="investors" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Discovery database</div>
+      <h2>Investor Database</h2>
+      <p>Move from spreadsheet feeling to search-and-shortlist behavior with compact filters and expandable detail.</p>
+    </div>
+    
+  <div class="screen screen--database">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">Discovery database</span>
+      <strong>171 investors</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>24 shortlisted</strong>
+    </div>
+  </div>
+
+    
+  <div class="chip-row">
+    <span>Region</span><span>Type</span><span>Stage</span><span>Lead appetite</span>
+  </div>
+
+    <div class="screen-grid">
+      <div class="stack">
+        
+  <div class="table-shell">
+    <div class="table-head">
+      <span>Fund</span><span>Type</span><span>Stage</span><span>Focus</span><span>Lead</span>
+    </div>
+    
+      <div class="table-row">
+        <span>Inovia</span><span>VC</span><span>Seed-Series A</span><span>B2B SaaS</span><span>Lead</span>
+      </div>
+    
+      <div class="table-row">
+        <span>Whitecap</span><span>VC</span><span>Seed</span><span>Deeptech</span><span>Lead/Follow</span>
+      </div>
+    
+      <div class="table-row">
+        <span>The51</span><span>Network</span><span>Pre-seed</span><span>Female founders</span><span>Follow</span>
+      </div>
+    
+      <div class="table-row">
+        <span>TELUS Ventures</span><span>CVC</span><span>Series A</span><span>Applied AI</span><span>Follow</span>
+      </div>
+    
+  </div>
+
+      </div>
+      <aside class="aside-stack">
+        <div class="detail-card">
+          <span class="eyebrow">Shortlist panel</span>
+          <h4>Focused result set</h4>
+          <p>Search, filters, and saved shortlist replace permanent exposure of every editable field.</p>
+        </div>
+        <div class="detail-card">
+          <span class="eyebrow">Profile preview</span>
+          <p>Cheque size, geography, portfolio signals, and outreach notes expand only when selected.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  </section>
+
+  <section id="companies" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Portfolio view</div>
+      <h2>Portfolio Companies</h2>
+      <p>Group companies by cohort and readiness so the page reads like a portfolio desk, not a maintenance sheet.</p>
+    </div>
+    
+  <div class="screen screen--portfolio">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">Portfolio view</span>
+      <strong>10 companies</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>3 blocked from intros</strong>
+    </div>
+  </div>
+
+    
+  <div class="chip-row">
+    <span>Cohort</span><span>Stage</span><span>Sector</span><span>Intro status</span>
+  </div>
+
+    <div class="company-grid">
+      <div class="company-band">
+        <span>Pivot 1</span>
+        <div class="company-list">
+          <article><strong>Aibo Fintech</strong><p>Seed fintech with strong warm paths.</p></article>
+          <article><strong>Voltie</strong><p>Climate hardware, needs milestone before outreach.</p></article>
+          <article><strong>Fermi Dev</strong><p>Developer tooling with investor-fit clarity.</p></article>
+        </div>
+      </div>
+      <div class="company-band">
+        <span>Horizon 3</span>
+        <div class="company-list">
+          <article><strong>Widmo Spectral</strong><p>Blocked from intros, route to customer paths instead.</p></article>
+          <article><strong>Try and Buy</strong><p>Retail workflow company with strong commerce theme.</p></article>
+          <article><strong>Quanscient</strong><p>Deeptech company requiring narrative support.</p></article>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </section>
+
+  <section id="match" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Selection workspace</div>
+      <h2>Match Output</h2>
+      <p>Keep the company picker stable while ranked investor evidence becomes the main focal surface.</p>
+    </div>
+    
+  <div class="screen screen--workspace">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">Selection workspace</span>
+      <strong>22 scored matches</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>6 customer paths</strong>
+    </div>
+  </div>
+
+    <div class="workspace-shell">
+      <div class="workspace-rail">
+        <strong>Companies</strong>
+        <span class="rail-item is-active">Voltie</span>
+        <span class="rail-item">Aibo Fintech</span>
+        <span class="rail-item">Quanscient</span>
+        <span class="rail-item rail-item--warn">Widmo Spectral</span>
+      </div>
+      <div class="workspace-main">
+        
+  <div class="list-shell">
+    
+      <div class="list-row">
+        <div>
+          <strong>Whitecap Venture Partners</strong>
+          <p>Strong stage and sector fit. Warm path through advisor network.</p>
+        </div>
+        <span class="list-chip">Tier 1</span>
+      </div>
+    
+      <div class="list-row">
+        <div>
+          <strong>TELUS Ventures</strong>
+          <p>Good fit but needs stronger traction packaging.</p>
+        </div>
+        <span class="list-chip">Tier 2</span>
+      </div>
+    
+      <div class="list-row">
+        <div>
+          <strong>The51</strong>
+          <p>Useful community angle, not a lead path.</p>
+        </div>
+        <span class="list-chip">Tier 2</span>
+      </div>
+    
+  </div>
+
+      </div>
+      <aside class="workspace-detail">
+        <div class="detail-card">
+          <span class="eyebrow">Evidence stack</span>
+          <p>Fit factors are grouped as conviction, guardrails, and framing notes rather than many tiny badges.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  </section>
+
+  <section id="pipeline" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Outreach tracker</div>
+      <h2>Pipeline</h2>
+      <p>Replace the wide operational sheet with a calmer status board and concise status summaries.</p>
+    </div>
+    
+  <div class="screen screen--pipeline">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">Outreach tracker</span>
+      <strong>22 active matches</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>7 waiting on reply</strong>
+    </div>
+  </div>
+
+    <div class="kanban-shell">
+      <section><header>Ready</header><p>4 matches</p><div>Inovia for Aibo</div><div>Whitecap for Voltie</div></section>
+      <section><header>Drafting</header><p>3 matches</p><div>TELUS for Voltie</div><div>Union Square for Quanscient</div></section>
+      <section><header>Sent</header><p>6 matches</p><div>York Angels for Monk Trader</div><div>Susa for Fermi Dev</div></section>
+      <section><header>Waiting</header><p>7 matches</p><div>The51 for Voltie</div><div>Version One for Try and Buy</div></section>
+    </div>
+  </div>
+
+  </section>
+
+  <section id="analyst" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Conversation workspace</div>
+      <h2>SCOTE Analyst</h2>
+      <p>Make the chat feel intentional by separating channel navigation, the active thread, and supporting context.</p>
+    </div>
+    
+  <div class="screen screen--chat">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">Conversation workspace</span>
+      <strong>1 active thread</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>42 reference files</strong>
+    </div>
+  </div>
+
+    <div class="chat-shell">
+      <div class="chat-rail">
+        <strong>Channels</strong>
+        <span class="rail-item is-active">General</span>
+        <span class="rail-item">Voltie</span>
+        <span class="rail-item">Aibo Fintech</span>
+        <span class="rail-item">Inovia</span>
+      </div>
+      <div class="chat-thread">
+        <div class="bubble bubble--assistant"><strong>SCOTE</strong><p>Here are the strongest next intros for Voltie and the risks to watch.</p></div>
+        <div class="bubble bubble--user"><strong>Operator</strong><p>Prioritize the three most credible warm paths and draft the framing.</p></div>
+        <div class="bubble bubble--assistant"><strong>SCOTE</strong><p>I would lead with Whitecap, then TELUS Ventures, then The51 as a support path.</p></div>
+        <div class="composer">Ask a question, upload a file, or request a profile update...</div>
+      </div>
+      <aside class="chat-context">
+        <div class="detail-card">
+          <span class="eyebrow">Context drawer</span>
+          <p>Selected company facts, recent files, and pinned reasoning appear here only when needed.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  </section>
+
+  <section id="training" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Configuration studio</div>
+      <h2>SCOTE Training</h2>
+      <p>Present files, memory, and chat as one training studio with fewer competing panes.</p>
+    </div>
+    
+  <div class="screen screen--training">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">Configuration studio</span>
+      <strong>3 identity files</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>1 live config chat</strong>
+    </div>
+  </div>
+
+    <div class="training-shell">
+      <div class="file-tree">
+        <strong>Workspace</strong>
+        <span class="rail-item is-active">SOUL.md</span>
+        <span class="rail-item">STYLE.md</span>
+        <span class="rail-item">VOICE.md</span>
+        <span class="rail-item">memory/2026-04-22.md</span>
+      </div>
+      <div class="editor-shell">
+        <div class="editor-header">STYLE.md</div>
+        <div class="editor-lines">
+          <span>Lead with the recommendation.</span>
+          <span>Cite thesis, stage, and cheque fit before extras.</span>
+          <span>Avoid generic fundraising language.</span>
+        </div>
+      </div>
+      <aside class="chat-context">
+        <div class="detail-card">
+          <span class="eyebrow">Configure SCOTE</span>
+          <p>Training guidance stays visually distinct from file editing, so the route feels like a studio rather than three unrelated panes.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  </section>
+
+  <section id="admin-users" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Access management</div>
+      <h2>Admin Users</h2>
+      <p>Turn user management into a clear roster plus invite workflow instead of a generic admin table.</p>
+    </div>
+    
+  <div class="screen screen--admin">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">Access management</span>
+      <strong>5 admins</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>1 self account</strong>
+    </div>
+  </div>
+
+    <div class="admin-grid">
+      <div class="detail-card">
+        <span class="eyebrow">Invite admin</span>
+        <h4>Inline invite workflow</h4>
+        <p>Email, name, role, and temporary credential live in one compact band instead of a detached form block.</p>
+      </div>
+      
+  <div class="table-shell">
+    <div class="table-head">
+      <span>User</span><span>Role</span><span>Created</span><span>Invited by</span>
+    </div>
+    
+      <div class="table-row">
+        <span>dummy-admin@local.test</span><span>Admin</span><span>2026-04-20</span><span>Bootstrap</span>
+      </div>
+    
+      <div class="table-row">
+        <span>korayem@ready4vc.com</span><span>Admin</span><span>2026-04-20</span><span>Bootstrap</span>
+      </div>
+    
+      <div class="table-row">
+        <span>assistant@tbdc.ready4vc.com</span><span>Assistant</span><span>2026-04-22</span><span>System</span>
+      </div>
+    
+  </div>
+
+    </div>
+  </div>
+
+  </section>
+
+  <section id="admin-audit" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Governance feed</div>
+      <h2>Audit Log</h2>
+      <p>Make changes readable as a timeline of intent, actor, and reversible diff instead of raw records.</p>
+    </div>
+    
+  <div class="screen screen--audit">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">Governance feed</span>
+      <strong>200 latest entries</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>Field-level revert</strong>
+    </div>
+  </div>
+
+    
+  <div class="chip-row">
+    <span>Recent activity</span><span>Actor</span><span>Table</span><span>Revert</span>
+  </div>
+
+    <div class="audit-list">
+      <article><strong>Company.stage updated</strong><p>Dummy Admin changed Voltie from Pre-seed to Seed. Revert stays visible but secondary.</p></article>
+      <article><strong>Match.nextStep updated</strong><p>Assistant refined the Whitecap outreach note for Voltie.</p></article>
+      <article><strong>Investor.sectors updated</strong><p>Korayem adjusted Inovia thesis tags for better search matching.</p></article>
+    </div>
+  </div>
+
+  </section>
+
+  <section id="mission-control" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">System health</div>
+      <h2>Mission Control</h2>
+      <p>Use a status dashboard vocabulary so gateway checks, scripts, and config do not blur together.</p>
+    </div>
+    
+  <div class="screen screen--status">
+    
+  <div class="metric-strip">
+    <div class="metric">
+      <span class="metric__label">System health</span>
+      <strong>4 status modules</strong>
+    </div>
+    <div class="metric">
+      <span class="metric__label">Signal</span>
+      <strong>1 launch action</strong>
+    </div>
+  </div>
+
+    <div class="status-grid">
+      <div class="widget"><span>Gateway</span><strong>Healthy</strong><p>Model, bridge, and auth mode in one tile.</p></div>
+      <div class="widget"><span>Plugin state</span><strong>Loaded</strong><p>tbdc-db plugin and source path summary.</p></div>
+      <div class="widget"><span>Launch</span><strong>Ready</strong><p>One primary action, manual commands as secondary disclosure.</p></div>
+      <div class="widget"><span>Config</span><strong>Redacted</strong><p>Readable config snapshot, not a wall of JSON first.</p></div>
+    </div>
+  </div>
+
+  </section>
+
+  <section id="login" class="route-section">
+    <div class="route-copy">
+      <div class="eyebrow">Access entry</div>
+      <h2>Login</h2>
+      <p>Reduce the first touchpoint to a high-trust, minimal sign-in surface with strong orientation.</p>
+    </div>
+    
+  <div class="screen screen--auth">
+    <div class="login-shell">
+      <img class="login-logo" src="/tbdc-logo.png" alt="TBDC" />
+      <div class="eyebrow">Admin access</div>
+      <h3>Partnerships console</h3>
+      <p>Editors only. Public routes remain readable without login.</p>
+      <div class="form-lines">
+        <span>Email</span>
+        <span>Password</span>
+        <span class="button-line">Sign in</span>
+      </div>
+    </div>
+  </div>
+
+  </section>
+
+      </div>
+    </main>
+  </body>
+</html>

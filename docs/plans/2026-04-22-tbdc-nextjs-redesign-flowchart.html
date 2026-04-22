@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TBDC Next.js Redesign Plan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #ff4f8d;
+        --primary-dark: #eb2f77;
+        --green: #15b87a;
+        --amber: #f59e0b;
+        --blue: #4b6bff;
+        --n50: #fafbff;
+        --n100: #f5f7fb;
+        --n150: #eff3f9;
+        --n200: #e7ebf2;
+        --n300: #d4dae6;
+        --n500: #7d8496;
+        --n700: #30374a;
+        --n900: #11131a;
+        --surface: #ffffff;
+        --shadow: 0 20px 50px rgba(17, 19, 26, 0.08);
+        --radius: 16px;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Montserrat", sans-serif;
+        color: var(--n900);
+        background: linear-gradient(180deg, #fff3f8 0 220px, var(--n100) 220px 100%);
+      }
+
+      .wrap {
+        width: min(1240px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 24px 0 48px;
+      }
+
+      .hero {
+        padding: 28px;
+        border: 1px solid rgba(255, 79, 141, 0.1);
+        border-radius: 24px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), #ffffff);
+        box-shadow: var(--shadow);
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      h1 {
+        margin: 14px 0 0;
+        font-size: clamp(34px, 5vw, 56px);
+        line-height: 1;
+        letter-spacing: -0.05em;
+      }
+
+      .sub {
+        margin-top: 14px;
+        max-width: 780px;
+        color: var(--n700);
+        font-size: 15px;
+        line-height: 1.8;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 24px;
+      }
+
+      .stat {
+        padding: 18px;
+        border-radius: var(--radius);
+        background: var(--surface);
+        border: 1px solid var(--n200);
+      }
+
+      .stat span {
+        display: block;
+        color: var(--n500);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .stat strong {
+        display: block;
+        margin-top: 10px;
+        font-size: 28px;
+        letter-spacing: -0.04em;
+      }
+
+      .stat p {
+        margin: 8px 0 0;
+        color: var(--n700);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0 0;
+      }
+
+      .tab {
+        border: 1px solid var(--n200);
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--n700);
+        cursor: pointer;
+      }
+
+      .tab.is-active {
+        background: rgba(255, 79, 141, 0.12);
+        border-color: rgba(255, 79, 141, 0.22);
+        color: var(--primary-dark);
+      }
+
+      .panel {
+        display: none;
+        margin-top: 18px;
+      }
+
+      .panel.is-active {
+        display: block;
+      }
+
+      .grid {
+        display: grid;
+        gap: 18px;
+      }
+
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .card {
+        padding: 22px;
+        border-radius: 20px;
+        background: var(--surface);
+        border: 1px solid var(--n200);
+        box-shadow: var(--shadow);
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 24px;
+        letter-spacing: -0.03em;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 17px;
+        letter-spacing: -0.02em;
+      }
+
+      p, li {
+        color: var(--n700);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      ul {
+        margin: 12px 0 0;
+        padding-left: 18px;
+      }
+
+      .shell {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr) 320px;
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .shell-col {
+        min-height: 260px;
+        border-radius: 18px;
+        padding: 18px;
+        border: 1px solid var(--n200);
+      }
+
+      .shell-col.sidebar {
+        background: linear-gradient(180deg, #13141d, #1b1d28);
+        color: rgba(255,255,255,0.9);
+      }
+
+      .shell-col.main,
+      .shell-col.rail {
+        background: #ffffff;
+      }
+
+      .line {
+        height: 12px;
+        border-radius: 999px;
+        background: var(--n150);
+        margin-top: 10px;
+      }
+
+      .line.dark { background: rgba(255,255,255,0.12); }
+      .line.pink { background: rgba(255, 79, 141, 0.16); }
+      .line.green { background: rgba(21, 184, 122, 0.16); }
+
+      .queue {
+        display: grid;
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .queue-card {
+        padding: 16px;
+        border-radius: 16px;
+        background: #f8fafe;
+        border: 1px solid var(--n200);
+      }
+
+      .pill-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: var(--n150);
+        color: var(--n700);
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .pill.pink { background: rgba(255, 79, 141, 0.14); color: var(--primary-dark); }
+      .pill.green { background: rgba(21, 184, 122, 0.14); color: var(--green); }
+      .pill.amber { background: rgba(245, 158, 11, 0.16); color: #9b6600; }
+      .pill.blue { background: rgba(75, 107, 255, 0.14); color: var(--blue); }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 12px;
+      }
+
+      th, td {
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--n200);
+        text-align: left;
+        font-size: 13px;
+      }
+
+      th {
+        color: var(--n500);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 11px;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 30px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .step-badge {
+        width: 30px;
+        height: 30px;
+        display: grid;
+        place-items: center;
+        border-radius: 999px;
+        background: rgba(255, 79, 141, 0.14);
+        color: var(--primary-dark);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      @media (max-width: 1100px) {
+        .stats,
+        .grid.two,
+        .grid.three,
+        .shell {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <section class="hero">
+        <div class="eyebrow">TBDC Product Redesign</div>
+        <h1>New shell, cleaner workflows, same product depth.</h1>
+        <p class="sub">
+          This plan applies the approved design system to the real Next.js app,
+          restores the full operating navigation, and restructures the densest
+          routes so the product feels more premium and easier to scan.
+        </p>
+        <div class="stats">
+          <div class="stat">
+            <span>Shell</span>
+            <strong>1</strong>
+            <p>One unified visual system instead of old and new UI mixed together.</p>
+          </div>
+          <div class="stat">
+            <span>Core routes</span>
+            <strong>5</strong>
+            <p>Activation, Investors, Companies, Match, and Pipeline get deeper cleanup.</p>
+          </div>
+          <div class="stat">
+            <span>Navigation</span>
+            <strong>2</strong>
+            <p>`Investor Database` and `Portfolio Companies` are restored as first-class nav items.</p>
+          </div>
+          <div class="stat">
+            <span>Rule</span>
+            <strong>3</strong>
+            <p>Max three dominant desktop zones: sidebar, workspace, optional rail.</p>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab is-active" data-tab="system" onclick="showTab('system')">System</button>
+          <button class="tab" data-tab="shell" onclick="showTab('shell')">Shell</button>
+          <button class="tab" data-tab="pages" onclick="showTab('pages')">Page Strategy</button>
+          <button class="tab" data-tab="rollout" onclick="showTab('rollout')">Rollout</button>
+        </div>
+      </section>
+
+      <section class="panel is-active" id="system">
+        <div class="grid two">
+          <div class="card">
+            <h2>Visual language</h2>
+            <ul>
+              <li>Very light canvas with a faint pink-tinted upper band</li>
+              <li>Deep charcoal sidebar with cleaner active states</li>
+              <li>One vivid pink accent, supported by green, amber, and blue</li>
+              <li>Large headings, fewer words, stronger icon-led scanning</li>
+              <li>8px card logic in-product, calmer shadows, disciplined surfaces</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h2>Behavioral rules</h2>
+            <ul>
+              <li>Tables become secondary patterns, not default first view</li>
+              <li>Filters are grouped and purposeful, not permanently overwhelming</li>
+              <li>Right rails answer the selection question only</li>
+              <li>Progressive disclosure replaces all-at-once reference clutter</li>
+              <li>Motion is subtle: rise, hover, focus, no ornamental excess</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="shell">
+        <div class="card">
+          <h2>Global app shell</h2>
+          <div class="shell">
+            <div class="shell-col sidebar">
+              <div class="line dark" style="width: 54%;"></div>
+              <div class="line dark" style="width: 40%;"></div>
+              <div class="line dark pink" style="width: 76%; margin-top: 24px;"></div>
+              <div class="line dark" style="width: 72%;"></div>
+              <div class="line dark" style="width: 78%;"></div>
+              <div class="line dark" style="width: 64%;"></div>
+              <div class="line dark" style="width: 82%;"></div>
+              <div class="line dark" style="width: 74%; margin-top: 28px;"></div>
+              <div class="line dark" style="width: 58%;"></div>
+            </div>
+            <div class="shell-col main">
+              <div class="line pink" style="width: 36%;"></div>
+              <div class="line" style="width: 68%; height: 16px;"></div>
+              <div class="line" style="width: 84%;"></div>
+              <div class="queue">
+                <div class="queue-card">
+                  <div class="line green" style="width: 28%;"></div>
+                  <div class="line" style="width: 64%;"></div>
+                  <div class="pill-row">
+                    <span class="pill pink">Filter group</span>
+                    <span class="pill blue">Signal chip</span>
+                    <span class="pill green">Ready now</span>
+                  </div>
+                </div>
+                <div class="queue-card">
+                  <div class="line" style="width: 44%;"></div>
+                  <div class="line" style="width: 82%;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="shell-col rail">
+              <div class="line pink" style="width: 44%;"></div>
+              <div class="line" style="width: 72%;"></div>
+              <div class="queue">
+                <div class="queue-card">
+                  <div class="line green" style="width: 62%;"></div>
+                  <div class="line" style="width: 84%;"></div>
+                </div>
+                <div class="queue-card">
+                  <div class="line" style="width: 58%;"></div>
+                  <div class="line" style="width: 74%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p>
+            The new shell keeps the full operating-system navigation, restores
+            `Investor Database` and `Portfolio Companies`, and standardizes pages
+            around one main work surface plus an optional detail rail.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel" id="pages">
+        <div class="grid two">
+          <div class="card">
+            <h2>Deep redesign pages</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Route</th>
+                  <th>New center of gravity</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Activation</td>
+                  <td>Action-first queue with selected-play rail</td>
+                </tr>
+                <tr>
+                  <td>Investor Database</td>
+                  <td>Search and guided filters before table depth</td>
+                </tr>
+                <tr>
+                  <td>Portfolio Companies</td>
+                  <td>Company index and richer summary rows</td>
+                </tr>
+                <tr>
+                  <td>Match Output</td>
+                  <td>Ranked fits with evidence chips and decision rail</td>
+                </tr>
+                <tr>
+                  <td>Pipeline</td>
+                  <td>Status bands and next actions before raw table view</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <h2>Lighter redesign pages</h2>
+            <ul>
+              <li>Methodology inherits the shell and cleaner section treatments</li>
+              <li>Analyst and Training become more polished workspaces</li>
+              <li>Admin Users, Audit Log, and Mission Control get the new chrome without unnecessary invention</li>
+              <li>Login adopts the same premium brand cues and spacing</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="rollout">
+        <div class="card">
+          <h2>Implementation order</h2>
+          <div class="grid two" style="margin-top: 16px;">
+            <div class="grid">
+              <div class="step">
+                <div class="step-badge">1</div>
+                <div>
+                  <h3>Replace the old shell tokens</h3>
+                  <p>Update global CSS, header, sidebar, and shared section/card patterns.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-badge">2</div>
+                <div>
+                  <h3>Restore core nav</h3>
+                  <p>Keep `Investor Database` and `Portfolio Companies` first-class in the operating routes.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-badge">3</div>
+                <div>
+                  <h3>Rebuild the dense pages</h3>
+                  <p>Activation, Investors, Companies, Match, and Pipeline move first.</p>
+                </div>
+              </div>
+            </div>
+            <div class="grid">
+              <div class="step">
+                <div class="step-badge">4</div>
+                <div>
+                  <h3>Reskin the remaining routes</h3>
+                  <p>Apply the same system without forcing unnecessary workflow changes.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-badge">5</div>
+                <div>
+                  <h3>Verify</h3>
+                  <p>Run lint, build, and route smoke tests after the shell and route changes settle.</p>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-badge">6</div>
+                <div>
+                  <h3>Refine</h3>
+                  <p>Use the first pass to tighten density, icon balance, and responsive behavior.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      function showTab(id) {
+        document.querySelectorAll(".tab").forEach((tab) => {
+          tab.classList.toggle("is-active", tab.dataset.tab === id);
+        });
+        document.querySelectorAll(".panel").forEach((panel) => {
+          panel.classList.toggle("is-active", panel.id === id);
+        });
+      }
+    </script>
+  </body>
+</html>

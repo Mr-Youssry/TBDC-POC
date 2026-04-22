@@ -1,0 +1,1358 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TBDC Activation Pilot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./subpage-pilots.css" />
+    <style>
+      .hero-actions,
+      .queue-tabs,
+      .draft-strip,
+      .lane-grid,
+      .detail-stack,
+      .section-split {
+        display: grid;
+        gap: 12px;
+      }
+
+      .hero-actions,
+      .queue-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .hero-actions {
+        margin-top: 16px;
+      }
+
+      .hero-note,
+      .muted-copy,
+      .mini-meta {
+        color: var(--muted);
+        font-size: 0.79rem;
+        line-height: 1.55;
+      }
+
+      .hero-note {
+        margin-top: 14px;
+      }
+
+      .focus-card h2,
+      .detail-card h2 {
+        margin: 12px 0 0;
+        font-size: 1.3rem;
+        letter-spacing: -0.03em;
+      }
+
+      .focus-card p,
+      .detail-card p {
+        margin-top: 10px;
+      }
+
+      .metric-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .metric-box {
+        padding: 14px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px solid rgba(255, 79, 141, 0.1);
+      }
+
+      .metric-box span {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .metric-box strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 1.32rem;
+        letter-spacing: -0.03em;
+      }
+
+      .metric-box small {
+        display: block;
+        margin-top: 6px;
+        color: var(--text);
+        font-size: 0.78rem;
+        line-height: 1.45;
+      }
+
+      .queue-tabs {
+        gap: 10px;
+      }
+
+      .fact-grid--four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .row-card .button-primary {
+        min-height: 36px;
+        padding: 0 14px;
+        font-size: 0.8rem;
+      }
+
+      .logo-tile {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .logo-tile::after {
+        content: "";
+        position: absolute;
+        inset: auto -8px -8px auto;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .logo-tile svg {
+        position: relative;
+        z-index: 1;
+        width: 34px;
+        height: 34px;
+      }
+
+      .logo-tile--voltie {
+        background: linear-gradient(135deg, #0f1218, #1b2130);
+      }
+
+      .logo-tile--carbon {
+        background: linear-gradient(135deg, #10151c, #1a2430);
+      }
+
+      .logo-tile--baseline {
+        background: linear-gradient(135deg, #10131a, #171e2a);
+      }
+
+      .row-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .lane-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .lane-card {
+        padding: 16px;
+        border-radius: 8px;
+        background: var(--surface-2);
+      }
+
+      .lane-card__head,
+      .check-row,
+      .draft-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .lane-card__head strong,
+      .detail-kv strong {
+        font-size: 0.9rem;
+      }
+
+      .lane-card p,
+      .draft-line span,
+      .detail-kv span {
+        margin-top: 4px;
+        color: var(--text);
+        font-size: 0.79rem;
+        line-height: 1.5;
+      }
+
+      .section-split {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .reactivation-box,
+      .draft-box {
+        padding: 16px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 79, 141, 0.12);
+        background: linear-gradient(180deg, #fff8fb 0%, #ffffff 100%);
+      }
+
+      .reactivation-box h3,
+      .draft-box h3 {
+        margin: 10px 0 0;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .reactivation-box p,
+      .draft-box p {
+        margin-top: 8px;
+        color: var(--text);
+        font-size: 0.82rem;
+        line-height: 1.6;
+      }
+
+      .detail-stack {
+        gap: 18px;
+      }
+
+      .detail-kv {
+        display: grid;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .detail-kv__row {
+        display: flex;
+        align-items: start;
+        gap: 10px;
+      }
+
+      .detail-kv__copy {
+        min-width: 0;
+      }
+
+      .check-list {
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .check-row {
+        min-height: 48px;
+        padding: 0 12px;
+        border-radius: 8px;
+        background: var(--surface-2);
+      }
+
+      .check-row__left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .draft-strip {
+        margin-top: 16px;
+      }
+
+      .draft-line {
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: var(--surface-2);
+        align-items: start;
+      }
+
+      .draft-line__left {
+        display: flex;
+        align-items: start;
+        gap: 10px;
+      }
+
+      @media (max-width: 1240px) {
+        .metric-strip,
+        .fact-grid--four,
+        .lane-grid,
+        .section-split {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="./index.html">
+          <img
+            alt="TBDC"
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2316c47f'/%3E%3Cstop offset='100%25' stop-color='%23ff4f8d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='6' y='6' width='52' height='52' rx='16' fill='%230d1017'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='url(%23g)' stroke-width='5'/%3E%3Cpath d='M22 27h20M32 19v26' stroke='white' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"
+          />
+          <div>
+            <strong>TBDC Capital Console</strong>
+            <span>Activation system pilot</span>
+          </div>
+        </a>
+
+        <div class="side-group">
+          <h3>Operate</h3>
+          <a class="side-link is-active" href="./activation.html">
+            <span class="side-link__icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
+              </svg>
+            </span>
+            <span>Activation</span>
+          </a>
+          <a class="side-link" href="./pilot-openvc-inspired.html">
+            <span class="side-link__icon">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 19c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5" />
+              </svg>
+            </span>
+            <span>Investor Database</span>
+          </a>
+          <a class="side-link" href="#">
+            <span class="side-link__icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="4" y="5" width="16" height="14" rx="3" />
+                <path d="M8 3v4" />
+                <path d="M16 3v4" />
+                <path d="M4 11h16" />
+              </svg>
+            </span>
+            <span>Portfolio Companies</span>
+          </a>
+          <a class="side-link" href="./match-studio-pilot.html">
+            <span class="side-link__icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M8 8l8 8" />
+                <path d="M16 8l-8 8" />
+                <circle cx="8" cy="8" r="4" />
+                <circle cx="16" cy="16" r="4" />
+              </svg>
+            </span>
+            <span>Match Studio</span>
+          </a>
+          <a class="side-link" href="./outreach-queue-pilot.html">
+            <span class="side-link__icon">
+              <svg viewBox="0 0 24 24">
+                <rect x="4" y="5" width="16" height="14" rx="3" />
+                <path d="M8 10h8" />
+                <path d="M8 14h5" />
+              </svg>
+            </span>
+            <span>Outreach Queue</span>
+          </a>
+        </div>
+
+        <div class="side-group">
+          <h3>Configure</h3>
+          <a class="side-link" href="#">
+            <span class="side-link__icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M10 3H5v5" />
+                <path d="M14 21h5v-5" />
+                <path d="M5 8a9 9 0 0 1 14-3" />
+                <path d="M19 16A9 9 0 0 1 5 19" />
+              </svg>
+            </span>
+            <span>Analyst</span>
+          </a>
+          <a class="side-link" href="#">
+            <span class="side-link__icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3l7 4v10l-7 4-7-4V7l7-4z" />
+                <path d="M12 7v10" />
+                <path d="M5 9l7 4 7-4" />
+              </svg>
+            </span>
+            <span>Training</span>
+          </a>
+          <a class="side-link" href="#">
+            <span class="side-link__icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l8-4z" />
+                <path d="M9 12l2 2 4-4" />
+              </svg>
+            </span>
+            <span>Audit</span>
+          </a>
+          <a class="side-link" href="#">
+            <span class="side-link__icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 12h16" />
+                <path d="M12 4v16" />
+                <circle cx="12" cy="12" r="8" />
+              </svg>
+            </span>
+            <span>Mission Control</span>
+          </a>
+        </div>
+
+        <div class="side-footer">
+          <span>Design intent</span>
+          <strong>Action-first and less literary.</strong>
+          <p>
+            Activation should answer one thing fast: which intro, follow-up, or
+            reactivation deserves the next move.
+          </p>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <div class="topbar rise">
+          <div class="topbar__left">
+            <div class="pill">
+              <span class="pill-icon">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4" y="5" width="16" height="15" rx="3" />
+                  <path d="M8 3v4" />
+                  <path d="M16 3v4" />
+                  <path d="M4 10h16" />
+                </svg>
+              </span>
+              Horizon 3 cohort
+            </div>
+            <div class="pill">
+              <span class="pill-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 12h16" />
+                  <path d="M12 4v16" />
+                </svg>
+              </span>
+              24 live matches
+            </div>
+            <div class="pill">
+              <span class="pill-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              </span>
+              9 ready now
+            </div>
+          </div>
+          <div class="topbar__right">
+            <div class="pill">Dummy admin</div>
+            <button class="button-primary">Run daily brief</button>
+          </div>
+        </div>
+
+        <section class="page-hero">
+          <article class="hero-card rise delay-1">
+            <div class="eyebrow">
+              <svg viewBox="0 0 24 24">
+                <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
+              </svg>
+              Activation OS
+            </div>
+            <h1>Move the right investor conversations this week.</h1>
+            <p>
+              Queue-first workflow for warm intros, live follow-ups, and
+              milestone-based reactivation. The page leads with actions, not
+              explanation.
+            </p>
+
+            <div class="hero-actions">
+              <span class="chip hot">
+                <span class="pill-icon">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 3v18" />
+                    <path d="M5 12h14" />
+                  </svg>
+                </span>
+                Ready now
+              </span>
+              <span class="chip">
+                <span class="pill-icon">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M7 12h10" />
+                    <path d="M12 7l5 5-5 5" />
+                  </svg>
+                </span>
+                Warm path
+              </span>
+              <span class="chip">
+                <span class="pill-icon">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 8v5" />
+                    <circle cx="12" cy="17" r="1" />
+                    <path d="M12 2a10 10 0 1 0 10 10" />
+                  </svg>
+                </span>
+                Follow-up
+              </span>
+              <span class="chip">
+                <span class="pill-icon">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M8 8l8 8" />
+                    <path d="M16 8l-8 8" />
+                    <circle cx="12" cy="12" r="9" />
+                  </svg>
+                </span>
+                Blocked
+              </span>
+            </div>
+
+            <div class="search-shell">
+              <div class="search-row">
+                <input
+                  placeholder="Search company, investor, owner, or intro path"
+                  type="text"
+                />
+                <button class="button-dark" type="button">Open queue</button>
+              </div>
+              <div class="queue-tabs">
+                <span class="segment active">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  Best moves
+                </span>
+                <span class="segment">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 2v20" />
+                    <path d="M4 12h16" />
+                  </svg>
+                  Warm paths only
+                </span>
+                <span class="segment">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M9 4h6" />
+                    <path d="M12 4v8l4 2" />
+                    <circle cx="12" cy="12" r="9" />
+                  </svg>
+                  Needs follow-up
+                </span>
+              </div>
+            </div>
+
+            <div class="metric-strip">
+              <div class="metric-box">
+                <span>Today</span>
+                <strong>6</strong>
+                <small>Immediate plays worth touching before end of day.</small>
+              </div>
+              <div class="metric-box">
+                <span>Warm intros</span>
+                <strong>4</strong>
+                <small>Connector-backed moves already strong enough to draft.</small>
+              </div>
+              <div class="metric-box">
+                <span>Follow-up</span>
+                <strong>3</strong>
+                <small>Existing conversations that need a timed push.</small>
+              </div>
+              <div class="metric-box">
+                <span>Blocked</span>
+                <strong>2</strong>
+                <small>No intro path. Redirect into customer proof or milestones.</small>
+              </div>
+            </div>
+          </article>
+
+          <aside class="focus-card rise delay-2">
+            <div class="eyebrow">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3l7 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l7-4z" />
+              </svg>
+              Today's focus
+            </div>
+            <h2>Voltie x Whitecap Venture Partners</h2>
+            <p>
+              This is the cleanest first move on the board: real cheque fit, warm
+              operator path, and a story that already sounds operational.
+            </p>
+            <div class="focus-grid" style="margin-top: 18px;">
+              <div class="focus-box">
+                <span>Stage</span>
+                <strong>Seed-Series A</strong>
+              </div>
+              <div class="focus-box">
+                <span>Owner</span>
+                <strong>Youssef</strong>
+              </div>
+              <div class="focus-box">
+                <span>Connector</span>
+                <strong>Portfolio operator</strong>
+              </div>
+              <div class="focus-box">
+                <span>Next touch</span>
+                <strong>Today, 4:00 PM</strong>
+              </div>
+            </div>
+            <div class="focus-dark">
+              <div class="section-overline">Frame</div>
+              <div class="focus-tags">
+                <span>Grid efficiency wedge</span>
+                <span>Operator-led intro</span>
+                <span>Canada / US story</span>
+              </div>
+              <p class="hero-note">
+                Lead with deployment leverage, not climate ambition. The angle
+                is operational software with proof points, not broad decarb
+                narrative.
+              </p>
+            </div>
+          </aside>
+        </section>
+
+        <div class="workspace-grid">
+          <div>
+            <section class="section-card rise delay-3">
+              <div class="section-head">
+                <div>
+                  <div class="eyebrow">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M4 12h16" />
+                      <path d="M12 4v16" />
+                    </svg>
+                    Action queue
+                  </div>
+                  <h2>Best moves for the next 48 hours</h2>
+                  <p>Short cards, obvious status, and one clear action on each row.</p>
+                </div>
+                <div class="queue-tabs">
+                  <span class="segment active">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                    Ready now
+                  </span>
+                  <span class="segment">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M7 12h10" />
+                      <path d="M12 7l5 5-5 5" />
+                    </svg>
+                    Warm path
+                  </span>
+                  <span class="segment">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M12 8v5" />
+                      <circle cx="12" cy="17" r="1" />
+                      <path d="M12 2a10 10 0 1 0 10 10" />
+                    </svg>
+                    Follow-up
+                  </span>
+                </div>
+              </div>
+
+              <div class="smart-filter-bar">
+                <div class="smart-filter-head">
+                  <div>
+                    <div class="section-overline">Scan by signal</div>
+                    <h3>Less reading, tighter filters</h3>
+                  </div>
+                  <span class="chip hot">4 filters active</span>
+                </div>
+                <div class="smart-filter-grid">
+                  <div class="filter-group">
+                    <h4>Stage</h4>
+                    <div class="filter-list">
+                      <div class="filter-item active">
+                        <div class="filter-item__left">
+                          <span class="icon-badge small pink">
+                            <svg viewBox="0 0 24 24">
+                              <path d="M12 3v18" />
+                              <path d="M5 12h14" />
+                            </svg>
+                          </span>
+                          <strong>Seed to Series A</strong>
+                        </div>
+                        <span class="filter-count">12</span>
+                      </div>
+                      <div class="filter-item">
+                        <div class="filter-item__left">
+                          <span class="icon-badge small blue">
+                            <svg viewBox="0 0 24 24">
+                              <path d="M4 12h16" />
+                              <path d="M12 4v16" />
+                            </svg>
+                          </span>
+                          <strong>Pre-seed only</strong>
+                        </div>
+                        <span class="filter-count">5</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="filter-group">
+                    <h4>Path</h4>
+                    <div class="filter-list">
+                      <div class="filter-item active">
+                        <div class="filter-item__left">
+                          <span class="icon-badge small green">
+                            <svg viewBox="0 0 24 24">
+                              <path d="M7 12h10" />
+                              <path d="M12 7l5 5-5 5" />
+                            </svg>
+                          </span>
+                          <strong>Warm intro live</strong>
+                        </div>
+                        <span class="filter-count">7</span>
+                      </div>
+                      <div class="filter-item">
+                        <div class="filter-item__left">
+                          <span class="icon-badge small amber">
+                            <svg viewBox="0 0 24 24">
+                              <path d="M12 8v5" />
+                              <circle cx="12" cy="17" r="1" />
+                              <path d="M12 2a10 10 0 1 0 10 10" />
+                            </svg>
+                          </span>
+                          <strong>Milestone wait</strong>
+                        </div>
+                        <span class="filter-count">3</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="filter-group">
+                    <h4>Ownership</h4>
+                    <div class="filter-list">
+                      <div class="filter-item">
+                        <div class="filter-item__left">
+                          <span class="icon-badge small dark">
+                            <svg viewBox="0 0 24 24">
+                              <circle cx="12" cy="8" r="4" />
+                              <path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5" />
+                            </svg>
+                          </span>
+                          <strong>Youssef-owned</strong>
+                        </div>
+                        <span class="filter-count">8</span>
+                      </div>
+                      <div class="filter-item">
+                        <div class="filter-item__left">
+                          <span class="icon-badge small blue">
+                            <svg viewBox="0 0 24 24">
+                              <path d="M4 7h16" />
+                              <path d="M4 12h10" />
+                              <path d="M4 17h7" />
+                            </svg>
+                          </span>
+                          <strong>Partner-backed</strong>
+                        </div>
+                        <span class="filter-count">4</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-list">
+                <article class="row-card selected">
+                  <div class="avatar logo-tile logo-tile--voltie" aria-label="Voltie logo">
+                    <svg viewBox="0 0 48 48" fill="none">
+                      <circle cx="24" cy="24" r="16" stroke="#21d58b" stroke-width="3.2" opacity="0.85" />
+                      <path
+                        d="M25.5 11L17.5 26h7l-2 11 9-15h-7l1-11z"
+                        fill="#ff4f8d"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="row-head">
+                      <h3>Voltie -> Whitecap Venture Partners</h3>
+                      <span class="badge hot">Best move</span>
+                      <span class="badge green">Warm intro</span>
+                    </div>
+                    <div class="fact-grid fact-grid--four">
+                      <div class="fact-pill">
+                        <span class="icon-badge small pink">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M12 3v18" />
+                            <path d="M5 12h14" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Stage</strong>
+                          <span>Seed-Series A</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small green">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M7 12h10" />
+                            <path d="M12 7l5 5-5 5" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Path</strong>
+                          <span>Operator intro</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small blue">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M4 12h16" />
+                            <path d="M12 4v16" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Angle</strong>
+                          <span>Grid efficiency</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small dark">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Next</strong>
+                          <span>Draft intro</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="row-copy">
+                      Clean cheque fit, strong thesis adjacency, and a credible
+                      connector. Lead with deployment proof and operating leverage.
+                    </p>
+                    <div class="row-actions">
+                      <button class="button-primary" type="button">Draft intro</button>
+                    </div>
+                  </div>
+                  <div class="row-score">
+                    <div class="score-pill">14/16</div>
+                    <div class="score-note">Move now</div>
+                  </div>
+                </article>
+
+                <article class="row-card">
+                  <div class="avatar logo-tile logo-tile--voltie" aria-label="Voltie logo">
+                    <svg viewBox="0 0 48 48" fill="none">
+                      <circle cx="24" cy="24" r="16" stroke="#21d58b" stroke-width="3.2" opacity="0.85" />
+                      <path
+                        d="M25.5 11L17.5 26h7l-2 11 9-15h-7l1-11z"
+                        fill="#ff4f8d"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="row-head">
+                      <h3>Voltie -> TELUS Ventures</h3>
+                      <span class="badge green">Partner path</span>
+                    </div>
+                    <div class="fact-grid fact-grid--four">
+                      <div class="fact-pill">
+                        <span class="icon-badge small pink">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M12 3v18" />
+                            <path d="M5 12h14" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Stage</strong>
+                          <span>Series A</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small green">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M7 12h10" />
+                            <path d="M12 7l5 5-5 5" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Path</strong>
+                          <span>Partner route</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small amber">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M8 8l8 8" />
+                            <path d="M16 8l-8 8" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Risk</strong>
+                          <span>Traction proof</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small dark">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Next</strong>
+                          <span>Attach proof point</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="row-copy">
+                      Strong adjacency and credible access, but the narrative
+                      gets stronger once deployment evidence is explicit.
+                    </p>
+                  </div>
+                  <div class="row-score">
+                    <div class="score-pill">11/16</div>
+                    <div class="score-note">Second wave</div>
+                  </div>
+                </article>
+
+                <article class="row-card">
+                  <div class="avatar logo-tile logo-tile--carbon" aria-label="Carbon Upcycling logo">
+                    <svg viewBox="0 0 48 48" fill="none">
+                      <circle cx="17" cy="24" r="6.5" stroke="#ffffff" stroke-width="2.4" />
+                      <circle cx="31" cy="16" r="5.5" stroke="#7ef0c1" stroke-width="2.4" />
+                      <circle cx="31" cy="32" r="5.5" stroke="#ff4f8d" stroke-width="2.4" />
+                      <path d="M22.5 21l3.5-2.2" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" />
+                      <path d="M22.5 27l3.5 2.2" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="row-head">
+                      <h3>Carbon Upcycling -> ArcTern Ventures</h3>
+                      <span class="badge hot">Follow-up</span>
+                    </div>
+                    <div class="fact-grid fact-grid--four">
+                      <div class="fact-pill">
+                        <span class="icon-badge small pink">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M12 3v18" />
+                            <path d="M5 12h14" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Stage</strong>
+                          <span>Series A</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small blue">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M12 8v5" />
+                            <circle cx="12" cy="17" r="1" />
+                            <path d="M12 2a10 10 0 1 0 10 10" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Status</strong>
+                          <span>Waiting reply</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small green">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M7 12h10" />
+                            <path d="M12 7l5 5-5 5" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Path</strong>
+                          <span>Warm intro sent</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small dark">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Next</strong>
+                          <span>48h nudge</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="row-copy">
+                      Conversation is live already. The job is timing and clarity,
+                      not re-qualification.
+                    </p>
+                  </div>
+                  <div class="row-score">
+                    <div class="score-pill">10/16</div>
+                    <div class="score-note">Live thread</div>
+                  </div>
+                </article>
+
+                <article class="row-card">
+                  <div class="avatar logo-tile logo-tile--baseline" aria-label="BaselineAI logo">
+                    <svg viewBox="0 0 48 48" fill="none">
+                      <rect x="12" y="13" width="7" height="22" rx="3.5" fill="#ffffff" />
+                      <rect x="21" y="18" width="7" height="17" rx="3.5" fill="#7ef0c1" />
+                      <rect x="30" y="10" width="7" height="25" rx="3.5" fill="#ff4f8d" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="row-head">
+                      <h3>BaselineAI -> BDC Climate Tech</h3>
+                      <span class="badge amber">Milestone wait</span>
+                    </div>
+                    <div class="fact-grid fact-grid--four">
+                      <div class="fact-pill">
+                        <span class="icon-badge small pink">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M12 3v18" />
+                            <path d="M5 12h14" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Stage</strong>
+                          <span>Pre-seed</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small amber">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M8 8l8 8" />
+                            <path d="M16 8l-8 8" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Gap</strong>
+                          <span>Needs customer proof</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small blue">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M9 4h6" />
+                            <path d="M12 4v8l4 2" />
+                            <circle cx="12" cy="12" r="9" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Return</strong>
+                          <span>After pilot close</span>
+                        </div>
+                      </div>
+                      <div class="fact-pill">
+                        <span class="icon-badge small dark">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                        </span>
+                        <div>
+                          <strong>Next</strong>
+                          <span>Set reminder</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="row-copy">
+                      Good eventual fit, wrong moment. Keep it off the live queue
+                      until the proof threshold changes.
+                    </p>
+                  </div>
+                  <div class="row-score">
+                    <div class="score-pill">9/16</div>
+                    <div class="score-note">Monitor</div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="section-card rise delay-4" style="margin-top: 18px;">
+              <div class="section-head">
+                <div>
+                  <div class="eyebrow">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M4 20l5-9 4 4 7-11" />
+                    </svg>
+                    Execution lanes
+                  </div>
+                  <h2>Keep readiness visible without taking over the page</h2>
+                </div>
+              </div>
+
+              <div class="lane-grid">
+                <div class="lane-card">
+                  <div class="lane-card__head">
+                    <div class="section-title">
+                      <span class="icon-badge pink">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                      </span>
+                      <strong>Ready now</strong>
+                    </div>
+                    <span class="count-pill">6</span>
+                  </div>
+                  <p>Clean enough to draft or send this week.</p>
+                </div>
+                <div class="lane-card">
+                  <div class="lane-card__head">
+                    <div class="section-title">
+                      <span class="icon-badge green">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M7 12h10" />
+                          <path d="M12 7l5 5-5 5" />
+                        </svg>
+                      </span>
+                      <strong>Qualified outreach</strong>
+                    </div>
+                    <span class="count-pill">5</span>
+                  </div>
+                  <p>Good fits that need sharper framing, proof, or sequencing.</p>
+                </div>
+                <div class="lane-card">
+                  <div class="lane-card__head">
+                    <div class="section-title">
+                      <span class="icon-badge amber">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M9 4h6" />
+                          <path d="M12 4v8l4 2" />
+                          <circle cx="12" cy="12" r="9" />
+                        </svg>
+                      </span>
+                      <strong>Waiting / blocked</strong>
+                    </div>
+                    <span class="count-pill">5</span>
+                  </div>
+                  <p>Track triggers and do not burn relationship capital early.</p>
+                </div>
+              </div>
+
+              <div class="section-split" style="margin-top: 16px;">
+                <div class="reactivation-box">
+                  <div class="eyebrow">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M8 8l8 8" />
+                      <path d="M16 8l-8 8" />
+                      <circle cx="12" cy="12" r="9" />
+                    </svg>
+                    Blocked reactivation
+                  </div>
+                  <h3>No investor intro path for Hydract</h3>
+                  <p>
+                    Redirect the energy into customer proof. Top target is a
+                    utility deployment partner; once the case study exists,
+                    reactivate White Star and ArcTern.
+                  </p>
+                  <div class="queue-row" style="margin-top: 14px;">
+                    <div class="queue-row__left">
+                      <span class="icon-badge small blue">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M4 7h16" />
+                          <path d="M4 12h10" />
+                          <path d="M4 17h7" />
+                        </svg>
+                      </span>
+                      <div>
+                        <strong>Target customer</strong>
+                        <span>Utility pilot / enterprise proof</span>
+                      </div>
+                    </div>
+                    <span class="count-pill">1</span>
+                  </div>
+                </div>
+
+                <div class="draft-box">
+                  <div class="eyebrow">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M4 20l5-9 4 4 7-11" />
+                    </svg>
+                    Watchlist
+                  </div>
+                  <h3>Milestones to monitor this week</h3>
+                  <div class="timeline" style="margin-top: 14px;">
+                    <div class="timeline-item">
+                      <div class="timeline-item__left">
+                        <span class="icon-badge small green">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                        </span>
+                        <div>
+                          <h4>Voltie pilot deployment note</h4>
+                          <p>Attach one proof point before the TELUS push.</p>
+                        </div>
+                      </div>
+                      <span class="count-pill">Tue</span>
+                    </div>
+                    <div class="timeline-item">
+                      <div class="timeline-item__left">
+                        <span class="icon-badge small amber">
+                          <svg viewBox="0 0 24 24">
+                            <path d="M9 4h6" />
+                            <path d="M12 4v8l4 2" />
+                            <circle cx="12" cy="12" r="9" />
+                          </svg>
+                        </span>
+                        <div>
+                          <h4>BaselineAI customer reference</h4>
+                          <p>Re-check if pilot closes this week.</p>
+                        </div>
+                      </div>
+                      <span class="count-pill">Fri</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <aside class="detail-stack">
+            <section class="detail-card rise delay-4">
+              <div class="eyebrow">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 3l7 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7l7-4z" />
+                </svg>
+                Selected play
+              </div>
+              <h2>Whitecap at a glance</h2>
+              <p>
+                The detail rail stays quiet and decisive. It answers why this is
+                worth moving now and what the send should sound like.
+              </p>
+
+              <div class="detail-kv">
+                <div class="detail-kv__row">
+                  <span class="icon-badge pink">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </span>
+                  <div class="detail-kv__copy">
+                    <strong>Cheque fit is clean</strong>
+                    <span>Inside the real band, not an aspirational stretch.</span>
+                  </div>
+                </div>
+                <div class="detail-kv__row">
+                  <span class="icon-badge green">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M7 12h10" />
+                      <path d="M12 7l5 5-5 5" />
+                    </svg>
+                  </span>
+                  <div class="detail-kv__copy">
+                    <strong>Warm path is live</strong>
+                    <span>Operator-backed intro reduces cold-start risk.</span>
+                  </div>
+                </div>
+                <div class="detail-kv__row">
+                  <span class="icon-badge amber">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M8 8l8 8" />
+                      <path d="M16 8l-8 8" />
+                    </svg>
+                  </span>
+                  <div class="detail-kv__copy">
+                    <strong>One thing to tighten</strong>
+                    <span>Add the fleet deployment proof line in the first paragraph.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="check-list">
+                <div class="check-row">
+                  <div class="check-row__left">
+                    <span class="icon-badge small dark">
+                      <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5" />
+                      </svg>
+                    </span>
+                    <div>
+                      <strong>Owner</strong>
+                      <span class="mini-meta">Youssef</span>
+                    </div>
+                  </div>
+                  <span class="count-pill">Now</span>
+                </div>
+                <div class="check-row">
+                  <div class="check-row__left">
+                    <span class="icon-badge small blue">
+                      <svg viewBox="0 0 24 24">
+                        <path d="M4 7h16" />
+                        <path d="M4 12h10" />
+                        <path d="M4 17h7" />
+                      </svg>
+                    </span>
+                    <div>
+                      <strong>Connector</strong>
+                      <span class="mini-meta">Portfolio operator</span>
+                    </div>
+                  </div>
+                  <span class="count-pill">Live</span>
+                </div>
+                <div class="check-row">
+                  <div class="check-row__left">
+                    <span class="icon-badge small green">
+                      <svg viewBox="0 0 24 24">
+                        <path d="M4 20l5-9 4 4 7-11" />
+                      </svg>
+                    </span>
+                    <div>
+                      <strong>Next send</strong>
+                      <span class="mini-meta">Today, after draft review</span>
+                    </div>
+                  </div>
+                  <span class="count-pill">4 PM</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="detail-card rise delay-5">
+              <div class="section-title">
+                <span class="icon-badge pink">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M4 7l8 6 8-6" />
+                    <rect x="4" y="5" width="16" height="14" rx="3" />
+                  </svg>
+                </span>
+                <div>
+                  <div class="section-overline">Draft angle</div>
+                  <strong>Operator intro around operating leverage</strong>
+                </div>
+              </div>
+
+              <div class="draft-strip">
+                <div class="draft-line">
+                  <div class="draft-line__left">
+                    <span class="icon-badge small pink">
+                      <svg viewBox="0 0 24 24">
+                        <path d="M4 12h16" />
+                      </svg>
+                    </span>
+                    <div>
+                      <strong>Open with the problem</strong>
+                      <span>Electrification projects stall on deployment friction.</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="draft-line">
+                  <div class="draft-line__left">
+                    <span class="icon-badge small green">
+                      <svg viewBox="0 0 24 24">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    </span>
+                    <div>
+                      <strong>Bridge to proof</strong>
+                      <span>Show one fleet or utility deployment signal immediately.</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="draft-line">
+                  <div class="draft-line__left">
+                    <span class="icon-badge small blue">
+                      <svg viewBox="0 0 24 24">
+                        <path d="M7 12h10" />
+                        <path d="M12 7l5 5-5 5" />
+                      </svg>
+                    </span>
+                    <div>
+                      <strong>Ask for the right move</strong>
+                      <span>Short call, not diligence. Keep the intro light and concrete.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="footer-note">
+                <div>
+                  <strong>Success signal</strong>
+                  <small>Connector agrees to send this exact framing.</small>
+                </div>
+                <div class="score-pill">High</div>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

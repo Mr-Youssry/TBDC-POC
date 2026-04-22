@@ -5,16 +5,35 @@ import { TbdcButton } from "@/components/ui/tbdc-button";
 
 export function FileViewer({ path }: { path: string }) {
   const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loadedPath, setLoadedPath] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const loading = loadedPath !== path;
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`/api/openclaw/workspace/file?path=${encodeURIComponent(path)}`)
-      .then((r) => r.json())
-      .then((data) => { if (data.ok) setContent(data.content); })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    let cancelled = false;
+
+    const loadFile = async () => {
+      try {
+        const response = await fetch(`/api/openclaw/workspace/file?path=${encodeURIComponent(path)}`);
+        const data = await response.json();
+        if (!cancelled) {
+          setContent(data.ok ? data.content : "");
+        }
+      } catch {
+        if (!cancelled) {
+          setContent("");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadedPath(path);
+        }
+      }
+    };
+
+    void loadFile();
+    return () => {
+      cancelled = true;
+    };
   }, [path]);
 
   const handleCopy = async () => {

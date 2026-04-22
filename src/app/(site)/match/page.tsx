@@ -9,7 +9,6 @@ import { EditableCell } from "@/components/editable-cell";
 import { LongTextModal } from "@/components/long-text-modal";
 import {
   updateMatchStringField,
-  updateMatchNumberField,
   updateDoNotMatch,
   updateCustomerTarget,
 } from "./actions";
@@ -121,17 +120,16 @@ export default async function MatchPage({
   const tier2 = matches.filter((m) => m.tier === 2);
 
   return (
-    <div className="flex h-full overflow-hidden">
-      {/* ── Company sidebar — matches global sidebar visual style ── */}
-      <aside className="w-[220px] flex-shrink-0 overflow-y-auto border-r border-border bg-surface">
+    <div className="app-page flex h-full gap-5 overflow-hidden">
+      <aside className="app-surface w-[240px] flex-shrink-0 overflow-y-auto p-2">
         <div>
-          <div className="px-3 py-2.5 font-mono text-[0.55rem] tracking-[0.1em] uppercase text-text-3">
+          <div className="px-3 py-2.5 font-mono text-[0.62rem] tracking-[0.12em] uppercase text-text-3">
             Select company
           </div>
           {cohorts.map((group, gi) => (
             <div key={group.label}>
-              {gi > 0 && <div className="my-1 border-t border-border mx-1.5" />}
-              <div className="px-3 pb-1 pt-2 font-mono text-[0.55rem] text-text-3 uppercase tracking-[0.1em]">
+              {gi > 0 && <div className="mx-1.5 my-2 border-t border-border" />}
+              <div className="px-3 pb-1 pt-2 font-mono text-[0.58rem] text-text-3 uppercase tracking-[0.12em]">
                 {group.label}
               </div>
               {group.items.map((c) => {
@@ -142,9 +140,9 @@ export default async function MatchPage({
                     key={c.id}
                     href={`/match?c=${c.id}`}
                     className={[
-                      "flex items-center gap-2.5 mx-1.5 px-2.5 py-2 rounded-md text-[0.78rem] transition-colors",
+                      "mx-1.5 flex items-center gap-2.5 rounded-[8px] px-3 py-2.5 text-[0.8rem] transition-colors",
                       isActive
-                        ? "bg-[#e8e6e1] text-text-1 font-semibold border-l-[3px] border-l-t1-txt"
+                        ? "bg-accent text-text-1 font-semibold shadow-[inset_0_0_0_1px_rgba(255,79,141,0.12)]"
                         : isWidmo
                           ? "text-warn-txt hover:bg-surface-2"
                           : "text-text-3 hover:bg-surface-2 hover:text-text-2",
@@ -162,21 +160,19 @@ export default async function MatchPage({
         </div>
       </aside>
 
-      {/* ── Main pane ── */}
-      <div className="flex-1 overflow-y-auto px-8 py-6">
-        {/* Company profile card */}
-        <div className="bg-surface border border-border rounded-[10px] p-5 mb-5">
+      <div className="min-w-0 flex-1 overflow-y-auto">
+        <div className="app-hero mb-5">
           <div className="flex items-start justify-between flex-wrap gap-3 mb-3">
             <div>
-              <div className="font-mono text-[0.65rem] text-text-3 tracking-[0.06em] uppercase mb-[3px]">
+              <div className="font-mono text-[0.68rem] text-text-3 tracking-[0.12em] uppercase mb-[6px]">
                 TBDC {selected.cohort}
               </div>
-              <div className="text-[1.4rem] tracking-[-0.02em]">{selected.name}</div>
-              <div className="text-[0.82rem] text-text-2">{selected.sector}</div>
+              <div className="app-page-title text-[2.2rem]">{selected.name}</div>
+              <div className="mt-1 text-[0.9rem] text-text-2">{selected.sector}</div>
             </div>
             {!selected.acceptsInvestorIntros && (
-              <span className="inline-block font-mono text-[0.62rem] px-[7px] py-[2px] rounded-[4px] bg-warn text-warn-txt border border-warn-bdr font-bold whitespace-nowrap">
-                ⚠ NO INVESTOR INTRODUCTIONS
+              <span className="inline-flex items-center rounded-full border border-warn-bdr bg-warn px-3 py-1 text-[0.72rem] font-medium text-warn-txt whitespace-nowrap">
+                No investor introductions
               </span>
             )}
           </div>

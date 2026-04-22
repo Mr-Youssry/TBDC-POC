@@ -32,11 +32,22 @@ export default async function MethodologyPage() {
   const th = "bg-surface-2 px-[10px] py-2 text-left font-mono text-[0.65rem] tracking-[0.05em] text-text-2 border-b border-border font-normal";
 
   return (
-    <div className="px-8 py-7 max-w-[1200px]">
-      <nav className="sticky top-0 z-10 bg-background border-b border-border py-2 mb-4 flex gap-4">
-        <a href="#gates" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Gates</a>
-        <a href="#dimensions" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Dimensions</a>
-        <a href="#cards" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Cards</a>
+    <div className="app-page mx-auto max-w-[1200px]">
+      <section className="app-hero mb-5">
+        <div className="font-mono text-[0.68rem] uppercase tracking-[0.12em] text-text-3">
+          Scoring system
+        </div>
+        <h1 className="app-page-title mt-3">Methodology</h1>
+        <p className="app-page-copy">
+          Hard gates, weighted dimensions, and the tier logic behind the investor matching system.
+          This route stays reference-heavy, but the first screen now frames the system before dropping into tables.
+        </p>
+      </section>
+
+      <nav className="app-topbar mb-4 flex gap-4 py-3">
+        <a href="#gates" className="text-[0.74rem] font-mono text-text-3 transition-colors hover:text-text-1">Gates</a>
+        <a href="#dimensions" className="text-[0.74rem] font-mono text-text-3 transition-colors hover:text-text-1">Dimensions</a>
+        <a href="#cards" className="text-[0.74rem] font-mono text-text-3 transition-colors hover:text-text-1">Cards</a>
       </nav>
       {/* ═══════════════════════════════════════════════════════════════
           SECTION 1 — Hard gates

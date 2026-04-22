@@ -5,6 +5,8 @@ import type { NextAuthConfig } from "next-auth";
  * full Node runtime auth at src/auth.ts. Keep this file free of Node-only
  * imports (no bcryptjs, no Prisma) — the edge middleware can't load them.
  */
+const useDummyData = process.env.USE_DUMMY_DATA === "true";
+
 export const authConfig = {
   pages: {
     signIn: "/login",
@@ -14,6 +16,7 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnAdmin = nextUrl.pathname.startsWith("/admin");
+      if (isOnAdmin && useDummyData) return true;
       if (isOnAdmin) return isLoggedIn;
       return true;
     },

@@ -1,0 +1,185 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TBDC UI Exploration</title>
+    <link rel="stylesheet" href="./mockups.css" />
+  </head>
+  <body class="index-page">
+    <main class="index-shell">
+      <header class="exploration-header">
+        <div class="header-copy">
+          <div class="eyebrow">Design exploration</div>
+          <h1>TBDC UI/UX mockup directions</h1>
+          <p>Five static HTML directions for the full project surface. Each concept covers the main routes so you can mix and match which page patterns you want to keep.</p>
+        </div>
+        <img class="brand-mark" src="/tbdc-logo.png" alt="TBDC" />
+      </header>
+      <section class="summary-grid">
+        <article class="summary-card">
+          <h3>Current friction</h3>
+          <ul class="bullet-list">
+            <li>Too many pages lead with full-width tables, which forces scanning across dozens of columns before the user understands what matters.</li><li>Primary decisions and secondary reference material sit at the same visual weight, so the eye has no stable starting point.</li><li>Filters, counts, and edit controls are exposed all at once instead of appearing when the user is in selection or editing mode.</li><li>Routes with their own sidebars compress the working canvas and make long-form comparison harder than it should be.</li><li>Admin, analyst, and training surfaces solve useful workflows, but the shared shell does not differentiate reading, editing, and acting states clearly.</li>
+          </ul>
+        </article>
+        <article class="summary-card">
+          <h3>Reference logic</h3>
+          <ul class="bullet-list">
+            <li><strong>OpenVC:</strong> Search-first investor discovery with a clear taxonomy for stage, type, and location. It reduces cognitive load by making filters feel like a guided narrowing step rather than a permanent wall of controls.</li><li><strong>b2match dashboard pattern:</strong> Hub-like dashboard logic with widgets that act as gateways into deeper pages. It keeps the top layer concise while still making dense workflows discoverable through progressive disclosure.</li>
+          </ul>
+        </article>
+        <article class="summary-card">
+          <h3>Design principles</h3>
+          <ul class="bullet-list">
+            <li>Show one primary action zone per page, then support it with one secondary context rail.</li><li>Replace wide editable tables with layered views: summary first, detail second, edit mode last.</li><li>Expose filters in short, task-oriented groups instead of permanent all-at-once controls.</li><li>Use section bands, scorecards, and drawers to separate signal from reference material.</li><li>Let analyst and training feel like focused workspaces, not generic admin pages with chat bolted on.</li>
+          </ul>
+        </article>
+      </section>
+      <section class="index-grid">
+        
+  <a class="index-card" href="./01-signal-board.html">
+    <div class="index-card__top">
+      <div>
+        <div class="eyebrow">Concept</div>
+        <h2>Signal Board</h2>
+        <p>Search-first operator dashboard</p>
+      </div>
+      <span class="badge">Strongest overall baseline for the product.</span>
+    </div>
+    <div class="mini-screen mini-screen--signal-board">
+      <div class="mini-screen__rail"></div>
+      <div class="mini-screen__canvas">
+        <div class="mini-screen__band"></div>
+        <div class="mini-screen__row">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="mini-screen__grid">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    <ul class="bullet-list">
+      <li><strong>Philosophy:</strong> Takes the clearest ideas from OpenVC: intentional filtering, shortlist thinking, and quieter data presentation. Each page begins with one big answer and one support rail.</li>
+      <li><strong>Best for:</strong> Activation Playbook, Investors, Companies, Pipeline</li>
+      <li><strong>Why:</strong> Best balance of elegance and usability. It lowers the feeling of crowding without making the product feel thin.</li>
+    </ul>
+  </a>
+
+  <a class="index-card" href="./02-editorial-ops.html">
+    <div class="index-card__top">
+      <div>
+        <div class="eyebrow">Concept</div>
+        <h2>Editorial Ops</h2>
+        <p>Board-deck style operating review</p>
+      </div>
+      <span class="badge">Best for presentation and stakeholder storytelling.</span>
+    </div>
+    <div class="mini-screen mini-screen--editorial-ops">
+      <div class="mini-screen__rail"></div>
+      <div class="mini-screen__canvas">
+        <div class="mini-screen__band"></div>
+        <div class="mini-screen__row">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="mini-screen__grid">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    <ul class="bullet-list">
+      <li><strong>Philosophy:</strong> Treats each route like a chapter in a weekly operating brief. Large spacing, strong typography, and chapter summaries make dense material feel deliberate instead of compressed.</li>
+      <li><strong>Best for:</strong> Methodology, Activation Playbook, Audit Log, Mission Control</li>
+      <li><strong>Why:</strong> Useful when the product needs to read like an executive system rather than a classic SaaS dashboard.</li>
+    </ul>
+  </a>
+
+  <a class="index-card" href="./03-relationship-studio.html">
+    <div class="index-card__top">
+      <div>
+        <div class="eyebrow">Concept</div>
+        <h2>Relationship Studio</h2>
+        <p>Queue plus inspector workspace</p>
+      </div>
+      <span class="badge">Best fit for communication-heavy routes.</span>
+    </div>
+    <div class="mini-screen mini-screen--relationship-studio">
+      <div class="mini-screen__rail"></div>
+      <div class="mini-screen__canvas">
+        <div class="mini-screen__band"></div>
+        <div class="mini-screen__row">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="mini-screen__grid">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    <ul class="bullet-list">
+      <li><strong>Philosophy:</strong> Optimized around one live list and one active detail pane. It treats people, matches, and conversations as selections inside a stable workspace.</li>
+      <li><strong>Best for:</strong> Match Output, Analyst, Training, Activation Playbook</li>
+      <li><strong>Why:</strong> Excellent when the team spends most of its time comparing entities and moving them through next actions.</li>
+    </ul>
+  </a>
+
+  <a class="index-card" href="./04-atlas-workspace.html">
+    <div class="index-card__top">
+      <div>
+        <div class="eyebrow">Concept</div>
+        <h2>Atlas Workspace</h2>
+        <p>Hub-and-spoke portfolio command map</p>
+      </div>
+      <span class="badge">Best for teams that want a richer dashboard center.</span>
+    </div>
+    <div class="mini-screen mini-screen--atlas-workspace">
+      <div class="mini-screen__rail"></div>
+      <div class="mini-screen__canvas">
+        <div class="mini-screen__band"></div>
+        <div class="mini-screen__row">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="mini-screen__grid">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    <ul class="bullet-list">
+      <li><strong>Philosophy:</strong> Uses b2match-style widget grouping to create a central navigation hub, then hands off to deeper operational screens. Dense content is grouped into modules instead of flattened into one scroll.</li>
+      <li><strong>Best for:</strong> Home-level overview, Pipeline, Mission Control, Admin surfaces</li>
+      <li><strong>Why:</strong> Good if you want the product to feel like an operational control center without returning to clutter.</li>
+    </ul>
+  </a>
+
+  <a class="index-card" href="./05-boardroom-minimal.html">
+    <div class="index-card__top">
+      <div>
+        <div class="eyebrow">Concept</div>
+        <h2>Boardroom Minimal</h2>
+        <p>Minimal enterprise with strong focus states</p>
+      </div>
+      <span class="badge">Best if visual stress is the main problem to solve.</span>
+    </div>
+    <div class="mini-screen mini-screen--boardroom-minimal">
+      <div class="mini-screen__rail"></div>
+      <div class="mini-screen__canvas">
+        <div class="mini-screen__band"></div>
+        <div class="mini-screen__row">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="mini-screen__grid">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    <ul class="bullet-list">
+      <li><strong>Philosophy:</strong> Aggressively removes chrome, collapses secondary information, and uses minimal accents. The interface feels lighter because only the current decision surface is visible.</li>
+      <li><strong>Best for:</strong> Login, Investors, Companies, Admin Users, Audit Log</li>
+      <li><strong>Why:</strong> Creates the cleanest visual experience, especially for tables and maintenance workflows.</li>
+    </ul>
+  </a>
+
+      </section>
+    </main>
+  </body>
+</html>

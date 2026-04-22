@@ -17,7 +17,7 @@ export function InviteForm() {
     <form
       ref={formRef}
       action={action}
-      className="border border-border rounded-[10px] bg-surface p-4 mb-6 grid grid-cols-1 md:grid-cols-[2fr_2fr_2fr_auto] gap-3 items-end"
+      className="app-surface mb-6 grid grid-cols-1 items-end gap-3 p-4 md:grid-cols-[2fr_2fr_2fr_auto]"
     >
       <label className="block">
         <span className="block font-mono text-[0.62rem] uppercase tracking-[0.06em] text-text-3 mb-1">
@@ -27,7 +27,7 @@ export function InviteForm() {
           name="email"
           type="email"
           required
-          className="w-full px-2 py-1.5 text-[0.82rem] border border-border rounded-[4px] bg-background"
+          className="w-full rounded-[8px] border border-border bg-background px-3 py-2 text-[0.82rem]"
         />
       </label>
       <label className="block">
@@ -37,7 +37,7 @@ export function InviteForm() {
         <input
           name="name"
           required
-          className="w-full px-2 py-1.5 text-[0.82rem] border border-border rounded-[4px] bg-background"
+          className="w-full rounded-[8px] border border-border bg-background px-3 py-2 text-[0.82rem]"
         />
       </label>
       <label className="block">
@@ -49,13 +49,13 @@ export function InviteForm() {
           type="text"
           required
           minLength={8}
-          className="w-full px-2 py-1.5 text-[0.82rem] border border-border rounded-[4px] bg-background font-mono"
+          className="w-full rounded-[8px] border border-border bg-background px-3 py-2 font-mono text-[0.82rem]"
         />
       </label>
       <button
         type="submit"
         disabled={pending}
-        className="px-3 py-1.5 text-[0.82rem] font-mono border border-border-2 rounded-[4px] bg-[var(--text-1)] text-[var(--bg)] hover:opacity-90 disabled:opacity-60 whitespace-nowrap"
+        className="rounded-full border border-primary bg-primary px-4 py-2 text-[0.82rem] font-medium whitespace-nowrap text-white hover:bg-[#eb2f77] disabled:opacity-60"
       >
         {pending ? "Inviting…" : "Invite admin"}
       </button>

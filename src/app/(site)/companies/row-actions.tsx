@@ -31,9 +31,9 @@ export function AddCompanyButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="px-3 py-1.5 text-[0.75rem] font-mono border border-border-2 rounded-[4px] bg-surface hover:bg-surface-2"
+        className="inline-flex min-h-[38px] items-center rounded-full border border-primary/16 bg-accent px-4 text-[0.78rem] font-medium text-accent-foreground transition-colors hover:border-primary/24 hover:bg-primary/12"
       >
-        + add company
+        Add company
       </button>
     );
   }
@@ -42,9 +42,9 @@ export function AddCompanyButton() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <form
         onSubmit={handleSubmit}
-        className="bg-surface border border-border rounded-lg shadow-xl p-5 w-[440px] max-h-[90vh] overflow-y-auto space-y-3"
+        className="w-[440px] max-h-[90vh] overflow-y-auto space-y-3 rounded-[12px] border border-border bg-surface p-5 shadow-2xl"
       >
-        <h3 className="font-serif text-lg text-text-1">Add Company</h3>
+        <h3 className="text-lg font-semibold text-text-1">Add Company</h3>
 
         <label className="block">
           <span className="text-xs text-text-3 font-mono">Company Name *</span>
@@ -134,14 +134,14 @@ export function AddCompanyButton() {
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="px-3 py-1.5 text-[0.75rem] font-mono border border-border rounded-[4px] text-text-3 hover:text-text-1"
+            className="rounded-full border border-border px-3 py-1.5 text-[0.75rem] font-medium text-text-3 hover:text-text-1"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={pending || !form.name.trim()}
-            className="px-3 py-1.5 text-[0.75rem] font-mono border border-text-1 rounded-[4px] bg-text-1 text-[#f5f4f0] hover:opacity-90 disabled:opacity-50"
+            className="rounded-full border border-primary bg-primary px-3 py-1.5 text-[0.75rem] font-medium text-white hover:bg-[#eb2f77] disabled:opacity-50"
           >
             {pending ? "Adding..." : "Add Company"}
           </button>
@@ -159,7 +159,7 @@ export function DeleteCompanyButton({ id, name }: { id: string; name: string }) 
       <button
         type="button"
         onClick={() => setConfirming(true)}
-        className="text-[0.62rem] font-mono text-text-3 hover:text-[var(--t3txt)]"
+        className="text-[0.66rem] font-mono text-text-3 hover:text-[var(--t3txt)]"
         title={`Delete ${name}`}
       >
         ✕
@@ -177,14 +177,14 @@ export function DeleteCompanyButton({ id, name }: { id: string; name: string }) 
             setConfirming(false);
           })
         }
-        className="text-[0.62rem] font-mono text-[var(--t3txt)] font-bold"
+        className="text-[0.66rem] font-mono font-bold text-[var(--t3txt)]"
       >
         confirm
       </button>
       <button
         type="button"
         onClick={() => setConfirming(false)}
-        className="text-[0.62rem] font-mono text-text-3"
+        className="text-[0.66rem] font-mono text-text-3"
       >
         cancel
       </button>
@@ -206,12 +206,12 @@ export function AcceptsIntrosToggle({
 
   if (!editable) {
     return accepts ? (
-      <span className="inline-block font-mono text-[0.62rem] px-[7px] py-[2px] rounded-[4px] bg-[#e8f8ef] text-[#1a6a40] border border-[#50b080] font-bold">
+      <span className="inline-flex items-center rounded-full border border-t1-bdr bg-t1-bg px-2.5 py-1 font-mono text-[0.66rem] font-semibold text-t1-txt">
         Open
       </span>
     ) : (
-      <span className="inline-block font-mono text-[0.62rem] px-[7px] py-[2px] rounded-[4px] bg-warn text-warn-txt border border-warn-bdr font-bold">
-        ⚠ Declined
+      <span className="inline-flex items-center rounded-full border border-warn-bdr bg-warn px-2.5 py-1 font-mono text-[0.66rem] font-semibold text-warn-txt">
+        Declined
       </span>
     );
   }
@@ -230,11 +230,11 @@ export function AcceptsIntrosToggle({
       }}
       className={
         accepts
-          ? "inline-block font-mono text-[0.62rem] px-[7px] py-[2px] rounded-[4px] bg-[#e8f8ef] text-[#1a6a40] border border-[#50b080] font-bold cursor-pointer hover:opacity-80"
-          : "inline-block font-mono text-[0.62rem] px-[7px] py-[2px] rounded-[4px] bg-warn text-warn-txt border border-warn-bdr font-bold cursor-pointer hover:opacity-80"
+          ? "inline-flex items-center rounded-full border border-t1-bdr bg-t1-bg px-2.5 py-1 font-mono text-[0.66rem] font-semibold text-t1-txt cursor-pointer hover:opacity-80"
+          : "inline-flex items-center rounded-full border border-warn-bdr bg-warn px-2.5 py-1 font-mono text-[0.66rem] font-semibold text-warn-txt cursor-pointer hover:opacity-80"
       }
     >
-      {accepts ? "Open" : "⚠ Declined"}
+      {accepts ? "Open" : "Declined"}
     </button>
   );
 }

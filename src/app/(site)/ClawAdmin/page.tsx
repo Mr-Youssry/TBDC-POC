@@ -52,14 +52,17 @@ export default async function ClawAdminPage() {
     : `http://localhost:${LOCAL_PORT}/`;
 
   return (
-    <div className="max-w-[900px] mx-auto p-6 space-y-4">
-      <header className="mb-2">
-        <h1 className="font-serif text-2xl text-text-1 mb-1">Mission Control</h1>
-        <p className="text-sm text-text-3">
+    <div className="app-page mx-auto max-w-[900px] space-y-4">
+      <section className="app-hero">
+        <div className="font-mono text-[0.68rem] uppercase tracking-[0.12em] text-text-3">
+          Gateway operations
+        </div>
+        <h1 className="app-page-title mt-3">Mission Control</h1>
+        <p className="app-page-copy">
           Live OpenClaw gateway state. Data fetched server-side from the
           in-container bridge — no SSH required.
         </p>
-      </header>
+      </section>
 
       {/* Gateway Status */}
       <StatusCard title="Gateway Status">

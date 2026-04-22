@@ -25,8 +25,9 @@ export async function updatePipelineStatus(
 
   await prisma.match.update({
     where: { id: matchId },
-    data: { pipelineStatus: parsed.data as any },
+    data: { pipelineStatus: parsed.data },
   });
   revalidatePath("/pipeline");
+  revalidatePath("/activation-playbook");
   return { ok: true };
 }

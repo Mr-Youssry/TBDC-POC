@@ -4,7 +4,6 @@ export const metadata: Metadata = { title: "Investor Database — TBDC POC" };
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isLoggedIn } from "@/lib/guards";
-import { SecHead } from "@/components/sec-head";
 import { EditableCell } from "@/components/editable-cell";
 import { LongTextModal } from "@/components/long-text-modal";
 import { TypeBadge, StageBadge, LeadBadge, ConfidenceBadge, RegionBadge } from "@/components/badges";
@@ -81,7 +80,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
   ]);
 
   /* ── Sort client-side for confidence/stage ──────────────────────────── */
-  let sorted = [...investors];
+  const sorted = [...investors];
   if (sortParam === "confidence-desc") {
     sorted.sort((a, b) => (a.confidence === "High" ? -1 : 1) - (b.confidence === "High" ? -1 : 1));
   } else if (sortParam === "confidence-asc") {
@@ -97,35 +96,65 @@ export default async function InvestorsPage({ searchParams }: Props) {
   const canada = allInvestors.find((g) => g.region === "Canada")?._count ?? 0;
   const us = allInvestors.find((g) => g.region === "US")?._count ?? 0;
   const global = allInvestors.find((g) => g.region === "Global")?._count ?? 0;
+  const highConfidence = sorted.filter((iv) => iv.confidence === "High").length;
+  const leadFriendly = sorted.filter((iv) => iv.leadOrFollow.includes("Lead")).length;
+  const earlyStage = sorted.filter((iv) => stageRank(iv.stage) <= STAGE_ORDER["Series A"]).length;
 
-  // Shared cell classes
-  const th = "bg-surface-2 px-3 py-[9px] text-left font-mono text-[0.65rem] tracking-[0.05em] text-text-2 border-b border-border whitespace-nowrap font-normal";
-  const thSticky = `${th} sticky top-0 z-20`; // frozen header row
-  const thFrozen = `${th} sticky top-0 left-0 z-30 bg-surface-2`; // frozen header + frozen column intersection
+  const th = "bg-[#f8fafe] px-3 py-[10px] text-left font-mono text-[0.65rem] tracking-[0.08em] text-text-3 border-b border-border whitespace-nowrap font-normal";
+  const thSticky = `${th} sticky top-0 z-20`;
+  const thFrozen = `${th} sticky top-0 left-0 z-30 bg-[#f8fafe]`;
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      {/* ── Pinned controls (don't scroll) ─────────────────────────────── */}
-      <div className="flex-shrink-0 px-8 py-4 bg-background border-b border-border">
-        <div className="flex items-center justify-between mb-3">
-          <SecHead className="mb-0 mt-0 pb-0 border-none">
-            Investor database — {total} funds profiled
-          </SecHead>
+    <div className="app-page flex h-full flex-col gap-5">
+      <section className="app-hero">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-3xl">
+            <div className="font-mono text-[0.68rem] uppercase tracking-[0.12em] text-text-3">
+              Investor universe
+            </div>
+            <h1 className="app-page-title mt-3">Investor Database</h1>
+            <p className="app-page-copy">
+              Search-led investor profiling with filters up front and the full reference matrix underneath.
+              The first screen should orient the list before asking the user to scan rows.
+            </p>
+          </div>
           {editable && <AddInvestorButton />}
         </div>
+        <div className="app-stat-grid mt-5">
+          <div className="app-stat-card">
+            <span className="app-stat-card__label">Profiled funds</span>
+            <strong className="app-stat-card__value">{total}</strong>
+            <span className="app-stat-card__copy">Current investor universe in the database.</span>
+          </div>
+          <div className="app-stat-card">
+            <span className="app-stat-card__label">High confidence</span>
+            <strong className="app-stat-card__value">{highConfidence}</strong>
+            <span className="app-stat-card__copy">Funds where fit quality is already strong enough to prioritize.</span>
+          </div>
+          <div className="app-stat-card">
+            <span className="app-stat-card__label">Lead-friendly</span>
+            <strong className="app-stat-card__value">{leadFriendly}</strong>
+            <span className="app-stat-card__copy">Profiles willing to lead or co-lead, not just observe.</span>
+          </div>
+          <div className="app-stat-card">
+            <span className="app-stat-card__label">Early-stage</span>
+            <strong className="app-stat-card__value">{earlyStage}</strong>
+            <span className="app-stat-card__copy">Seed to Series A funds currently visible in this set.</span>
+          </div>
+        </div>
+      </section>
 
+      <section className="app-surface p-4">
         <InvestorFilters counts={{ total, canada, us, global }} />
-
-        <p className="text-[0.68rem] font-mono text-text-3">
+        <p className="mt-3 text-[0.72rem] font-mono text-text-3">
           Showing {sorted.length} of {total} investors
           {regionFilter !== "All" && <> · {regionFilter}</>}
           {typeFilter !== "All" && <> · {typeFilter}</>}
           {sortParam && <> · sorted by {sortParam.replace("-", " ")}</>}
         </p>
-      </div>
+      </section>
 
-      {/* ── Scrollable table container ─────────────────────────────────── */}
-      <div className="flex-1 overflow-auto mx-8 my-4 border border-border rounded-[10px]">
+      <div className="app-table-wrap flex-1">
         <table className="text-[0.78rem] border-collapse">
           <thead>
             <tr>
@@ -138,8 +167,8 @@ export default async function InvestorsPage({ searchParams }: Props) {
           </thead>
           <tbody>
             {sorted.map((iv) => (
-              <tr key={iv.id} className="group bg-background hover:bg-surface-2">
-                <td className="px-3 py-[9px] border-b border-border align-top sticky left-0 z-10 bg-background group-hover:bg-surface-2 border-r border-border" style={{ minWidth: 180 }}>
+              <tr key={iv.id} className="group bg-white hover:bg-[#f8fafe]">
+                <td className="sticky left-0 z-10 border-b border-r border-border bg-white px-3 py-[10px] align-top group-hover:bg-[#f8fafe]" style={{ minWidth: 180 }}>
                   <EditableCell
                     id={iv.id}
                     field="name"
@@ -149,7 +178,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     display={<strong>{iv.name}</strong>}
                   />
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top">
+                <td className="border-b border-border px-3 py-[10px] align-top">
                   <EditableCell
                     id={iv.id}
                     field="type"
@@ -160,7 +189,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     display={<TypeBadge type={iv.type} />}
                   />
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top">
+                <td className="border-b border-border px-3 py-[10px] align-top">
                   <EditableCell
                     id={iv.id}
                     field="region"
@@ -171,7 +200,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     display={<RegionBadge region={iv.region} />}
                   />
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top">
+                <td className="border-b border-border px-3 py-[10px] align-top">
                   <EditableCell
                     id={iv.id}
                     field="stage"
@@ -181,7 +210,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     display={<StageBadge stage={iv.stage} />}
                   />
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top text-[0.73rem]">
+                <td className="border-b border-border px-3 py-[10px] align-top text-[0.73rem]">
                   <LongTextModal
                     id={iv.id}
                     field="sectors"
@@ -193,7 +222,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     <span>{iv.sectors}</span>
                   </LongTextModal>
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top font-mono text-[0.72rem]">
+                <td className="border-b border-border px-3 py-[10px] align-top font-mono text-[0.72rem]">
                   <EditableCell
                     id={iv.id}
                     field="chequeSize"
@@ -202,7 +231,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     update={updateInvestorField}
                   />
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top text-[0.73rem]">
+                <td className="border-b border-border px-3 py-[10px] align-top text-[0.73rem]">
                   <EditableCell
                     id={iv.id}
                     field="geography"
@@ -211,7 +240,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     update={updateInvestorField}
                   />
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top">
+                <td className="border-b border-border px-3 py-[10px] align-top">
                   <EditableCell
                     id={iv.id}
                     field="leadOrFollow"
@@ -222,7 +251,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     display={<LeadBadge lead={iv.leadOrFollow} />}
                   />
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top font-mono text-[0.72rem] text-text-3">
+                <td className="border-b border-border px-3 py-[10px] align-top font-mono text-[0.72rem] text-text-3">
                   <EditableCell
                     id={iv.id}
                     field="deals12m"
@@ -231,7 +260,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     update={updateInvestorField}
                   />
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top">
+                <td className="border-b border-border px-3 py-[10px] align-top">
                   <EditableCell
                     id={iv.id}
                     field="confidence"
@@ -242,7 +271,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     display={<ConfidenceBadge confidence={iv.confidence} />}
                   />
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top text-[0.73rem]">
+                <td className="border-b border-border px-3 py-[10px] align-top text-[0.73rem]">
                   <LongTextModal
                     id={iv.id}
                     field="notablePortfolio"
@@ -254,7 +283,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                     <span>{iv.notablePortfolio}</span>
                   </LongTextModal>
                 </td>
-                <td className="px-3 py-[9px] border-b border-border align-top text-[0.72rem] text-text-2">
+                <td className="border-b border-border px-3 py-[10px] align-top text-[0.72rem] text-text-2">
                   <LongTextModal
                     id={iv.id}
                     field="contactApproach"
@@ -267,7 +296,7 @@ export default async function InvestorsPage({ searchParams }: Props) {
                   </LongTextModal>
                 </td>
                 {editable && (
-                  <td className="px-3 py-[9px] border-b border-border align-top text-right">
+                  <td className="border-b border-border px-3 py-[10px] align-top text-right">
                     <DeleteInvestorButton id={iv.id} name={iv.name} />
                   </td>
                 )}
