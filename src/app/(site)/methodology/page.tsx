@@ -33,6 +33,41 @@ export default async function MethodologyPage() {
 
   return (
     <div className="px-8 py-7 max-w-[1200px]">
+      {/* ═══════════════════════════════════════════════════════════════
+          Video hero — methodology walkthrough
+          Added 2026-04-23. Drive file is shared "Anyone with the link".
+          ═══════════════════════════════════════════════════════════════ */}
+      <section className="mb-6">
+        <div
+          className="font-mono text-[0.68rem] uppercase tracking-[0.12em] font-bold mb-2"
+          style={{ color: "var(--color-tbdc-blue)" }}
+        >
+          Watch first — 3 min overview
+        </div>
+        <h1 className="font-heading text-[1.5rem] font-bold text-text-1 leading-tight mb-1">
+          How the matching methodology works
+        </h1>
+        <p className="text-[0.85rem] text-text-2 mb-4 max-w-[720px]">
+          A short walkthrough of the scoring rubric before you dive into the gate, dimension, and rationale tables below.
+        </p>
+        <div
+          className="relative w-full rounded-[8px] overflow-hidden border border-border bg-surface-2 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+          style={{ aspectRatio: "16 / 9", maxWidth: "960px" }}
+        >
+          <iframe
+            src="https://drive.google.com/file/d/1RppYj9i5s6F3wftbYCk3FuxQqV6AV6ck/preview"
+            title="TBDC methodology walkthrough"
+            allow="autoplay"
+            allowFullScreen
+            loading="lazy"
+            className="absolute inset-0 w-full h-full"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
+        <p className="text-[0.65rem] font-mono text-text-3 mt-2">
+          Video hosted on Google Drive · requires the file to be shared as "Anyone with the link can view" to render inline.
+        </p>
+      </section>
       <nav className="sticky top-0 z-10 bg-background border-b border-border py-2 mb-4 flex gap-4">
         <a href="#gates" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Gates</a>
         <a href="#dimensions" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Dimensions</a>
