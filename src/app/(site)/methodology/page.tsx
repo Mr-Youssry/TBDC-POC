@@ -6,6 +6,11 @@ import { isLoggedIn } from "@/lib/guards";
 import { SecHead } from "@/components/sec-head";
 import { LongTextModal } from "@/components/long-text-modal";
 import { updateGateField, updateDimensionField, updateCardField } from "./actions";
+import { getFunnelData } from "./_components/funnel-data";
+import { FunnelChart } from "./_components/funnel-chart";
+import { GateCard } from "./_components/gate-card";
+import { DimensionCard } from "./_components/dimension-card";
+import { ExecutionProtocol } from "./_components/execution-protocol";
 
 export const dynamic = "force-dynamic";
 
@@ -14,30 +19,28 @@ type Gate = { id: string; code: string; name: string; trigger: string; rationale
 export default async function MethodologyPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma v7 driver-adapter type lag
   const gateQuery: Promise<Gate[]> = (prisma as any).methodologyGate.findMany({ orderBy: { sortOrder: "asc" } });
-  const [gates, dimensions, cards, editable] = await Promise.all([
+  const [gates, dimensions, cards, editable, funnel] = await Promise.all([
     gateQuery,
     prisma.methodologyDimension.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.methodologyCard.findMany({ orderBy: { sortOrder: "asc" } }),
     isLoggedIn(),
+    getFunnelData(),
   ]);
 
   const tiers = [
-    { score: "11\u201314", label: "Tier 1 \u2014 Priority intro", desc: "High-conviction match. Make the warm intro immediately, or craft targeted outreach with a specific portfolio gap angle if no warm path is available. Do not delay.", color: "t1" as const },
-    { score: "7\u201310", label: "Tier 2 \u2014 Qualified outreach", desc: "Logical match with identified gaps. Worth an introduction if framed correctly \u2014 typically positioned as co-investor or follow-on, not lead. Review which dimensions pulled the score down before crafting the intro.", color: "t2" as const },
-    { score: "3\u20136", label: "Tier 3 \u2014 Monitor", desc: "Premature or partial alignment. Log for reactivation at a future milestone. Do not make the intro now \u2014 a weak intro is worse than no intro. Note the specific milestone that would move this to Tier 2.", color: "t3-muted" as const },
-    { score: "0\u20132 / Gate", label: "Do not match", desc: "Structural mismatch or hard gate triggered. Making this introduction damages TBDC\u2019s credibility with the investor. Log the reason and move on.", color: "t3" as const },
+    { score: "11–14", label: "Tier 1 — Priority intro", desc: "High-conviction match. Make the warm intro immediately, or craft targeted outreach with a specific portfolio gap angle if no warm path is available. Do not delay.", color: "t1" as const },
+    { score: "7–10", label: "Tier 2 — Qualified outreach", desc: "Logical match with identified gaps. Worth an introduction if framed correctly — typically positioned as co-investor or follow-on, not lead. Review which dimensions pulled the score down before crafting the intro.", color: "t2" as const },
+    { score: "3–6", label: "Tier 3 — Monitor", desc: "Premature or partial alignment. Log for reactivation at a future milestone. Do not make the intro now — a weak intro is worse than no intro. Note the specific milestone that would move this to Tier 2.", color: "t3-muted" as const },
+    { score: "0–2 / Gate", label: "Do not match", desc: "Structural mismatch or hard gate triggered. Making this introduction damages TBDC’s credibility with the investor. Log the reason and move on.", color: "t3" as const },
   ];
-
-  /* ── Table header cell styles (shared) ─────────────────────────────── */
-  const th = "bg-surface-2 px-[10px] py-2 text-left font-mono text-[0.65rem] tracking-[0.05em] text-text-2 border-b border-border font-normal";
 
   return (
     <div className="px-8 py-7 max-w-[1200px]">
       {/* ═══════════════════════════════════════════════════════════════
           Video hero — methodology walkthrough
-          Added 2026-04-23. Drive file is shared "Anyone with the link".
+          Preserved from the 2026-04-23 visual reskin.
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="mb-6">
+      <section className="mb-8">
         <div
           className="font-mono text-[0.68rem] uppercase tracking-[0.12em] font-bold mb-2"
           style={{ color: "var(--color-tbdc-blue)" }}
@@ -65,163 +68,151 @@ export default async function MethodologyPage() {
           />
         </div>
         <p className="text-[0.65rem] font-mono text-text-3 mt-2">
-          Video hosted on Google Drive · requires the file to be shared as "Anyone with the link can view" to render inline.
+          Video hosted on Google Drive · requires the file to be shared as &ldquo;Anyone with the link can view&rdquo; to render inline.
         </p>
       </section>
-      <nav className="sticky top-0 z-10 bg-background border-b border-border py-2 mb-4 flex gap-4">
-        <a href="#gates" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Gates</a>
-        <a href="#dimensions" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Dimensions</a>
-        <a href="#cards" className="text-[0.72rem] font-mono text-text-3 hover:text-text-1 transition-colors">Cards</a>
-      </nav>
-      {/* ═══════════════════════════════════════════════════════════════
-          SECTION 1 — Hard gates
-          ═══════════════════════════════════════════════════════════════ */}
-      <SecHead id="gates">Hard gates \u2014 run before scoring begins</SecHead>
-      <p className="text-[0.78rem] text-text-2 mb-3 leading-relaxed">
-        If any gate fires, the investor-startup pair is eliminated from the match output entirely, regardless of what score they would have received. There are three gates.
-      </p>
 
-      <div className="overflow-x-auto border border-border rounded-[10px] mb-6">
-        <table className="w-full text-[0.78rem] border-collapse">
-          <thead>
-            <tr>
-              <th className={th}>Gate</th>
-              <th className={th}>Trigger</th>
-              <th className={th}>Rationale &amp; Implementation Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            {gates.map((g, i) => (
-              <tr key={g.id} className={i < gates.length - 1 ? "" : "last-row"}>
-                <td className="px-[10px] py-2 border-b border-border align-top">
+      {/* Page header */}
+      <section className="mb-8">
+        <div className="app-page-label">Methodology</div>
+        <h2 className="app-page-title">Scoring Framework &amp; Filter Architecture</h2>
+        <p className="app-page-subtitle max-w-[820px]">
+          Three hard gates eliminate structural mismatches before scoring. Seven ranked dimensions with weighted points determine match quality. Warm path modifies execution, not the score.
+        </p>
+      </section>
+
+      {/* Phase 1 — Hard Gates */}
+      <section className="mb-8">
+        <div className="flex items-baseline gap-3 mb-4">
+          <div className="font-mono text-[0.62rem] uppercase tracking-[0.12em] font-bold" style={{ color: "var(--color-tbdc-blue)" }}>Phase 1</div>
+          <SecHead id="gates">Hard gates — run before scoring begins</SecHead>
+        </div>
+        <p className="text-[0.82rem] text-text-2 mb-4 max-w-[820px] leading-relaxed">
+          If any gate fires, the investor-startup pair is eliminated from the match output entirely, regardless of what score they would have received. Scoring does not run until all three gates clear.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {gates.map((g) => (
+            <GateCard
+              key={g.id}
+              code={g.code}
+              nameSlot={
+                <LongTextModal
+                  id={g.id}
+                  field="name"
+                  label={`Gate ${g.code} — name`}
+                  initialValue={g.name}
+                  editable={editable}
+                  update={updateGateField}
+                >
+                  <span>{g.name}</span>
+                </LongTextModal>
+              }
+              triggerSlot={
+                <LongTextModal
+                  id={g.id}
+                  field="trigger"
+                  label={`Gate ${g.code} — trigger`}
+                  initialValue={g.trigger}
+                  editable={editable}
+                  update={updateGateField}
+                >
+                  <span>{g.trigger}</span>
+                </LongTextModal>
+              }
+              rationaleSlot={
+                <LongTextModal
+                  id={g.id}
+                  field="rationale"
+                  label={`Gate ${g.code} — rationale`}
+                  initialValue={g.rationale}
+                  editable={editable}
+                  update={updateGateField}
+                >
+                  <span>{g.rationale}</span>
+                </LongTextModal>
+              }
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Phase 2 — Ranked Dimensions */}
+      <section className="mb-8">
+        <div className="flex items-baseline gap-3 mb-4">
+          <div className="font-mono text-[0.62rem] uppercase tracking-[0.12em] font-bold" style={{ color: "var(--color-tbdc-blue)" }}>Phase 2</div>
+          <SecHead id="dimensions">Ranked dimensions — weighted, not equal</SecHead>
+        </div>
+        <p className="text-[0.82rem] text-text-2 mb-4 max-w-[820px] leading-relaxed">
+          Seven dimensions are scored after the hard gates clear. Higher-ranked dimensions carry greater weight. Maximum possible score: <strong className="text-text-1">14 points</strong>.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {dimensions.map((d, i) => {
+            const isMod = d.maxWeight.startsWith("Activation");
+            const rank = isMod ? null : i + 1;
+            return (
+              <DimensionCard
+                key={d.id}
+                rank={rank}
+                maxWeight={d.maxWeight}
+                isModifier={isMod}
+                nameSlot={
                   <LongTextModal
-                    id={g.id}
+                    id={d.id}
                     field="name"
-                    label={`Gate ${g.code} \u2014 name`}
-                    initialValue={g.name}
+                    label={`${d.name} — name`}
+                    initialValue={d.name}
                     editable={editable}
-                    update={updateGateField}
+                    update={updateDimensionField}
                   >
-                    <span className="font-mono text-[0.62rem] px-[7px] py-[2px] rounded-[4px] bg-warn text-warn-txt border border-warn-bdr font-bold whitespace-nowrap">
-                      {g.code} \u2014 {g.name}
-                    </span>
+                    <span>{d.name}</span>
                   </LongTextModal>
-                </td>
-                <td className="px-[10px] py-2 border-b border-border align-top">
+                }
+                logicSlot={
                   <LongTextModal
-                    id={g.id}
-                    field="trigger"
-                    label={`Gate ${g.code} \u2014 trigger`}
-                    initialValue={g.trigger}
+                    id={d.id}
+                    field="logic"
+                    label={`${d.name} — logic`}
+                    initialValue={d.logic}
                     editable={editable}
-                    update={updateGateField}
+                    update={updateDimensionField}
                   >
-                    <span>{g.trigger}</span>
+                    <span>{d.logic}</span>
                   </LongTextModal>
-                </td>
-                <td className="px-[10px] py-2 border-b border-border align-top">
-                  <LongTextModal
-                    id={g.id}
-                    field="rationale"
-                    label={`Gate ${g.code} \u2014 rationale`}
-                    initialValue={g.rationale}
-                    editable={editable}
-                    update={updateGateField}
-                  >
-                    <span>{g.rationale}</span>
-                  </LongTextModal>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                }
+              />
+            );
+          })}
+        </div>
+      </section>
 
-      <div className="bg-warn/40 border border-warn-bdr rounded-[6px] px-4 py-2.5 mb-6 text-[0.75rem] text-warn-txt leading-snug">
-        <strong>Implementation note:</strong> the scoring algorithm must not run until all three gates have cleared. A company or investor that triggers any gate should never appear in the match output for that pair.
-      </div>
+      {/* Phase 3 — Execution Protocol */}
+      <section className="mb-8">
+        <div className="flex items-baseline gap-3 mb-4">
+          <div className="font-mono text-[0.62rem] uppercase tracking-[0.12em] font-bold" style={{ color: "var(--color-tbdc-blue)" }}>Phase 3</div>
+          <SecHead>Execution protocol — applied after threshold clears</SecHead>
+        </div>
+        <p className="text-[0.82rem] text-text-2 mb-4 max-w-[820px] leading-relaxed">
+          Once a match clears the Tier 2 threshold (7+ pts), execution branches on whether a warm path is available. The score determines priority; the warm path determines approach.
+        </p>
+        <ExecutionProtocol />
+      </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SECTION 2 — Scoring dimensions
-          ═══════════════════════════════════════════════════════════════ */}
-      <SecHead id="dimensions">Scoring dimensions \u2014 weighted, not equal</SecHead>
-      <p className="text-[0.78rem] text-text-2 mb-3 leading-relaxed">
-        Seven dimensions are scored after the hard gates clear. Dimensions are ranked by importance \u2014 higher-ranked dimensions carry greater weight. Maximum possible score: <strong className="text-text-1">14 points</strong>.
-      </p>
+      {/* Filter Architecture — Anti-Spam Funnel */}
+      <section className="mb-8">
+        <SecHead>Filter architecture — anti-spam funnel</SecHead>
+        <p className="text-[0.82rem] text-text-2 mb-4 max-w-[820px] leading-relaxed">
+          Live count of investor × company pairs filtering through the gates and the scoring layer in the current cohort. Numbers update as the data does.
+        </p>
+        <div className="bg-surface border border-border rounded-[10px] p-5">
+          <FunnelChart data={funnel} />
+        </div>
+      </section>
 
-      <div className="overflow-x-auto border border-border rounded-[10px] mb-6">
-        <table className="w-full text-[0.78rem] border-collapse">
-          <thead>
-            <tr>
-              <th className={th}>Rank</th>
-              <th className={th}>Dimension</th>
-              <th className={th}>Max pts</th>
-              <th className={th}>Scoring Logic &amp; Rationale</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dimensions.map((d, i) => {
-              const isMod = d.maxWeight.startsWith("Activation");
-              const rank = isMod ? null : String(i + 1).padStart(2, "0");
-              return (
-                <tr key={d.id} className={i < dimensions.length - 1 ? "" : "last-row"}>
-                  <td className="px-[10px] py-2 border-b border-border align-top">
-                    {isMod ? (
-                      <span className="font-mono text-[0.72rem] text-text-3 italic">Modifier</span>
-                    ) : (
-                      <span className="font-mono text-[0.82rem] font-bold">{rank}</span>
-                    )}
-                  </td>
-                  <td className="px-[10px] py-2 border-b border-border align-top">
-                    <LongTextModal
-                      id={d.id}
-                      field="name"
-                      label={`${d.name} \u2014 name`}
-                      initialValue={d.name}
-                      editable={editable}
-                      update={updateDimensionField}
-                    >
-                      {isMod ? (
-                        <span className="text-[0.82rem] italic text-text-3">{d.name}</span>
-                      ) : (
-                        <strong className="text-[0.82rem]">{d.name}</strong>
-                      )}
-                    </LongTextModal>
-                  </td>
-                  <td className="px-[10px] py-2 border-b border-border align-top">
-                    {isMod ? (
-                      <span className="font-mono text-[0.72rem] text-text-3 italic">{d.maxWeight}</span>
-                    ) : (
-                      <span className="font-mono text-[1rem] font-bold">{d.maxWeight}</span>
-                    )}
-                  </td>
-                  <td className="px-[10px] py-2 border-b border-border align-top">
-                    <LongTextModal
-                      id={d.id}
-                      field="logic"
-                      label={`${d.name} \u2014 logic`}
-                      initialValue={d.logic}
-                      editable={editable}
-                      update={updateDimensionField}
-                    >
-                      <span className={isMod ? "italic text-text-3" : ""}>{d.logic}</span>
-                    </LongTextModal>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          SECTION 3 — Score tiers and action protocol
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* Score tiers and action protocol — preserved unchanged */}
       <SecHead>Score tiers and action protocol</SecHead>
       <p className="text-[0.78rem] text-text-2 mb-3 leading-relaxed">
-        Score tiers are calibrated against a maximum of 14 points. Each tier maps to a specific action protocol for the IR function. The tier determines not just whether to make the introduction, but how.
+        Score tiers are calibrated against a maximum of 14 points. Each tier maps to a specific action protocol for the IR function.
       </p>
-
       <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-2 mb-3">
         {tiers.map((t) => {
           const borderColor =
@@ -252,22 +243,19 @@ export default async function MethodologyPage() {
           );
         })}
       </div>
-
-      <div className="bg-surface border border-border rounded-[6px] px-4 py-2.5 mb-6 text-[0.75rem] text-text-2 leading-snug italic">
-        A weak introduction is worse than no introduction. Tier 3 and Do Not Match outcomes should be logged with the reason and the milestone that would change the outcome. This data feeds the learning loop across cohorts.
+      <div className="bg-surface border border-border rounded-[6px] px-4 py-2.5 mb-8 text-[0.75rem] text-text-2 leading-snug italic">
+        A weak introduction is worse than no introduction. Tier 3 and Do Not Match outcomes should be logged with the reason and the milestone that would change the outcome.
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SECTION 4 — Design rationale
-          ═══════════════════════════════════════════════════════════════ */}
-      <SecHead id="cards">Design rationale \u2014 why these choices</SecHead>
+      {/* Design rationale — preserved unchanged */}
+      <SecHead id="cards">Design rationale — why these choices</SecHead>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
         {cards.map((c) => (
           <div key={c.id} className="bg-surface border border-border rounded-[10px] p-5">
             <LongTextModal
               id={c.id}
               field="title"
-              label={`${c.title} \u2014 title`}
+              label={`${c.title} — title`}
               initialValue={c.title}
               editable={editable}
               update={updateCardField}
@@ -277,7 +265,7 @@ export default async function MethodologyPage() {
             <LongTextModal
               id={c.id}
               field="body"
-              label={`${c.title} \u2014 body`}
+              label={`${c.title} — body`}
               initialValue={c.body}
               editable={editable}
               update={updateCardField}
@@ -288,46 +276,17 @@ export default async function MethodologyPage() {
         ))}
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SECTION 5 — Warm path as activation modifier
-          ═══════════════════════════════════════════════════════════════ */}
-      <SecHead>Warm path as activation modifier</SecHead>
-      <div className="bg-surface border border-border rounded-[10px] p-5 mb-6">
-        <p className="text-[0.8rem] text-text-2 leading-relaxed mb-3">
-          Warm path availability is logged alongside the match score but does not contribute to it. It changes how the IR function executes a valid match &mdash; not whether the match is valid.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-t1-bg border border-t1-bdr rounded-[6px] px-4 py-3">
-            <div className="text-[0.75rem] font-bold text-t1-txt mb-1">Warm path available</div>
-            <div className="text-[0.72rem] text-text-2 leading-snug">
-              Curated one-paragraph brief to the connector. Permission ask before the introduction. Framed around the specific thesis angle the system identified.
-            </div>
-          </div>
-          <div className="bg-surface-2 border border-border rounded-[6px] px-4 py-3">
-            <div className="text-[0.75rem] font-bold text-text-1 mb-1">No warm path</div>
-            <div className="text-[0.72rem] text-text-2 leading-snug">
-              Gap-framed outreach referencing the investor&rsquo;s recent portfolio moves and the specific thesis alignment. Direct, specific, short.
-            </div>
-          </div>
-        </div>
-        <p className="text-[0.75rem] text-text-3 mt-3 italic leading-snug">
-          A warm path to a Tier 2 match is not preferable to a cold path to a Tier 1 match. The score determines priority. The warm path determines execution.
-        </p>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          SECTION 6 — Scoring summary
-          ═══════════════════════════════════════════════════════════════ */}
+      {/* Scoring summary — preserved unchanged */}
       <SecHead>Scoring summary</SecHead>
       <div className="bg-surface border border-border rounded-[10px] p-5 mb-6">
         <ul className="text-[0.8rem] text-text-2 leading-loose list-disc pl-5">
           <li>Hard gates: <strong className="text-text-1">3</strong> (Founder Opt-Out, Geographic Jurisdiction, Fund Activity)</li>
           <li>Scored dimensions: <strong className="text-text-1">7</strong></li>
           <li>Maximum score: <strong className="text-text-1">14 points</strong></li>
-          <li>Tier 1 threshold: <strong className="text-t1-txt">11\u201314 pts</strong></li>
-          <li>Tier 2 threshold: <strong className="text-t2-txt">7\u201310 pts</strong></li>
-          <li>Tier 3 threshold: <strong className="text-text-3">3\u20136 pts</strong></li>
-          <li>Do Not Match: <strong className="text-t3-txt">0\u20132 pts</strong> or any gate triggered</li>
+          <li>Tier 1 threshold: <strong className="text-t1-txt">11–14 pts</strong></li>
+          <li>Tier 2 threshold: <strong className="text-t2-txt">7–10 pts</strong></li>
+          <li>Tier 3 threshold: <strong className="text-text-3">3–6 pts</strong></li>
+          <li>Do Not Match: <strong className="text-t3-txt">0–2 pts</strong> or any gate triggered</li>
           <li>Activation modifier: <span className="text-text-1 font-medium">Warm Path</span> (no pts, changes execution only)</li>
         </ul>
       </div>
