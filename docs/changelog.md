@@ -6,6 +6,13 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ---
 
+## 2026-04-23 — Methodology page: Phase 1/2/3 card layout + live funnel
+
+- **Layout rebuild (Level 1 of the preview adoption).** `/methodology` now matches the `docs/reference/tbdc-preview.txt` structure: page-header → Phase 1 hard-gate card grid → Phase 2 ranked-dimension card grid (colored left borders keyed to rank) → Phase 3 warm/cold execution-protocol cards → Filter Architecture anti-spam funnel → Score tiers → Design rationale → Summary.
+- **Live funnel.** New `getFunnelData()` helper reads Investor × Company × Match at request time and produces a 5-stage drop: total pairs → after G1 → after G2 → after G3 → scored. Per-gate drops use coarse heuristics (G1 reads `Company.acceptsInvestorIntros`, G2 treats `Investor.region === "US"` as a fail, G3 assumes all active). Tier breakdown at the bottom is exact (`Match.tier` groupBy).
+- **Rubric unchanged.** Still 3 gates / 7 dims / 14 pts. No schema migration, no `Match` recompute, no plugin edit, no seed rewrite. Every dimension and gate text still edits in-place via `LongTextModal`.
+- **Components added under `src/app/(site)/methodology/_components/`:** `funnel-data.ts`, `funnel-chart.tsx`, `gate-card.tsx`, `dimension-card.tsx`, `execution-protocol.tsx`. Page-local, not exported to other routes.
+
 ## 2026-04-23 — Tier A visual reskin + methodology video hero
 
 - **Palette + fonts.** Remapped the values of every `:root` design token in `src/app/globals.css` to the preview palette (navy sidebar #0f172a, light-slate content #f1f5f9, blue accent #2563eb, preview's green/amber/red tier ramp). Token NAMES unchanged, so all 100+ existing usages (`bg-surface`, `text-text-1`, `bg-t1-bg`, `border-warn-bdr`, etc.) pick up the new palette automatically with zero page-level churn. Font family swapped from Georgia to Inter via `next/font/google`, attached as `--font-inter` CSS variable.
