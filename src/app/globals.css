@@ -234,3 +234,97 @@
   pointer-events: none;
   height: 0;
 }
+
+/* ── Preview-style card + table utilities (opt-in) ──────────────────────── */
+/* Added 2026-04-23 alongside the visual reskin. Pages opt into these by
+   swapping their existing wrapper classes to `app-card` / `app-table`.
+   Leaving them off is fine — the token remap already improved the base look. */
+
+.app-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.app-card-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-1);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-surface-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.app-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+}
+
+.app-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-surface-2);
+  color: var(--color-text-2);
+}
+
+.app-table tr:hover td {
+  background: var(--color-surface-2);
+}
+
+.app-table .clickable {
+  color: var(--color-tbdc-blue);
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.app-table .clickable:hover {
+  text-decoration: underline;
+}
+
+/* Page-section header, matching the preview's page-label + page-title block */
+.app-page {
+  padding: 28px 40px 48px;
+}
+
+.app-page-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-tbdc-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.app-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-1);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+  font-family: var(--font-heading);
+}
+
+.app-page-subtitle {
+  font-size: 13px;
+  color: var(--color-text-2);
+  margin-bottom: 24px;
+}
