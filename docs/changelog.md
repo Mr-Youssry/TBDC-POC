@@ -6,6 +6,12 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ---
 
+## 2026-04-23 — Mission Control moved off `/ClawAdmin`, one-click browser launch
+
+- **Path conflict fixed.** Caddy routes `/ClawAdmin` and `/ClawAdmin/*` on `demo.korayem.info` to `openclaw-gateway:18789` (OpenClaw Control UI). The TBDC Next.js app also had a page at `/ClawAdmin` (the Mission Control dashboard), which meant clicking "Mission Control" in the nav landed on OpenClaw's login form instead of the TBDC dashboard — so users never saw the gateway token. Moved the route to `/mission-control`; nav and sidebar hrefs updated to match. OpenClaw keeps `/ClawAdmin/` on demo.korayem.info unchanged.
+- **"Launch Control UI in Browser" button** added to Mission Control. Server-renders the token into an `href` of `https://demo.korayem.info/ClawAdmin/#token=<token>` so the Control UI auto-consumes it from the URL fragment on first load and caches it in localStorage for subsequent visits. This is now the primary launch path; the SSH-tunnel download script is demoted to a "power user" card below.
+- **openclaw-chat-bridge durable restart.** The bridge was silently down for 11 days (the openclaw-gateway container was recreated at some point with the image's default entrypoint, so `/openclaw-init.sh` — which backgrounds `node /openclaw-chat-bridge.mjs` before execing the gateway — never ran). Recreated the container with `--entrypoint /openclaw-init.sh`; gateway state volume is preserved. All `/api/openclaw/*` endpoints functional again.
+
 ## 2026-04-10 — Mission Control dashboard (no SSH)
 
 - **`/ClawAdmin`** now shows a live TBDC-branded Mission Control dashboard with gateway status, plugin details, model config, and sanitized JSON config — all fetched server-side from the openclaw-chat-bridge. No SSH tunnel required.

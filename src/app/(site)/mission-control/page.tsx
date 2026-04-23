@@ -12,6 +12,7 @@ const SSH_USER = "root";
 const SSH_HOST = "67.205.157.55";
 const SSH_KEY = "~/.ssh/id_ed25519";
 const LOCAL_PORT = 18789;
+const PUBLIC_CONTROL_UI_URL = "https://demo.korayem.info/ClawAdmin/";
 
 async function bridgeFetch<T>(path: string): Promise<{ ok: true; data: T } | { ok: false; error: string }> {
   try {
@@ -27,7 +28,7 @@ async function bridgeFetch<T>(path: string): Promise<{ ok: true; data: T } | { o
   }
 }
 
-export default async function ClawAdminPage() {
+export default async function MissionControlPage() {
   const session = await requireSessionForPage();
   const role = (session.user as { role?: string }).role;
   if (role !== "admin") {
@@ -122,13 +123,47 @@ export default async function ClawAdminPage() {
         )}
       </StatusCard>
 
-      {/* Native Control UI — one-click launcher */}
-      <StatusCard title="Launch Native Control UI">
+      {/* Public browser launch — primary path, no SSH needed */}
+      <StatusCard title="Launch Control UI in Browser">
+        {tokenData ? (
+          <div className="space-y-3">
+            <p className="text-sm text-text-2">
+              Opens the OpenClaw Control UI at{" "}
+              <code className="font-mono bg-surface-3 px-1 rounded">demo.korayem.info/ClawAdmin/</code>
+              {" "}with the gateway token pre-filled in the URL fragment. The
+              Control UI consumes the fragment on load and caches the token in
+              browser localStorage, so subsequent visits stay signed in.
+            </p>
+            <div className="flex gap-2 flex-wrap items-center">
+              <a
+                href={`${PUBLIC_CONTROL_UI_URL}#token=${tokenData.token}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 text-xs rounded border border-border bg-surface-2 text-text-1 hover:bg-surface transition-colors font-semibold"
+              >
+                Launch Control UI →
+              </a>
+              <CopyButton
+                text={`${PUBLIC_CONTROL_UI_URL}#token=${tokenData.token}`}
+                label="Copy launch URL"
+              />
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-warn-txt">
+            Could not fetch the gateway token — launch URL unavailable.
+          </p>
+        )}
+      </StatusCard>
+
+      {/* Native Control UI — SSH tunnel fallback for power users */}
+      <StatusCard title="Launch via SSH Tunnel (power user)">
         <div className="space-y-3">
           <p className="text-sm text-text-2">
             Download and run this script to open the full interactive
-            OpenClaw Control UI. It opens an SSH tunnel in the background
-            and launches the dashboard in your browser automatically.
+            OpenClaw Control UI over an SSH tunnel to the droplet loopback
+            port. Use this when you need to bypass Caddy (e.g., to debug
+            the gateway directly without the reverse proxy in the path).
           </p>
           {tokenData ? (
             <>

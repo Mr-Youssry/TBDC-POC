@@ -14,7 +14,7 @@ const TABS = [
 const ADMIN_TABS = [
   { id: "analyst", label: "Analyst", href: "/analyst" },
   { id: "audit", label: "Audit", href: "/admin/audit" },
-  { id: "clawadmin", label: "Mission Control", href: "/ClawAdmin" },
+  { id: "clawadmin", label: "Mission Control", href: "/mission-control" },
 ];
 
 export function NavTabs({ role }: { role?: string }) {

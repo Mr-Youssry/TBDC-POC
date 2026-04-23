@@ -71,7 +71,7 @@ const ADMIN_ITEMS = [
   { id: "analyst", label: "SCOTE", href: "/analyst" },
   { id: "training", label: "SCOTE Training", href: "/training" },
   { id: "audit", label: "Audit Log", href: "/admin/audit" },
-  { id: "clawadmin", label: "Mission Control", href: "/ClawAdmin" },
+  { id: "clawadmin", label: "Mission Control", href: "/mission-control" },
 ];
 
 export function Sidebar({ role }: { role?: string }) {
