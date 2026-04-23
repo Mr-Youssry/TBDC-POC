@@ -13,95 +13,95 @@
 
 :root {
   /* ── Surfaces & text (mapped to shadcn semantic names) ── */
-  --background:        #f5f4f0;
-  --foreground:        #181715;
+  --background:        #f1f5f9;
+  --foreground:        #0f172a;
 
   --card:              #ffffff;
-  --card-foreground:   #181715;
+  --card-foreground:   #0f172a;
 
   --popover:           #ffffff;
-  --popover-foreground: #181715;
+  --popover-foreground: #0f172a;
 
-  --primary:           #181715;
-  --primary-foreground: #f5f4f0;
+  --primary:           #2563eb;
+  --primary-foreground: #ffffff;
 
-  --secondary:         #f0ede8;
-  --secondary-foreground: #181715;
+  --secondary:         #f1f5f9;
+  --secondary-foreground: #0f172a;
 
-  --muted:             #f0ede8;
-  --muted-foreground:  #5a5752;
+  --muted:             #f1f5f9;
+  --muted-foreground:  #64748b;
 
-  --accent:            #e8e4de;
-  --accent-foreground: #181715;
+  --accent:            #dbeafe;
+  --accent-foreground: #1e40af;
 
-  --destructive:       #8c2020;
+  --destructive:       #dc2626;
 
-  --border:            #ddd9d2;
-  --input:             #ddd9d2;
-  --ring:              #bbb6ae;
+  --border:            #e2e8f0;
+  --input:             #e2e8f0;
+  --ring:              #2563eb;
 
-  /* ── Original TBDC design tokens (kept verbatim) ── */
-  --bg:      #f5f4f0;
+  /* ── TBDC semantic tokens — remapped to preview palette 2026-04-23 ── */
+  --bg:      #f1f5f9;
   --surface: #ffffff;
-  --surface2: #f0ede8;
-  --surface3: #e8e4de;
-  --border-1: #ddd9d2;
-  --border-2: #bbb6ae;
+  --surface2: #f8fafc;
+  --surface3: #e2e8f0;
+  --border-1: #e2e8f0;
+  --border-2: #cbd5e1;
 
-  --text-1:  #181715;
-  --text-2:  #5a5752;
-  --text-3:  #9a968f;
+  --text-1:  #0f172a;
+  --text-2:  #475569;
+  --text-3:  #94a3b8;
 
   /* Tier 1 — priority intro (green) */
-  --t1bg:   #eaf4e3;
-  --t1txt:  #275c18;
-  --t1bdr:  #4e9038;
+  --t1bg:   #f0fdf4;
+  --t1txt:  #15803d;
+  --t1bdr:  #86efac;
 
   /* Tier 2 — qualified outreach (amber) */
-  --t2bg:   #fef2df;
-  --t2txt:  #7a4b09;
-  --t2bdr:  #c4840c;
+  --t2bg:   #fffbeb;
+  --t2txt:  #b45309;
+  --t2bdr:  #fcd34d;
 
   /* Tier 3 / Do not match (red) */
-  --t3bg:   #fceaea;
-  --t3txt:  #8c2020;
-  --t3bdr:  #c94040;
+  --t3bg:   #fef2f2;
+  --t3txt:  #b91c1c;
+  --t3bdr:  #fca5a5;
 
-  /* Warning / hard gate (orange) */
-  --warn:    #fff1ea;
-  --warnbdr: #c85420;
-  --warntxt: #7a3010;
+  /* Warning / hard gate (amber — preview folds this into the amber ramp) */
+  --warn:    #fffbeb;
+  --warnbdr: #fcd34d;
+  --warntxt: #92400e;
 
   /* Blue accents (stage, type:VC badges) */
-  --blue:   #1a4fa0;
-  --bluebg: #e8eef8;
+  --blue:   #2563eb;
+  --bluebg: #dbeafe;
 
   /* Generic semantic aliases used in original */
-  --green:  #275c18;
-  --red:    #8c2020;
+  --green:  #15803d;
+  --red:    #b91c1c;
 
   /* Radii */
-  --radius:    0.625rem; /* shadcn default — used by shadcn components */
-  --radius-og: 10px;     /* original TBDC card radius */
-  --radius-md-og: 8px;
-  --radius-sm-og: 6px;
+  --radius:    0.5rem;
+  --radius-og: 8px;
+  --radius-md-og: 6px;
+  --radius-sm-og: 4px;
 
-  /* Chart colors — tier palette reused */
-  --chart-1: #4e9038;
-  --chart-2: #c4840c;
-  --chart-3: #c94040;
-  --chart-4: #1a4fa0;
-  --chart-5: #5a5752;
+  /* Chart colors — preview palette */
+  --chart-1: #16a34a;
+  --chart-2: #d97706;
+  --chart-3: #dc2626;
+  --chart-4: #2563eb;
+  --chart-5: #64748b;
 
-  /* Sidebar (used by shadcn sidebar components if needed) */
-  --sidebar:                   #ffffff;
-  --sidebar-foreground:        #181715;
-  --sidebar-primary:           #181715;
-  --sidebar-primary-foreground: #f5f4f0;
-  --sidebar-accent:            #f0ede8;
-  --sidebar-accent-foreground: #181715;
-  --sidebar-border:            #ddd9d2;
-  --sidebar-ring:              #bbb6ae;
+  /* Sidebar — navy surface, light text (preview look) */
+  --sidebar:                   #0f172a;
+  --sidebar-foreground:        #cbd5e1;
+  --sidebar-primary:           #1e40af;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent:            #1e293b;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border:            #1e293b;
+  --sidebar-ring:              #2563eb;
 }
 
 @theme inline {
@@ -174,10 +174,10 @@
   --color-tbdc-blue-bg: var(--bluebg);
 
   /* ── Fonts ── */
-  --font-sans:    "Georgia", serif;
-  --font-serif:   "Georgia", serif;
+  --font-sans:    var(--font-inter), "Inter", -apple-system, system-ui, sans-serif;
+  --font-serif:   "Georgia", "Times New Roman", serif;
   --font-mono:    ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
-  --font-heading: "Georgia", serif;
+  --font-heading: var(--font-inter), "Inter", -apple-system, system-ui, sans-serif;
 
   /* ── Radii (shadcn ramp kept for shadcn components) ── */
   --radius-sm: calc(var(--radius) * 0.6);
@@ -207,7 +207,7 @@
   outline: none;
   min-height: 200px;
   padding: 1rem;
-  font-family: Georgia, serif;
+  font-family: var(--font-sans);
   font-size: 0.875rem;
   color: var(--color-text-1);
   line-height: 1.6;
