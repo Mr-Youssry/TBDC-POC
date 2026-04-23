@@ -7,6 +7,7 @@ import { isLoggedIn } from "@/lib/guards";
 import { SecHead } from "@/components/sec-head";
 import { EditableCell } from "@/components/editable-cell";
 import { LongTextModal } from "@/components/long-text-modal";
+import { DimCellGrid, type DimCell } from "@/components/dim-cell-grid";
 import {
   updateMatchStringField,
   updateMatchNumberField,
@@ -34,39 +35,6 @@ function scoreBadge(sc: number, tier: number) {
   return (
     <span className="inline-block font-mono text-[0.62rem] px-[7px] py-[2px] rounded-[4px] bg-t3-bg text-t3-txt border border-t3-bdr font-bold whitespace-nowrap">
       Tier 3 · {sc}/14
-    </span>
-  );
-}
-
-function dimSignal(label: string, value: number, max: number) {
-  const hit = value >= max && value > 0;
-  const partial = value > 0 && value < max;
-  const neg = value < 0;
-  const base = "font-mono text-[0.7rem] px-[7px] py-[2px] rounded-[3px] border";
-  if (neg) {
-    return (
-      <span className={`${base} bg-t3-bg text-t3-txt border-t3-bdr opacity-70`}>
-        ✗ {label} {value}/{max}
-      </span>
-    );
-  }
-  if (hit) {
-    return (
-      <span className={`${base} bg-t1-bg text-t1-txt border-t1-bdr`}>
-        ✓ {label} {value}/{max}
-      </span>
-    );
-  }
-  if (partial) {
-    return (
-      <span className={`${base} bg-t2-bg text-t2-txt border-t2-bdr`}>
-        ~ {label} {value}/{max}
-      </span>
-    );
-  }
-  return (
-    <span className={`${base} bg-t3-bg text-t3-txt border-t3-bdr opacity-70`}>
-      ✗ {label} {value}/{max}
     </span>
   );
 }
@@ -235,12 +203,26 @@ export default async function MatchPage({
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-1.5 mb-2.5">
-                      {dimSignal("Sector", m.sectorPts, 3)}
-                      {dimSignal("Stage", m.stagePts, 3)}
-                      {dimSignal("Cheque", m.chequePts, 2)}
-                      {dimSignal("Founder", m.founderPts, 1)}
-                      {dimSignal("Gap", m.gapPts, 1)}
+                    <div className="mb-2.5">
+                      {(() => {
+                        const dimCells: DimCell[] = [
+                          { label: "STG", value: m.stagePts,   max: 3, title: `Stage Fit: ${m.stagePts}/3` },
+                          { label: "SEC", value: m.sectorPts,  max: 3, title: `Sector & Thesis: ${m.sectorPts}/3` },
+                          { label: "CHQ", value: m.chequePts,  max: 2, title: `Cheque Size: ${m.chequePts}/2` },
+                          { label: "L/F", value: m.revenuePts, max: 2, title: `Lead/Follow: ${m.revenuePts}/2` },
+                          { label: "GEO", value: m.geoPts,     max: 2, title: `Geographic: ${m.geoPts}/2` },
+                          { label: "FIF", value: m.founderPts, max: 1, title: `Founder Fit: ${m.founderPts}/1` },
+                          { label: "SV",  value: m.gapPts,     max: 1, title: `Strategic: ${m.gapPts}/1` },
+                        ];
+                        return (
+                          <DimCellGrid
+                            cells={dimCells}
+                            total={m.score}
+                            max={14}
+                            tier={m.tier as 1 | 2 | 3}
+                          />
+                        );
+                      })()}
                     </div>
                     <div className="text-[0.82rem] text-text-2 leading-relaxed mb-1.5">
                       <LongTextModal
@@ -308,12 +290,26 @@ export default async function MatchPage({
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-1.5 mb-2.5">
-                      {dimSignal("Sector", m.sectorPts, 3)}
-                      {dimSignal("Stage", m.stagePts, 3)}
-                      {dimSignal("Cheque", m.chequePts, 2)}
-                      {dimSignal("Founder", m.founderPts, 1)}
-                      {dimSignal("Gap", m.gapPts, 1)}
+                    <div className="mb-2.5">
+                      {(() => {
+                        const dimCells: DimCell[] = [
+                          { label: "STG", value: m.stagePts,   max: 3, title: `Stage Fit: ${m.stagePts}/3` },
+                          { label: "SEC", value: m.sectorPts,  max: 3, title: `Sector & Thesis: ${m.sectorPts}/3` },
+                          { label: "CHQ", value: m.chequePts,  max: 2, title: `Cheque Size: ${m.chequePts}/2` },
+                          { label: "L/F", value: m.revenuePts, max: 2, title: `Lead/Follow: ${m.revenuePts}/2` },
+                          { label: "GEO", value: m.geoPts,     max: 2, title: `Geographic: ${m.geoPts}/2` },
+                          { label: "FIF", value: m.founderPts, max: 1, title: `Founder Fit: ${m.founderPts}/1` },
+                          { label: "SV",  value: m.gapPts,     max: 1, title: `Strategic: ${m.gapPts}/1` },
+                        ];
+                        return (
+                          <DimCellGrid
+                            cells={dimCells}
+                            total={m.score}
+                            max={14}
+                            tier={m.tier as 1 | 2 | 3}
+                          />
+                        );
+                      })()}
                     </div>
                     <div className="text-[0.82rem] text-text-2 leading-relaxed mb-1.5">
                       <LongTextModal
