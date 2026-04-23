@@ -97,11 +97,11 @@ export function Sidebar({ role }: { role?: string }) {
           "flex items-center gap-2.5 rounded-md text-[0.78rem] transition-colors relative",
           collapsed ? "px-2 py-2 justify-center" : "px-3 py-2",
           active
-            ? "bg-[#e8e6e1] text-text-1 font-semibold border-l-[3px] border-l-t1-txt"
-            : "text-text-3 hover:bg-surface-2 hover:text-text-2",
+            ? "bg-sidebar-primary text-sidebar-primary-foreground font-semibold"
+            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-white",
         ].join(" ")}
       >
-        <span className={active ? "text-text-1" : "text-text-3"}>
+        <span className={active ? "text-white" : "text-sidebar-foreground"}>
           {icons[item.id]}
         </span>
         {!collapsed && <span className="truncate">{item.label}</span>}
@@ -113,12 +113,12 @@ export function Sidebar({ role }: { role?: string }) {
     <aside
       className={[
         "sticky top-[60px] h-[calc(100vh-60px)] flex-shrink-0 flex flex-col transition-all duration-200",
-        "bg-surface border-r border-border shadow-[2px_0_8px_rgba(0,0,0,0.06)]",
+        "bg-sidebar text-sidebar-foreground border-r border-sidebar-border",
         collapsed ? "w-[52px]" : "w-[220px]",
       ].join(" ")}
     >
       {/* Logo area */}
-      <div className={["flex items-center gap-2 border-b border-border", collapsed ? "px-2 py-3 justify-center" : "px-3 py-3"].join(" ")}>
+      <div className={["flex items-center gap-2 border-b border-sidebar-border", collapsed ? "px-2 py-3 justify-center" : "px-3 py-3"].join(" ")}>
         <Image
           src="/tbdc-logo.png"
           alt="TBDC"
@@ -127,7 +127,7 @@ export function Sidebar({ role }: { role?: string }) {
           className="rounded flex-shrink-0"
         />
         {!collapsed && (
-          <span className="text-[0.72rem] font-semibold text-text-1 truncate">
+          <span className="text-[0.72rem] font-semibold text-white truncate">
             TBDC POC
           </span>
         )}
@@ -140,15 +140,15 @@ export function Sidebar({ role }: { role?: string }) {
         {/* Admin section */}
         {isAdmin && (
           <>
-            <div className="my-2 border-t border-border" />
+            <div className="my-2 border-t border-sidebar-border" />
             {collapsed ? (
               <div className="flex justify-center py-1">
-                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-3 h-3 text-text-3">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-3 h-3 text-sidebar-foreground">
                   <rect x="2" y="6" width="8" height="5" rx="1" /><path d="M4 6V4a2 2 0 114 0v2" />
                 </svg>
               </div>
             ) : (
-              <div className="px-3 pb-1 font-mono text-[0.55rem] text-text-3 uppercase tracking-[0.1em]">
+              <div className="px-3 pb-1 font-mono text-[0.55rem] text-sidebar-foreground/70 uppercase tracking-[0.1em]">
                 Admin
               </div>
             )}
@@ -159,10 +159,10 @@ export function Sidebar({ role }: { role?: string }) {
 
       {/* Bottom-docked collapse toggle — hidden when force-collapsed */}
       {!forceCollapsed && (
-        <div className="flex-shrink-0 border-t border-border px-2 py-1.5">
+        <div className="flex-shrink-0 border-t border-sidebar-border px-2 py-1.5">
           <button
             onClick={() => setManualCollapsed(!manualCollapsed)}
-            className="w-full flex items-center justify-center gap-1 py-1.5 rounded text-[0.65rem] text-text-3 hover:text-text-1 hover:bg-surface-2 transition-colors"
+            className="w-full flex items-center justify-center gap-1 py-1.5 rounded text-[0.65rem] text-sidebar-foreground hover:text-white hover:bg-sidebar-accent transition-colors"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"
