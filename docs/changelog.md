@@ -6,6 +6,16 @@ Format: `## YYYY-MM-DD — [short hash] Title` followed by 1–3 lines explainin
 
 ---
 
+## 2026-04-23 — Tier A visual reskin + methodology video hero
+
+- **Palette + fonts.** Remapped the values of every `:root` design token in `src/app/globals.css` to the preview palette (navy sidebar #0f172a, light-slate content #f1f5f9, blue accent #2563eb, preview's green/amber/red tier ramp). Token NAMES unchanged, so all 100+ existing usages (`bg-surface`, `text-text-1`, `bg-t1-bg`, `border-warn-bdr`, etc.) pick up the new palette automatically with zero page-level churn. Font family swapped from Georgia to Inter via `next/font/google`, attached as `--font-inter` CSS variable.
+- **Sidebar on a dark surface.** `src/components/sidebar.tsx` switches from `bg-surface` (now white) to `bg-sidebar` (navy); text uses `text-sidebar-foreground`, active items use blue `bg-sidebar-primary`, hover darkens to `bg-sidebar-accent`. Icons and the collapse footer updated to read on dark.
+- **Site header flipped.** `src/components/site-header.tsx` moves from `bg-[var(--text-1)]` (which is now navy and would stack with the sidebar) to `bg-surface` + bottom border, so it reads as a white card-like top strip with slate info chips.
+- **`DimCellGrid` on Match Output.** New presentational component in `src/components/dim-cell-grid.tsx` renders all 7 dimensions as coloured cells plus a score bar, replacing the row of pill-shaped `dimSignal()` spans on each match row. The old pill row only surfaced 5 of the 7 dimensions; the grid shows every dimension of the 14-point rubric. Scoring math and the tier badge are unchanged.
+- **Methodology video hero.** Google Drive walkthrough (`file/d/1RppYj9i5s6F3wftbYCk3FuxQqV6AV6ck/preview`) embedded as the first section of `/methodology`, above the sticky sub-nav. 16:9 responsive iframe; file is shared "Anyone with the link".
+- **Opt-in polish utilities.** New `.app-card`, `.app-table`, `.app-page*` classes in `globals.css` for pages that want to adopt the preview's tighter card + uppercase-micro-header look without a full restyle pass.
+- **Explicitly not in this pass.** Methodology rubric unchanged (still 3 gates / 7 dims / 14 pts — not the preview's 5/6/10). No new routes (Investor Profile, Company Profile, Analytics). No radar, heatmap, funnel, or kanban. Those were scoped to Tier B/C plans and will ship separately if approved.
+
 ## 2026-04-23 — Mission Control moved off `/ClawAdmin`, one-click browser launch
 
 - **Path conflict fixed.** Caddy routes `/ClawAdmin` and `/ClawAdmin/*` on `demo.korayem.info` to `openclaw-gateway:18789` (OpenClaw Control UI). The TBDC Next.js app also had a page at `/ClawAdmin` (the Mission Control dashboard), which meant clicking "Mission Control" in the nav landed on OpenClaw's login form instead of the TBDC dashboard — so users never saw the gateway token. Moved the route to `/mission-control`; nav and sidebar hrefs updated to match. OpenClaw keeps `/ClawAdmin/` on demo.korayem.info unchanged.
